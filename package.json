@@ -9,6 +9,10 @@
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
     "doctoc": "npm install -g doctoc && doctoc README.md"
   },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/idanto/express-ajv-swagger-validation.git"
+  },
   "keywords": [
     "ajv",
     "express",
@@ -19,6 +23,10 @@
     "validation",
     "validator"
   ],
+  "bugs": {
+    "url": "https://github.com/idanto/express-ajv-swagger-validation"
+  },
+  "homepage": "https://github.com/idanto/express-ajv-swagger-validation",
   "author": "Idan Tovi",
   "license": "MIT",
   "dependencies": {
