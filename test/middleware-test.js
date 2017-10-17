@@ -7,8 +7,6 @@ var chai = require('chai'),
     request = require('request-promise-native');
 chai.use(chaiSinon);
 
-require('./test-server');
-
 describe('input-validation middleware tests', function () {
     describe('init function tests', function() {
         it('should reject the promise in case the file doesn\'t exists', function () {
@@ -31,9 +29,18 @@ describe('input-validation middleware tests', function () {
         });
     });
     describe('Valid headers request should pass', function () {
+        var server;
+        before(function () {
+            return require('./test-server').then(function(testServer) {
+                server = testServer;
+            });
+        });
+        after(function () {
+            server.close();
+        });
         it('valid request - should pass validation', function () {
             return request({
-                uri: 'http://localhost:3001/pets',
+                uri: 'http://localhost:8281/pets',
                 headers: {
                     'api-version': '1.0',
                     'request-id': '123456'
@@ -50,7 +57,7 @@ describe('input-validation middleware tests', function () {
         });
         it('missing header - should fail', function () {
             return request({
-                uri: 'http://localhost:3001/pets',
+                uri: 'http://localhost:8281/pets',
                 headers: {
                     'request-id': '123456'
                 },
@@ -68,7 +75,7 @@ describe('input-validation middleware tests', function () {
         });
         it('bad header - invalid pattern', function () {
             return request({
-                uri: 'http://localhost:3001/pets',
+                uri: 'http://localhost:8281/pets',
                 headers: {
                     'api-version': '1',
                     'request-id': '123456'
@@ -87,7 +94,7 @@ describe('input-validation middleware tests', function () {
         });
         it('bad header - empty header', function () {
             return request({
-                uri: 'http://localhost:3001/pets',
+                uri: 'http://localhost:8281/pets',
                 headers: {
                     'api-version': '1.0',
                     'request-id': ''
@@ -106,7 +113,7 @@ describe('input-validation middleware tests', function () {
         it('bad body - wrong type', function() {
             return request({
                 method: 'POST',
-                uri: 'http://localhost:3001/pets',
+                uri: 'http://localhost:8281/pets',
                 headers: {
                     'api-version': '1.0',
                     'request-id': ''
@@ -127,7 +134,7 @@ describe('input-validation middleware tests', function () {
         it('bad body - missing required params', function () {
             return request({
                 method: 'POST',
-                uri: 'http://localhost:3001/pets',
+                uri: 'http://localhost:8281/pets',
                 headers: {
                     'api-version': '1.0',
                     'request-id': ''
@@ -147,7 +154,7 @@ describe('input-validation middleware tests', function () {
         it('bad query param - missing required params', function () {
             return request({
                 method: 'GET',
-                uri: 'http://localhost:3001/pets',
+                uri: 'http://localhost:8281/pets',
                 headers: {
                     'api-version': '1.0',
                     'request-id': '1234'
@@ -166,7 +173,7 @@ describe('input-validation middleware tests', function () {
         it('bad query param - over limit', function () {
             return request({
                 method: 'GET',
-                uri: 'http://localhost:3001/pets',
+                uri: 'http://localhost:8281/pets',
                 headers: {
                     'api-version': '1.0',
                     'request-id': ''
@@ -186,7 +193,7 @@ describe('input-validation middleware tests', function () {
         it('bad query param - under limit', function () {
             return request({
                 method: 'GET',
-                uri: 'http://localhost:3001/pets',
+                uri: 'http://localhost:8281/pets',
                 headers: {
                     'api-version': '1.0',
                     'request-id': ''
@@ -206,7 +213,7 @@ describe('input-validation middleware tests', function () {
         it('bad query param - wrong type', function () {
             return request({
                 method: 'GET',
-                uri: 'http://localhost:3001/pets',
+                uri: 'http://localhost:8281/pets',
                 headers: {
                     'api-version': '1.0',
                     'request-id': ''
@@ -226,7 +233,7 @@ describe('input-validation middleware tests', function () {
         it('bad path param - wrong format', function () {
             return request({
                 method: 'GET',
-                uri: 'http://localhost:3001/pets/12',
+                uri: 'http://localhost:8281/pets/12',
                 headers: {
                     'api-version': '1.0',
                     'request-id': '1234'

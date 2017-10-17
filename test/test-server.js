@@ -3,7 +3,8 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var inputValidation = require('../src/middleware');
-var serverPort = process.env.PORT || 3001;
+var serverPort = process.env.PORT || 8281;
+var server;
 
 let inputValidationOptions = {
     formats: [
@@ -12,7 +13,7 @@ let inputValidationOptions = {
     ]
 };
 
-inputValidation.init('test/pet-store-swagger.yaml', inputValidationOptions)
+module.exports = inputValidation.init('test/pet-store-swagger.yaml', inputValidationOptions)
     .then(function () {
         var app = express();
         app.use(bodyParser.json());
@@ -32,6 +33,7 @@ inputValidation.init('test/pet-store-swagger.yaml', inputValidationOptions)
             }
         });
 
-        var server = app.listen(serverPort, function () {
+        server = app.listen(serverPort, function () {
         });
+        return Promise.resolve(server);
     });

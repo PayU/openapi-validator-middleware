@@ -11,5 +11,5 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - g++-4.8
-script: "npm run-script test-travis"
+script: "npm run test-travis"
 after_success: 'npm run coveralls'
