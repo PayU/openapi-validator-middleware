@@ -14,7 +14,7 @@ This package is used to perform input validation to express app using a [Swagger
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+**Table of Contents**  <!-- *generated with [DocToc](https://github.com/thlorenz/doctoc)* -->
 
 - [express-ajv-swagger-validation](#express-ajv-swagger-validation)
   - [Install](#install)
@@ -47,7 +47,7 @@ var swaggerValidator = require('express-ajv-swagger-validation');
 This Middleware validate the request body, headers, path parameters and query parameters according to the path definition in the swagger file.
 Please make sure to use this middleware inside route definition in order to have `req.route.path` assign to the most accurate express route.
 
-### express_node_metrics.metrics.init(PathToSwaggerFile, options)
+### express-ajv-swagger-validation.init(PathToSwaggerFile, options)
 
 Init the middleware with the swagger definition.
 
@@ -63,14 +63,14 @@ The function return Promise.
 Options currently supports:
 - `formats` - array of formats that can be added to `ajv` configuration, each element in the array should include `name` and `pattern`
 
-``` js
+```js
 formats: [
     { name: 'double', pattern: /\d+(\.\d+)?/ },
     { name: 'int64', pattern: /^\d{1,18}$/ }
 ]
 ```
 
-## Examples
+## Usage Example
 
 ```js
 swaggerValidator.init('test/unit-tests/input-validation/pet-store-swagger.yaml')
@@ -97,6 +97,10 @@ swaggerValidator.init('test/unit-tests/input-validation/pet-store-swagger.yaml')
         });
     });
 ```
+
+## Important Notes
+
+- Objects - it is important to set any objects with the property `type: object` inside your swagger file, although it isn't a must in the Swagger (OpenAPI) spec in order to validate it accurately with [ajv](https://www.npmjs.com/package/ajv) it must be marked as `object`
 
 ## Running Tests
 Using mocha, istanbul and mochawesome
