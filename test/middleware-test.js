@@ -120,7 +120,10 @@ describe('input-validation middleware tests', function () {
                 },
                 body: {
                     name: '111',
-                    tag: 12344
+                    tag: 12344,
+                    'test': {
+                        field1: '1'
+                    }
                 },
                 qs: null,
                 json: true
@@ -140,7 +143,10 @@ describe('input-validation middleware tests', function () {
                     'request-id': ''
                 },
                 body: {
-                    tag: 'tag'
+                    tag: 'tag',
+                    'test': {
+                        field1: '1'
+                    }
                 },
                 qs: null,
                 json: true
@@ -149,6 +155,95 @@ describe('input-validation middleware tests', function () {
             }).catch(function (err) {
                 expect(err.statusCode).to.equal(400);
                 expect(err.response.body.more_info).to.includes('name');
+            });
+        });
+        it('bad body - missing required object attribute', function () {
+            return request({
+                method: 'POST',
+                uri: 'http://localhost:8281/pets',
+                headers: {
+                    'api-version': '1.0',
+                    'request-id': ''
+                },
+                body: {
+                    name: 'name',
+                    tag: 'tag'
+                },
+                qs: null,
+                json: true
+            }).then(function (res) {
+                expect.fail(res, 'should fail', 'request should fail with status 400');
+            }).catch(function (err) {
+                expect(err.statusCode).to.equal(400);
+                expect(err.response.body.more_info).to.includes('test');
+            });
+        });
+        it('bad body - wrong type object attribute', function () {
+            return request({
+                method: 'POST',
+                uri: 'http://localhost:8281/pets',
+                headers: {
+                    'api-version': '1.0',
+                    'request-id': ''
+                },
+                body: {
+                    name: 'name',
+                    tag: 'tag',
+                    test: ''
+                },
+                qs: null,
+                json: true
+            }).then(function (res) {
+                expect.fail(res, 'should fail', 'request should fail with status 400');
+            }).catch(function (err) {
+                expect(err.statusCode).to.equal(400);
+                expect(err.response.body.more_info).to.includes('test');
+            });
+        });
+        it('bad body - missing required nested attribute', function () {
+            return request({
+                method: 'POST',
+                uri: 'http://localhost:8281/pets',
+                headers: {
+                    'api-version': '1.0',
+                    'request-id': ''
+                },
+                body: {
+                    name: 'name',
+                    tag: 'tag',
+                    test: {}
+                },
+                qs: null,
+                json: true
+            }).then(function (res) {
+                expect.fail(res, 'should fail', 'request should fail with status 400');
+            }).catch(function (err) {
+                expect(err.statusCode).to.equal(400);
+                expect(err.response.body.more_info).to.includes('field1');
+            });
+        });
+        it('bad body - wrong format nested attribute', function () {
+            return request({
+                method: 'POST',
+                uri: 'http://localhost:8281/pets',
+                headers: {
+                    'api-version': '1.0',
+                    'request-id': ''
+                },
+                body: {
+                    name: 'name',
+                    tag: 'tag',
+                    test: {
+                        field1: 1234
+                    }
+                },
+                qs: null,
+                json: true
+            }).then(function (res) {
+                expect.fail(res, 'should fail', 'request should fail with status 400');
+            }).catch(function (err) {
+                expect(err.statusCode).to.equal(400);
+                expect(err.response.body.more_info).to.includes('field1');
             });
         });
         it('bad query param - missing required params', function () {

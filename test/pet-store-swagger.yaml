@@ -60,11 +60,19 @@ paths:
           schema:
             required:
               - name
+              - test
             properties:
               name:
                 type: string
               tag:
                 type: string
+              test:
+                type: object
+                required:
+                  - field1
+                properties:
+                  field1:
+                    type: string
       responses:
         "201":
           description: Null response
