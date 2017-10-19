@@ -17,8 +17,8 @@
     "ajv",
     "express",
     "swagger",
-    "open",
-    "api",
+    "OpenAPI",
+    "open api",
     "input validation",
     "validation",
     "validator"
