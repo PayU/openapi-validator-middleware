@@ -53,7 +53,6 @@
     "mocha": "^4.0.1",
     "mochawesome": "^2.3.1",
     "request": "^2.83.0",
-    "request-promise-native": "^1.0.5",
     "rewire": "^2.5.2",
     "sinon": "^4.0.1",
     "supertest": "^3.0.0"

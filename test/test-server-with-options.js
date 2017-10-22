@@ -3,8 +3,6 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var inputValidation = require('../src/middleware');
-var serverPort = process.env.PORT || 8281;
-var server;
 
 let inputValidationOptions = {
     formats: [
@@ -37,7 +35,5 @@ module.exports = inputValidation.init('test/pet-store-swagger.yaml', inputValida
             }
         });
 
-        server = app.listen(serverPort, function () {
-        });
-        return Promise.resolve(server);
+        return Promise.resolve(app);
     });
