@@ -5,13 +5,14 @@ var SwaggerParser = require('swagger-parser'),
     Parser = require('swagger-parameters');
 
 var schemas = {};
-
+var middlewareOptions;
 /**
  * Initialize the input validation middleware
  * @param {string} swaggerPath - the path for the swagger file
- * @param {Object} options - options.formats to add formats to ajv
+ * @param {Object} options - options.formats to add formats to ajv, options.beautifyErrors, options.firstError
  */
 function init(swaggerPath, options) {
+    middlewareOptions = options || {};
     return SwaggerParser.dereference(swaggerPath)
         .then(function (dereferenced) {
             Object.keys(dereferenced.paths).forEach(function(currentPath){
@@ -58,12 +59,21 @@ function init(swaggerPath, options) {
  */
 function validate(req, res, next) {
     return Promise.all([
-        _validateParams(req.headers, req.params, req.query, req.route.path, req.method.toLowerCase()),
-        _validateBody(req.body, req.route.path, req.method.toLowerCase())
-    ]).then(function () {
+        _validateParams(req.headers, req.params, req.query, req.route.path, req.method.toLowerCase()).catch(e => e),
+        _validateBody(req.body, req.route.path, req.method.toLowerCase()).catch(e => e)
+    ]).then(function (errors) {
+        if (errors[0] || errors[1]) {
+            return errors[0] && errors[1] ? Promise.reject(errors[0].concat(errors[1])) : errors[0] ? Promise.reject(errors[0]) : Promise.reject(errors[1]);
+        }
         return next();
-    }).catch(function (error) {
-        return next(new InputValidationError(error));
+    }).catch(function (errors) {
+        if (middlewareOptions.beautifyErrors && middlewareOptions.firstError) {
+            errors = parseAjvError(errors[0]);
+        } else if (middlewareOptions.beautifyErrors) {
+            errors = parseAjvErrors(errors);
+        }
+
+        return next(new InputValidationError(errors));
     });
 };
 
@@ -93,6 +103,39 @@ function _validateParams(headers, pathParams, query, path, method) {
 
         return resolve();
     });
+}
+
+function parseAjvErrors(errors) {
+    var parsedError = [];
+    errors.forEach(function(error) {
+        parsedError.push(parseAjvError(error));
+    }, this);
+
+    return parsedError;
+}
+
+function parseAjvError(error) {
+    if (error.dataPath.startsWith('.')) {
+        error.dataPath = error.dataPath.replace('.', 'body/');
+    }
+
+    if (error.dataPath.startsWith('[')) {
+        error.dataPath = 'body/' + error.dataPath;
+    }
+
+    if ((error.dataPath.startsWith('/')) || (error.dataPath.startsWith('\\'))) {
+        error.dataPath = error.dataPath.replace('\\', '').replace('/', '');
+    }
+
+    if (error.dataPath === '') {
+        error.dataPath = 'body';
+    }
+
+    if (error.keyword === 'enum') {
+        error.message += ' [' + error.params.allowedValues.toString() + ']';
+    }
+
+    return error.dataPath + ' ' + error.message;
 }
 
 function addFormats(ajv, formats) {

@@ -20,8 +20,8 @@ paths:
       tags:
         - pets
       parameters:
-        - $ref: '#/parameters/ApiVersion'
         - $ref: '#/parameters/ApiRequestId'
+        - $ref: '#/parameters/ApiVersion'
         - name: limit
           in: query
           description: How many items to return at one time (max 100)
@@ -54,6 +54,7 @@ paths:
       summary: Create a pet
       operationId: createPets
       parameters:
+        - $ref: '#/parameters/ApiRequestId'
         - name: body
           in: body
           required: true
@@ -73,6 +74,7 @@ paths:
                 properties:
                   field1:
                     type: string
+                    enum: ['enum1', 'enum2']
       responses:
         "201":
           description: Null response
@@ -80,16 +82,53 @@ paths:
           description: unexpected error
           schema:
             $ref: '#/definitions/Error'
+    put:
+      summary: Info for a specific pet
+      operationId: updatePats
+      tags:
+        - pets
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+              type: array
+              items:
+                type: object
+                required:
+                  - name
+                  - test
+                properties:
+                  name:
+                    type: string
+                  tag:
+                    type: string
+                  test:
+                    type: object
+                    required:
+                      - field1
+                    properties:
+                      field1:
+                        type: string
+                        enum: ['enum1', 'enum2']
+      responses:
+        "200":
+          description: Expected response to a valid request
+          schema:
+            $ref: '#/definitions/Pets'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
   /pets/{petId}:
-    parameters:
-      - $ref: '#/parameters/ApiVersion'
-      - $ref: '#/parameters/ApiRequestId'
     get:
       summary: Info for a specific pet
       operationId: showPetById
       tags:
         - pets
       parameters:
+        - $ref: '#/parameters/ApiVersion'
+        - $ref: '#/parameters/ApiRequestId'
         - name: petId
           in: path
           required: true
