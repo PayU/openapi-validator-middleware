@@ -32,7 +32,9 @@ describe('input-validation middleware tests', function () {
     describe('Server with options - beautify and one error', function () {
         var app;
         before(function () {
+            console.log('build express app');
             return require('./test-server-with-options').then(function (testServer) {
+                console.log('done building express app');
                 app = testServer;
             });
         });
