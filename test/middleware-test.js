@@ -9,7 +9,7 @@ const clearRequire = require('clear-require');
 chai.use(chaiSinon);
 
 describe('input-validation middleware tests', function () {
-    describe('init function tests', function () {
+    describe.skip('init function tests', function () {
         it('should reject the promise in case the file doesn\'t exists', function () {
             let rewire = require('rewire');
             let middleware = rewire('../src/middleware');
