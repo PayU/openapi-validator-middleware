@@ -38,6 +38,7 @@
     "body-parser": "^1.18.2",
     "chai": "^4.1.2",
     "chai-sinon": "^2.8.1",
+    "clear-require": "^2.0.0",
     "coveralls": "^3.0.0",
     "eslint": "^4.0.0",
     "eslint-config-standard": "^10.2.1",

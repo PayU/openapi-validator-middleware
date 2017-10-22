@@ -5,6 +5,7 @@ var chai = require('chai'),
     sinon = require('sinon'),
     chaiSinon = require('chai-sinon'),
     request = require('supertest');
+const clearRequire = require('clear-require');
 chai.use(chaiSinon);
 
 describe('input-validation middleware tests', function () {
@@ -36,7 +37,7 @@ describe('input-validation middleware tests', function () {
             });
         });
         after(function () {
-            delete require.cache;
+            clearRequire('../src/middleware');
         });
         it('valid request - should pass validation', function (done) {
             request(app)
@@ -390,7 +391,7 @@ describe('input-validation middleware tests', function () {
             });
         });
         after(function () {
-            delete require.cache;
+            clearRequire('../src/middleware');
         });
         it('valid request - should pass validation', function (done) {
             request(app)
@@ -744,7 +745,7 @@ describe('input-validation middleware tests', function () {
             });
         });
         after(function () {
-            delete require.cache;
+            clearRequire('../src/middleware');
         });
         it('valid request - should pass validation', function (done) {
             request(app)
@@ -1078,7 +1079,7 @@ describe('input-validation middleware tests', function () {
             });
         });
         after(function () {
-            delete require.cache;
+            clearRequire('../src/middleware');
         });
         it('valid request - should pass validation', function (done) {
             request(app)
