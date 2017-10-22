@@ -58,9 +58,10 @@ function init(swaggerPath, options) {
  * @returns In case of an error will call `next` with `InputValidationError`
  */
 function validate(req, res, next) {
+    let path = extractPath(req);
     return Promise.all([
-        _validateParams(req.headers, req.params, req.query, req.route.path, req.method.toLowerCase()).catch(e => e),
-        _validateBody(req.body, req.route.path, req.method.toLowerCase()).catch(e => e)
+        _validateParams(req.headers, req.params, req.query, path, req.method.toLowerCase()).catch(e => e),
+        _validateBody(req.body, path, req.method.toLowerCase()).catch(e => e)
     ]).then(function (errors) {
         if (errors[0] || errors[1]) {
             return errors[0] && errors[1] ? Promise.reject(errors[0].concat(errors[1])) : errors[0] ? Promise.reject(errors[0]) : Promise.reject(errors[1]);
@@ -142,6 +143,11 @@ function addFormats(ajv, formats) {
     formats.forEach(function(format) {
         ajv.addFormat(format.name, format.pattern);
     });
+}
+
+function extractPath(req) {
+    let path = req.baseUrl.concat(req.route.path);
+    return path.endsWith('/') ? path.substring(0, path.length - 1) : path;
 }
 
 /**
