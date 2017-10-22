@@ -4,7 +4,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var inputValidation = require('../src/middleware');
 
-let inputValidationOptions = {
+var inputValidationOptions = {
     formats: [
         { name: 'double', pattern: /\d+(\.\d+)?/ },
         { name: 'int64', pattern: /^\d{1,18}$/ }

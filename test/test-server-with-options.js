@@ -4,7 +4,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var inputValidation = require('../src/middleware');
 
-let inputValidationOptions = {
+var inputValidationOptions = {
     formats: [
         { name: 'double', pattern: /\d+(\.\d+)?/ },
         { name: 'int64', pattern: /^\d{1,18}$/ }
@@ -13,6 +13,7 @@ let inputValidationOptions = {
     firstError: true
 };
 
+console.log(JSON.stringify(inputValidationOptions));
 module.exports = inputValidation.init('test/pet-store-swagger.yaml', inputValidationOptions)
     .then(function () {
         var app = express();
