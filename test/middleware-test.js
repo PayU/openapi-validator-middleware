@@ -35,6 +35,9 @@ describe('input-validation middleware tests', function () {
                 app = testServer;
             });
         });
+        after(function () {
+            delete require.cache;
+        });
         it('valid request - should pass validation', function (done) {
             request(app)
                 .get('/pets')
@@ -385,6 +388,9 @@ describe('input-validation middleware tests', function () {
             return require('./test-simple-server-base-route').then(function (testServer) {
                 app = testServer;
             });
+        });
+        after(function () {
+            delete require.cache;
         });
         it('valid request - should pass validation', function (done) {
             request(app)
@@ -737,6 +743,9 @@ describe('input-validation middleware tests', function () {
                 app = testServer;
             });
         });
+        after(function () {
+            delete require.cache;
+        });
         it('valid request - should pass validation', function (done) {
             request(app)
                 .get('/pets')
@@ -760,6 +769,7 @@ describe('input-validation middleware tests', function () {
                     if (err) {
                         throw err;
                     }
+                    console.log(res.body.more_info);
                     expect(res.body.more_info).to.be.a('string');
                     expect(res.body.more_info).to.equal('headers should have required property \'api-version\'');
                     done();
@@ -1066,6 +1076,9 @@ describe('input-validation middleware tests', function () {
             return require('./test-server-with-options-more-than-1-error').then(function (testServer) {
                 app = testServer;
             });
+        });
+        after(function () {
+            delete require.cache;
         });
         it('valid request - should pass validation', function (done) {
             request(app)
