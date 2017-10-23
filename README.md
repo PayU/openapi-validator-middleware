@@ -7,7 +7,7 @@
 [![NPM Downloads][downloads-image]][downloads-url]
 [![Build Status][travis-image]][travis-url]
 [![Test Coverage][coveralls-image]][coveralls-url]
-[![NSP Status](https://nodesecurity.io/orgs/zooz-test/projects/012e3ff9-f6a8-4eb2-86ef-4173af622196/badge)](https://nodesecurity.io/orgs/zooz-test/projects/012e3ff9-f6a8-4eb2-86ef-4173af622196)
+[![NSP Status](https://nodesecurity.io/orgs/zooz-test/projects/49d2a5f4-9408-4d08-81d5-0bf23eda19ec/badge)](https://nodesecurity.io/orgs/zooz-test/projects/012e3ff9-f6a8-4eb2-86ef-4173af622196)
 [![MIT License][license-image]][license-url]
 
 This package is used to perform input validation to express app using a [Swagger (Open API)](https://swagger.io/specification/) definition and [ajv](https://www.npmjs.com/package/ajv)
@@ -61,7 +61,18 @@ The function return Promise.
 ##### Options
 
 Options currently supports:
-- `formats` - array of formats that can be added to `ajv` configuration, each element in the array should include `name` and `pattern`
+- `formats` - Array of formats that can be added to `ajv` configuration, each element in the array should include `name` and `pattern`.
+- `beautify`- Boolean that indicates if to beautify the errors, in this case it will create a string from the Ajv error.
+    - Examples:
+        - `query/limit should be <= 100` - query param
+        - `path/petId should NOT be shorter than 3 characters` - path param not in format
+        - `body/[0].test.field1 should be string` - Item in an array body
+        - `body/test should have required property 'field1'` - nested field
+        - `body should have required property 'name'` - Missing field in body
+
+    You can see more examples in the tests
+
+- `firstError` - Boolean that indicates if to return only the first error.
 
 ```js
 formats: [
