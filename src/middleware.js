@@ -13,8 +13,6 @@ var middlewareOptions;
  */
 function init(swaggerPath, options) {
     middlewareOptions = options || {};
-    console.log(JSON.stringify(options));
-    console.log(JSON.stringify(middlewareOptions));
     return SwaggerParser.dereference(swaggerPath)
         .then(function (dereferenced) {
             Object.keys(dereferenced.paths).forEach(function(currentPath){
@@ -70,9 +68,6 @@ function validate(req, res, next) {
         }
         return next();
     }).catch(function (errors) {
-        console.log(JSON.stringify(middlewareOptions));
-        console.log(middlewareOptions.beautifyErrors && middlewareOptions.firstError);
-        console.log(middlewareOptions.beautifyErrors);
         if (middlewareOptions.beautifyErrors && middlewareOptions.firstError) {
             errors = parseAjvError(errors[0]);
         } else if (middlewareOptions.beautifyErrors) {

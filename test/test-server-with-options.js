@@ -13,10 +13,8 @@ var inputValidationOptions = {
     firstError: true
 };
 
-console.log(JSON.stringify(inputValidationOptions));
 module.exports = inputValidation.init('test/pet-store-swagger.yaml', inputValidationOptions)
     .then(function () {
-        console.log('finish init middleware');
         var app = express();
         app.use(bodyParser.json());
         app.get('/pets', inputValidation.validate, function (req, res, next) {
