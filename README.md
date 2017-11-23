@@ -62,7 +62,7 @@ The function return Promise.
 
 Options currently supports:
 - `formats` - Array of formats that can be added to `ajv` configuration, each element in the array should include `name` and `pattern`.
-- `beautify`- Boolean that indicates if to beautify the errors, in this case it will create a string from the Ajv error.
+- `beautifyErrors`- Boolean that indicates if to beautify the errors, in this case it will create a string from the Ajv error.
     - Examples:
         - `query/limit should be <= 100` - query param
         - `path/petId should NOT be shorter than 3 characters` - path param not in format
@@ -76,7 +76,7 @@ Options currently supports:
 
 ```js
 formats: [
-    { name: 'double', pattern: /\d+(\.\d+)?/ },
+    { name: 'double', pattern: /\d+\.(\d+)+/ },
     { name: 'int64', pattern: /^\d{1,18}$/ }
 ]
 ```
