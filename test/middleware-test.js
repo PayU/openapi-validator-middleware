@@ -1414,4 +1414,172 @@ describe('input-validation middleware tests', function () {
                 });
         });
     });
+    describe('Inheritance', function () {
+        var app;
+        before(function () {
+            return require('./test-server-inheritance').then(function (testServer) {
+                app = testServer;
+            });
+        });
+        it('should pass', function (done) {
+            request(app)
+                .post('/pets')
+                .set('api-version', '1.0')
+                .send({
+                    petType: 'Dog',
+                    name: 'name',
+                    packSize: 3
+                })
+                .expect(200, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.result).to.equal('OK');
+                    done();
+                });
+        });
+        it('wrong value for header with enum definition', function (done) {
+            request(app)
+                .get('/pets')
+                .set('api-version', '2.0')
+                .expect(400, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.more_info).to.includes('headers/api-version should be equal to one of the allowed values [1.0,1.1]');
+                    done();
+                });
+        });
+        it('wrong value for query with enum definition', function (done) {
+            request(app)
+                .get('/pets')
+                .set('api-version', '1.0')
+                .query({ PetType: 'bird' })
+                .expect(400, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.more_info).to.includes('query/PetType should be equal to one of the allowed values [Dog,Cat]');
+                    done();
+                });
+        });
+        it('missing header with enum definition', function (done) {
+            request(app)
+                .get('/pets')
+                .expect(400, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.more_info).to.includes('headers should have required property \'api-version\'');
+                    done();
+                });
+        });
+        it('wrong value for path param with enum definition', function (done) {
+            request(app)
+                .get('/v2/pets/12345')
+                .expect(400, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.more_info).to.includes('path/version should be equal to one of the allowed values [v1]');
+                    done();
+                });
+        });
+        it('should fail for wrong value in discriminator', function (done) {
+            request(app)
+                .post('/pets')
+                .set('api-version', '1.0')
+                .send({
+                    petType: 'dog',
+                    name: 'name',
+                    tag: 'tag',
+                    test: {
+                        field1: '1234'
+                    }
+                })
+                .expect(400, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.more_info).to.includes('body/petType should be equal to one of the allowed values [Cat,Dog]');
+                    done();
+                });
+        });
+        it('should fail for missing discriminator key', function (done) {
+            request(app)
+                .post('/pets')
+                .set('api-version', '1.0')
+                .send({
+                    name: 'name',
+                    tag: 'tag',
+                    test: {
+                        field1: '1234'
+                    }
+                })
+                .expect(400, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.more_info).to.includes('body/petType should be equal to one of the allowed values [Cat,Dog]');
+                    done();
+                });
+        });
+        it('should fail for missing attribute in inherited object (Dog)', function (done) {
+            request(app)
+                .post('/pets')
+                .set('api-version', '1.0')
+                .send({
+                    petType: 'Dog',
+                    name: 'name',
+                    tag: 'tag',
+                    test: {
+                        field1: '1234'
+                    }
+                })
+                .expect(400, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.more_info).to.includes('body should have required property \'packSize\'');
+                    done();
+                });
+        });
+        it('should fail for missing attribute in inherited object (cat)', function (done) {
+            request(app)
+                .post('/pets')
+                .set('api-version', '1.0')
+                .send({
+                    petType: 'Cat',
+                    name: 'name',
+                    tag: 'tag',
+                    test: {
+                        field1: '1234'
+                    }
+                })
+                .expect(400, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.more_info).to.includes('body should have required property \'huntingSkill\'');
+                    done();
+                });
+        });
+        it('should fail for missing attribute in inherited object (parent)', function (done) {
+            request(app)
+                .post('/pets')
+                .set('api-version', '1.0')
+                .send({
+                    petType: 'Dog',
+                    tag: 'tag',
+                    chip_number: '123454'
+                })
+                .expect(400, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.more_info).to.includes('body should have required property \'name\'');
+                    done();
+                });
+        });
+    });
 });

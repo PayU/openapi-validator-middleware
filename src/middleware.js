@@ -2,10 +2,12 @@
 
 var SwaggerParser = require('swagger-parser'),
     Ajv = require('ajv'),
-    Parser = require('swagger-parameters');
+    _ = require('lodash'),
+    Validators = require('./validators');
 
 var schemas = {};
 var middlewareOptions;
+
 /**
  * Initialize the input validation middleware
  * @param {string} swaggerPath - the path for the swagger file
@@ -13,38 +15,33 @@ var middlewareOptions;
  */
 function init(swaggerPath, options) {
     middlewareOptions = options || {};
-    return SwaggerParser.dereference(swaggerPath)
-        .then(function (dereferenced) {
-            Object.keys(dereferenced.paths).forEach(function(currentPath){
-                let pathParameters = dereferenced.paths[currentPath].parameters || [];
-                let parsedPath = currentPath.replace(/{/g, ':').replace(/}/g, '');
-                schemas[parsedPath] = {};
-                Object.keys(dereferenced.paths[currentPath]).filter(function (parameter) { return parameter !== 'parameters' })
-                    .forEach(function(currentMethod) {
-                        schemas[parsedPath][currentMethod.toLowerCase()] = {};
-                        let ajv = new Ajv({
-                            allErrors: true
-                        });
+    return Promise.all([
+        SwaggerParser.dereference(swaggerPath),
+        SwaggerParser.parse(swaggerPath)
+    ]).then(function (swaggers) {
+        var dereferenced = swaggers[0];
+        Object.keys(dereferenced.paths).forEach(function (currentPath) {
+            let pathParameters = dereferenced.paths[currentPath].parameters || [];
+            let parsedPath = currentPath.replace(/{/g, ':').replace(/}/g, '');
+            schemas[parsedPath] = {};
+            Object.keys(dereferenced.paths[currentPath]).filter(function (parameter) { return parameter !== 'parameters' })
+                .forEach(function (currentMethod) {
+                    schemas[parsedPath][currentMethod.toLowerCase()] = {};
 
-                        if (options && options.formats) {
-                            addFormats(ajv, options.formats);
-                        }
+                    let bodySchema = dereferenced.paths[currentPath][currentMethod].parameters.filter(function (parameter) { return parameter.in === 'body' });
+                    if (bodySchema.length > 0) {
+                        schemas[parsedPath][currentMethod].body = buildBodyValidation(bodySchema[0].schema, dereferenced.definitions, swaggers[1], currentPath, currentMethod, parsedPath);
+                    }
 
-                        let bodySchema = dereferenced.paths[currentPath][currentMethod].parameters.filter(function(parameter) { return parameter.in === 'body' });
-                        if (bodySchema.length > 0) {
-                            schemas[parsedPath][currentMethod].body = ajv.compile(bodySchema[0].schema);
-                        }
-
-                        let localParameters = dereferenced.paths[currentPath][currentMethod].parameters.filter(function(parameter) {
-                            return parameter.in !== 'body';
-                        }).concat(pathParameters);
-
-                        if (localParameters.length > 0) {
-                            schemas[parsedPath][currentMethod].parameters = Parser(localParameters);
-                        }
-                    });
-            });
-        })
+                    let localParameters = dereferenced.paths[currentPath][currentMethod].parameters.filter(function (parameter) {
+                        return parameter.in !== 'body';
+                    }).concat(pathParameters);
+                    if (localParameters.length > 0) {
+                        schemas[parsedPath][currentMethod].parameters = buildParametersValidation(localParameters);
+                    }
+                });
+        });
+    })
         .catch(function (error) {
             return Promise.reject(error);
         });
@@ -69,9 +66,9 @@ function validate(req, res, next) {
         return next();
     }).catch(function (errors) {
         if (middlewareOptions.beautifyErrors && middlewareOptions.firstError) {
-            errors = parseAjvError(errors[0]);
+            errors = parseAjvError(errors[0], path, req.method.toLowerCase());
         } else if (middlewareOptions.beautifyErrors) {
-            errors = parseAjvErrors(errors);
+            errors = parseAjvErrors(errors, path, req.method.toLowerCase());
         }
 
         return next(new InputValidationError(errors));
@@ -80,7 +77,7 @@ function validate(req, res, next) {
 
 function _validateBody(body, path, method) {
     return new Promise(function (resolve, reject) {
-        if (schemas[path][method].body && !schemas[path][method].body(body)) {
+        if (schemas[path][method].body && !schemas[path][method].body.validate(body)) {
             return reject(schemas[path][method].body.errors);
         }
         return resolve();
@@ -89,43 +86,48 @@ function _validateBody(body, path, method) {
 
 function _validateParams(headers, pathParams, query, path, method) {
     return new Promise(function (resolve, reject) {
-        if (schemas[path][method].parameters) {
-            schemas[path][method].parameters({
-                query: query,
-                headers: headers,
-                path: pathParams
-            }, function (err, data) {
-                if (err) {
-                    return reject(err.errors);
-                }
-                return resolve();
-            });
+        if (schemas[path][method].parameters && !schemas[path][method].parameters({ query: query, headers: headers, path: pathParams })) {
+            return reject(schemas[path][method].parameters.errors);
         }
 
         return resolve();
     });
 }
 
-function parseAjvErrors(errors) {
+function parseAjvErrors(errors, path, method) {
     var parsedError = [];
-    errors.forEach(function(error) {
-        parsedError.push(parseAjvError(error));
+    errors.forEach(function (error) {
+        parsedError.push(parseAjvError(error, path, method));
     }, this);
 
     return parsedError;
 }
 
-function parseAjvError(error) {
+function parseAjvError(error, path, method) {
+    if (error.dataPath.startsWith('.header')) {
+        error.dataPath = error.dataPath.replace('.', '');
+        error.dataPath = error.dataPath.replace('[', '/');
+        error.dataPath = error.dataPath.replace(']', '');
+        error.dataPath = error.dataPath.replace('\'', '');
+        error.dataPath = error.dataPath.replace('\'', '');
+    }
+
+    if (error.dataPath.startsWith('.path')) {
+        error.dataPath = error.dataPath.replace('.', '');
+        error.dataPath = error.dataPath.replace('.', '/');
+    }
+
+    if (error.dataPath.startsWith('.query')) {
+        error.dataPath = error.dataPath.replace('.', '');
+        error.dataPath = error.dataPath.replace('.', '/');
+    }
+
     if (error.dataPath.startsWith('.')) {
         error.dataPath = error.dataPath.replace('.', 'body/');
     }
 
     if (error.dataPath.startsWith('[')) {
         error.dataPath = 'body/' + error.dataPath;
-    }
-
-    if ((error.dataPath.startsWith('/')) || (error.dataPath.startsWith('\\'))) {
-        error.dataPath = error.dataPath.replace('\\', '').replace('/', '');
     }
 
     if (error.dataPath === '') {
@@ -140,14 +142,111 @@ function parseAjvError(error) {
 }
 
 function addFormats(ajv, formats) {
-    formats.forEach(function(format) {
-        ajv.addFormat(format.name, format.pattern);
-    });
+    if (formats) {
+        formats.forEach(function (format) {
+            ajv.addFormat(format.name, format.pattern);
+        });
+    }
 }
 
 function extractPath(req) {
     let path = req.baseUrl.concat(req.route.path);
     return path.endsWith('/') ? path.substring(0, path.length - 1) : path;
+}
+
+function buildBodyValidation(schema, swaggerDefinitions, originalSwagger, currentPath, currentMethod, parsedPath) {
+    let ajv = new Ajv({
+        allErrors: true
+        // unknownFormats: 'ignore'
+    });
+
+    addFormats(ajv, middlewareOptions.formats);
+
+    if (schema.discriminator) {
+        return buildInheritance(schema.discriminator, swaggerDefinitions, originalSwagger, currentPath, currentMethod, parsedPath, ajv);
+    } else {
+        return new Validators.SimpleValidator(ajv.compile(schema));
+    }
+}
+
+function buildInheritance(discriminator, dereferencedDefinitions, swagger, currentPath, currentMethod, parsedPath, ajv) {
+    let bodySchema = swagger.paths[currentPath][currentMethod].parameters.filter(function (parameter) { return parameter.in === 'body' })[0];
+    var inheritsObject = {
+        inheritance: []
+    };
+    inheritsObject.discriminator = discriminator;
+
+    Object.keys(swagger.definitions).forEach(key => {
+        if (swagger.definitions[key].allOf) {
+            swagger.definitions[key].allOf.forEach(element => {
+                if (element['$ref'] && element['$ref'] === bodySchema.schema['$ref']) {
+                    inheritsObject[key] = ajv.compile(dereferencedDefinitions[key]);
+                    inheritsObject.inheritance.push(key);
+                }
+            });
+        }
+    }, this);
+
+    return new Validators.OneOfValidator(inheritsObject);
+}
+
+function buildParametersValidation(parameters) {
+    let ajv = new Ajv({
+        allErrors: true,
+        coerceTypes: 'array'
+        // unknownFormats: 'ignore'
+    });
+
+    addFormats(ajv, middlewareOptions.formats);
+
+    var ajvParametersSchema = {
+        title: 'HTTP parameters',
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+            headers: {
+                title: 'HTTP headers',
+                type: 'object',
+                properties: {},
+                additionalProperties: true
+                // plural: 'headers'
+            },
+            path: {
+                title: 'HTTP path',
+                type: 'object',
+                properties: {},
+                additionalProperties: false
+            },
+            query: {
+                title: 'HTTP query',
+                type: 'object',
+                properties: {},
+                additionalProperties: false
+            }
+        }
+    };
+
+    parameters.forEach(parameter => {
+        var data = _.cloneDeep(parameter);
+
+        const required = parameter.required;
+        const source = typeNameConversion[parameter.in] || parameter.in;
+        const key = parameter.name;
+
+        var destination = ajvParametersSchema.properties[source];
+
+        delete data.name;
+        delete data.in;
+        delete data.required;
+
+        if (required) {
+            destination.required = destination.required || [];
+            destination.required.push(key);
+        }
+        destination.properties[key] = data;
+    }, this);
+
+    return ajv.compile(ajvParametersSchema);
 }
 
 /**
@@ -167,4 +266,8 @@ module.exports = {
     init: init,
     validate: validate,
     InputValidationError: InputValidationError
+};
+
+var typeNameConversion = {
+    header: 'headers'
 };
