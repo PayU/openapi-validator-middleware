@@ -77,7 +77,8 @@ Options currently supports:
 ```js
 formats: [
     { name: 'double', pattern: /\d+\.(\d+)+/ },
-    { name: 'int64', pattern: /^\d{1,18}$/ }
+    { name: 'int64', pattern: /^\d{1,19}$/ },
+    { name: 'int32', pattern: /^\d{1,10}$/ }
 ]
 ```
 
