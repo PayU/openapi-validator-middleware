@@ -145,6 +145,19 @@ paths:
           description: unexpected error
           schema:
             $ref: '#/definitions/Error'
+  /heartbeat:
+    get:
+      summary: Info for current system status
+      operationId: getHearbeat
+      responses:
+        "200":
+          description: Expected response to a valid request
+          schema:
+            $ref: '#/definitions/StatusReport'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
 definitions:
   Pet:
     required:
@@ -171,6 +184,15 @@ definitions:
         type: integer
         # format: int32
       message:
+        type: string
+  StatusReport:
+    required:
+      - text
+      - code
+    properties:
+      text:
+        type: string
+      code:
         type: string
 parameters:
   ApiVersion:

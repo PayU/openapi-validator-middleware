@@ -28,12 +28,13 @@ function init(swaggerPath, options) {
                 .forEach(function (currentMethod) {
                     schemas[parsedPath][currentMethod.toLowerCase()] = {};
 
-                    let bodySchema = dereferenced.paths[currentPath][currentMethod].parameters.filter(function (parameter) { return parameter.in === 'body' });
+                    const parameters = dereferenced.paths[currentPath][currentMethod].parameters || [];
+                    let bodySchema = parameters.filter(function (parameter) { return parameter.in === 'body' });
                     if (bodySchema.length > 0) {
                         schemas[parsedPath][currentMethod].body = buildBodyValidation(bodySchema[0].schema, dereferenced.definitions, swaggers[1], currentPath, currentMethod, parsedPath);
                     }
 
-                    let localParameters = dereferenced.paths[currentPath][currentMethod].parameters.filter(function (parameter) {
+                    let localParameters = parameters.filter(function (parameter) {
                         return parameter.in !== 'body';
                     }).concat(pathParameters);
                     if (localParameters.length > 0) {
@@ -49,9 +50,9 @@ function init(swaggerPath, options) {
 
 /**
  * The middleware - should be called for each express route
- * @param {any} req 
- * @param {any} res 
- * @param {any} next 
+ * @param {any} req
+ * @param {any} res
+ * @param {any} next
  * @returns In case of an error will call `next` with `InputValidationError`
  */
 function validate(req, res, next) {
