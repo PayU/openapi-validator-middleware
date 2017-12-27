@@ -22,7 +22,7 @@ function init(swaggerPath, options) {
         var dereferenced = swaggers[0];
         Object.keys(dereferenced.paths).forEach(function (currentPath) {
             let pathParameters = dereferenced.paths[currentPath].parameters || [];
-            let parsedPath = currentPath.replace(/{/g, ':').replace(/}/g, '');
+            let parsedPath = dereferenced.basePath !== '/' ? dereferenced.basePath.concat(currentPath.replace(/{/g, ':').replace(/}/g, '')) : currentPath.replace(/{/g, ':').replace(/}/g, '');
             schemas[parsedPath] = {};
             Object.keys(dereferenced.paths[currentPath]).filter(function (parameter) { return parameter !== 'parameters' })
                 .forEach(function (currentMethod) {
