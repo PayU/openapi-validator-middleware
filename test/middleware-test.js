@@ -1933,4 +1933,26 @@ describe('input-validation middleware tests', function () {
                 });
         });
     });
+
+    describe('FormData', function () {
+        var app;
+        before(function () {
+            return require('./test-server-formdata').then(function (testServer) {
+                app = testServer;
+            });
+        });
+        it('should pass', function (done) {
+            request(app)
+                .post('/pets/import')
+                .set('api-version', '1.0')
+                .attach('sourceFile', 'LICENSE')
+                .expect(200, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.result).to.equal('OK');
+                    done();
+                });
+        });
+    });
 });
