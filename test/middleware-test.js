@@ -1786,6 +1786,26 @@ describe('input-validation middleware tests', function () {
                     done();
                 });
         });
+        it('valid post request - should pass validation', function (done) {
+            request(app)
+                .post('/pets')
+                .set('request-id', '1234')
+                .set('api-version', '1.0')
+                .send({
+                    name: 'name',
+                    tag: 'tag',
+                    test: {
+                        field1: 'enum1'
+                    }
+                })
+                .expect(200, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.result).to.equal('OK');
+                    done();
+                });
+        });
         it('missing header - should fail', function (done) {
             request(app)
                 .get('/pets')

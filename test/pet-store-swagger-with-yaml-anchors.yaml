@@ -15,7 +15,7 @@ produces:
 definitions:
   FIELDS:
   type: string
-  enum: &FIELDS [kaki1, kaki2]
+  enum: &FIELDS [enum1, enum2]
   Pet:
     required:
       - id
