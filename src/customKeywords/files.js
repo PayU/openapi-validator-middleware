@@ -40,7 +40,6 @@ module.exports = {
         } else {
             return true;
         }
-
     },
     errors: true
 };

@@ -254,7 +254,6 @@ function buildParametersValidation(parameters) {
         delete data.required;
 
         if (data.type === 'file') {
-            // destination.items.enum.push(key);
             required ? destination.files.required.push(key) : destination.files.optional.push(key);
         } else {
             if (required) {
