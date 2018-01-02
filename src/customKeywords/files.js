@@ -21,7 +21,7 @@ module.exports = {
         if (missingFiles.length > 0) {
             filesValidation.errors.push(new Ajv.ValidationError({
                 keyword: 'files',
-                message: 'Missing required files: ' + schema.required.toString(),
+                message: 'Missing required files: ' + missingFiles.toString(),
                 params: { requiredFiles: schema.required, missingFiles: missingFiles }
             }));
             return false;
@@ -33,7 +33,7 @@ module.exports = {
         if (extraFiles.length > 0) {
             filesValidation.errors.push(new Ajv.ValidationError({
                 keyword: 'files',
-                message: 'Extra files are not allowed. allowed files: ' + allFiles.toString(),
+                message: 'Extra files are not allowed. Not allowed files: ' + extraFiles,
                 params: { allowedFiles: allFiles, extraFiles: extraFiles }
             }));
             return false;

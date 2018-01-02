@@ -1990,7 +1990,7 @@ describe('input-validation middleware tests', function () {
                     if (err) {
                         throw err;
                     }
-                    expect(res.body.more_info).to.includes('body/files Extra files are not allowed. allowed files: sourceFile,optionalFile');
+                    expect(res.body.more_info).to.includes('body/files Extra files are not allowed. Not allowed files: sourceFile1');
                     done();
                 });
         });
