@@ -241,7 +241,7 @@ function buildParametersValidation(parameters) {
     };
 
     parameters.forEach(parameter => {
-        var data = { ...parameter };
+        var data = Object.assign({}, parameter);
 
         const required = parameter.required;
         const source = typeNameConversion[parameter.in] || parameter.in;
