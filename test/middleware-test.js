@@ -20,11 +20,11 @@ describe('input-validation middleware tests', function () {
         it('should resolve without formats', function () {
             let rewire = require('rewire');
             let middleware = rewire('../src/middleware');
-            let addFormats = middleware.__get__('addFormats');
-            let addFormatsSpy = sinon.spy(addFormats);
+            let addCustomKeyword = middleware.__get__('addCustomKeyword');
+            let addCustomKeywordSpy = sinon.spy(addCustomKeyword);
             return middleware.init('test/pet-store-swagger.yaml')
                 .then(function () {
-                    expect(addFormatsSpy).to.have.not.been.called;
+                    expect(addCustomKeywordSpy).to.have.not.been.called;
                 });
         });
     });
@@ -1929,6 +1929,68 @@ describe('input-validation middleware tests', function () {
                         throw err;
                     }
                     expect(res.body.more_info).to.includes('body should have required property \'name\'');
+                    done();
+                });
+        });
+    });
+    describe('FormData', function () {
+        var app;
+        before(function () {
+            return require('./test-server-formdata').then(function (testServer) {
+                app = testServer;
+            });
+        });
+        it('only required files exists should pass', function (done) {
+            request(app)
+                .post('/pets/import')
+                .set('api-version', '1.0')
+                .attach('sourceFile', 'LICENSE')
+                .expect(200, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.result).to.equal('OK');
+                    done();
+                });
+        });
+        it('required and optional files exists should pass', function (done) {
+            request(app)
+                .post('/pets/import')
+                .set('api-version', '1.0')
+                .attach('sourceFile', 'LICENSE')
+                .attach('optionalFile', 'LICENSE')
+                .expect(200, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.result).to.equal('OK');
+                    done();
+                });
+        });
+        it('missing required file should fail', function (done) {
+            request(app)
+                .post('/pets/import')
+                .set('api-version', '1.0')
+                .attach('sourceFile1', 'LICENSE')
+                .expect(400, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.more_info).to.includes('body/files Missing required files: sourceFile');
+                    done();
+                });
+        });
+        it('extra files exists but not allowed should fail', function (done) {
+            request(app)
+                .post('/pets/import')
+                .set('api-version', '1.0')
+                .attach('sourceFile1', 'LICENSE')
+                .attach('sourceFile', 'LICENSE')
+                .expect(400, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.more_info).to.includes('body/files Extra files are not allowed. Not allowed files: sourceFile1');
                     done();
                 });
         });

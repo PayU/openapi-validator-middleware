@@ -2,8 +2,8 @@
 
 var SwaggerParser = require('swagger-parser'),
     Ajv = require('ajv'),
-    _ = require('lodash'),
-    Validators = require('./validators');
+    Validators = require('./validators'),
+    filesKeyword = require('./customKeywords/files');
 
 var schemas = {};
 var middlewareOptions;
@@ -11,7 +11,7 @@ var middlewareOptions;
 /**
  * Initialize the input validation middleware
  * @param {string} swaggerPath - the path for the swagger file
- * @param {Object} options - options.formats to add formats to ajv, options.beautifyErrors, options.firstError
+ * @param {Object} options - options.formats to add formats to ajv, options.beautifyErrors, options.firstError, options.fileNameField (default is 'fieldname' - multer package)
  */
 function init(swaggerPath, options) {
     middlewareOptions = options || {};
@@ -58,7 +58,7 @@ function init(swaggerPath, options) {
 function validate(req, res, next) {
     let path = extractPath(req);
     return Promise.all([
-        _validateParams(req.headers, req.params, req.query, path, req.method.toLowerCase()).catch(e => e),
+        _validateParams(req.headers, req.params, req.query, req.files, path, req.method.toLowerCase()).catch(e => e),
         _validateBody(req.body, path, req.method.toLowerCase()).catch(e => e)
     ]).then(function (errors) {
         if (errors[0] || errors[1]) {
@@ -85,9 +85,9 @@ function _validateBody(body, path, method) {
     });
 }
 
-function _validateParams(headers, pathParams, query, path, method) {
+function _validateParams(headers, pathParams, query, files, path, method) {
     return new Promise(function (resolve, reject) {
-        if (schemas[path][method].parameters && !schemas[path][method].parameters({ query: query, headers: headers, path: pathParams })) {
+        if (schemas[path][method].parameters && !schemas[path][method].parameters({ query: query, headers: headers, path: pathParams, files: files })) {
             return reject(schemas[path][method].parameters.errors);
         }
 
@@ -139,15 +139,21 @@ function parseAjvError(error, path, method) {
         error.message += ' [' + error.params.allowedValues.toString() + ']';
     }
 
+    if (error.validation) {
+        error.message = error.errors.message;
+    }
+
     return error.dataPath + ' ' + error.message;
 }
 
-function addFormats(ajv, formats) {
+function addCustomKeyword(ajv, formats) {
     if (formats) {
         formats.forEach(function (format) {
             ajv.addFormat(format.name, format.pattern);
         });
     }
+
+    ajv.addKeyword('files', filesKeyword);
 }
 
 function extractPath(req) {
@@ -161,7 +167,7 @@ function buildBodyValidation(schema, swaggerDefinitions, originalSwagger, curren
         // unknownFormats: 'ignore'
     });
 
-    addFormats(ajv, middlewareOptions.formats);
+    addCustomKeyword(ajv, middlewareOptions.formats);
 
     if (schema.discriminator) {
         return buildInheritance(schema.discriminator, swaggerDefinitions, originalSwagger, currentPath, currentMethod, parsedPath, ajv);
@@ -198,7 +204,7 @@ function buildParametersValidation(parameters) {
         // unknownFormats: 'ignore'
     });
 
-    addFormats(ajv, middlewareOptions.formats);
+    addCustomKeyword(ajv, middlewareOptions.formats);
 
     var ajvParametersSchema = {
         title: 'HTTP parameters',
@@ -223,12 +229,19 @@ function buildParametersValidation(parameters) {
                 type: 'object',
                 properties: {},
                 additionalProperties: false
+            },
+            files: {
+                title: 'HTTP form',
+                files: {
+                    required: [],
+                    optional: []
+                }
             }
         }
     };
 
     parameters.forEach(parameter => {
-        var data = _.cloneDeep(parameter);
+        var data = Object.assign({}, parameter);
 
         const required = parameter.required;
         const source = typeNameConversion[parameter.in] || parameter.in;
@@ -240,11 +253,15 @@ function buildParametersValidation(parameters) {
         delete data.in;
         delete data.required;
 
-        if (required) {
-            destination.required = destination.required || [];
-            destination.required.push(key);
+        if (data.type === 'file') {
+            required ? destination.files.required.push(key) : destination.files.optional.push(key);
+        } else {
+            if (required) {
+                destination.required = destination.required || [];
+                destination.required.push(key);
+            }
+            destination.properties[key] = data;
         }
-        destination.properties[key] = data;
     }, this);
 
     return ajv.compile(ajvParametersSchema);
@@ -270,5 +287,6 @@ module.exports = {
 };
 
 var typeNameConversion = {
-    header: 'headers'
+    header: 'headers',
+    formData: 'files'
 };
