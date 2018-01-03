@@ -30,7 +30,7 @@
   "author": "Idan Tovi",
   "license": "MIT",
   "dependencies": {
-    "ajv": "^5.2.3",
+    "ajv": "^5.5.2",
     "swagger-parser": "^4.0.1"
   },
   "devDependencies": {
