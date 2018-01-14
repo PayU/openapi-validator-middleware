@@ -207,7 +207,7 @@ function buildParametersValidation(parameters, ajvOptions) {
         // unknownFormats: 'ignore'
     };
     ajvOptions = ajvOptions || {};
-    const options = Object.assign({}, defaultAjvOptions, parameters.ajvOptions);
+    const options = Object.assign({}, defaultAjvOptions, ajvOptions);
     let ajv = new Ajv(options);
 
     addCustomKeyword(ajv, middlewareOptions.formats);
