@@ -11,7 +11,7 @@ var middlewareOptions;
 /**
  * Initialize the input validation middleware
  * @param {string} swaggerPath - the path for the swagger file
- * @param {Object} options - options.formats to add formats to ajv, options.beautifyErrors, options.firstError, options.fileNameField (default is 'fieldname' - multer package)
+ * @param {Object} options - options.formats to add formats to ajv, options.beautifyErrors, options.firstError, options.fileNameField (default is 'fieldname' - multer package), options.ajvConfigBody and options.ajvConfigParams for config object that will be passed for creation of Ajv instance used for validation of body and parameters appropriately
  */
 function init(swaggerPath, options) {
     middlewareOptions = options || {};
@@ -31,14 +31,14 @@ function init(swaggerPath, options) {
                     const parameters = dereferenced.paths[currentPath][currentMethod].parameters || [];
                     let bodySchema = parameters.filter(function (parameter) { return parameter.in === 'body' });
                     if (bodySchema.length > 0) {
-                        schemas[parsedPath][currentMethod].body = buildBodyValidation(bodySchema[0].schema, dereferenced.definitions, swaggers[1], currentPath, currentMethod, parsedPath);
+                        schemas[parsedPath][currentMethod].body = buildBodyValidation(bodySchema[0].schema, dereferenced.definitions, swaggers[1], currentPath, currentMethod, parsedPath, middlewareOptions.ajvConfigBody);
                     }
 
                     let localParameters = parameters.filter(function (parameter) {
                         return parameter.in !== 'body';
                     }).concat(pathParameters);
                     if (localParameters.length > 0) {
-                        schemas[parsedPath][currentMethod].parameters = buildParametersValidation(localParameters);
+                        schemas[parsedPath][currentMethod].parameters = buildParametersValidation(localParameters, middlewareOptions.ajvConfigParams);
                     }
                 });
         });
@@ -46,7 +46,7 @@ function init(swaggerPath, options) {
         .catch(function (error) {
             return Promise.reject(error);
         });
-};
+}
 
 /**
  * The middleware - should be called for each express route
@@ -161,11 +161,14 @@ function extractPath(req) {
     return path.endsWith('/') ? path.substring(0, path.length - 1) : path;
 }
 
-function buildBodyValidation(schema, swaggerDefinitions, originalSwagger, currentPath, currentMethod, parsedPath) {
-    let ajv = new Ajv({
+function buildBodyValidation(schema, swaggerDefinitions, originalSwagger, currentPath, currentMethod, parsedPath, ajvOptions) {
+    ajvOptions = ajvOptions || {};
+    const defaultAjvOptions = {
         allErrors: true
         // unknownFormats: 'ignore'
-    });
+    };
+    const options = Object.assign({}, defaultAjvOptions, ajvOptions);
+    let ajv = new Ajv(options);
 
     addCustomKeyword(ajv, middlewareOptions.formats);
 
@@ -197,12 +200,15 @@ function buildInheritance(discriminator, dereferencedDefinitions, swagger, curre
     return new Validators.OneOfValidator(inheritsObject);
 }
 
-function buildParametersValidation(parameters) {
-    let ajv = new Ajv({
+function buildParametersValidation(parameters, ajvOptions) {
+    const defaultOptions = {
         allErrors: true,
         coerceTypes: 'array'
         // unknownFormats: 'ignore'
-    });
+    };
+    ajvOptions = ajvOptions || {};
+    const options = Object.assign({}, defaultOptions, parameters.ajvOptions);
+    let ajv = new Ajv(options);
 
     addCustomKeyword(ajv, middlewareOptions.formats);
 
