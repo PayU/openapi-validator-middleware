@@ -201,13 +201,13 @@ function buildInheritance(discriminator, dereferencedDefinitions, swagger, curre
 }
 
 function buildParametersValidation(parameters, ajvOptions) {
-    const defaultOptions = {
+    const defaultAjvOptions = {
         allErrors: true,
         coerceTypes: 'array'
         // unknownFormats: 'ignore'
     };
     ajvOptions = ajvOptions || {};
-    const options = Object.assign({}, defaultOptions, parameters.ajvOptions);
+    const options = Object.assign({}, defaultAjvOptions, parameters.ajvOptions);
     let ajv = new Ajv(options);
 
     addCustomKeyword(ajv, middlewareOptions.formats);
