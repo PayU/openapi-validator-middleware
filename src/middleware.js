@@ -7,6 +7,8 @@ var SwaggerParser = require('swagger-parser'),
 
 var schemas = {};
 var middlewareOptions;
+var ajvConfigBody;
+var ajvConfigParams;
 
 /**
  * Initialize the input validation middleware
@@ -15,6 +17,9 @@ var middlewareOptions;
  */
 function init(swaggerPath, options) {
     middlewareOptions = options || {};
+    ajvConfigBody = middlewareOptions.ajvConfigBody || {};
+    ajvConfigParams = middlewareOptions.ajvConfigParams || {};
+
     return Promise.all([
         SwaggerParser.dereference(swaggerPath),
         SwaggerParser.parse(swaggerPath)
@@ -31,14 +36,14 @@ function init(swaggerPath, options) {
                     const parameters = dereferenced.paths[currentPath][currentMethod].parameters || [];
                     let bodySchema = parameters.filter(function (parameter) { return parameter.in === 'body' });
                     if (bodySchema.length > 0) {
-                        schemas[parsedPath][currentMethod].body = buildBodyValidation(bodySchema[0].schema, dereferenced.definitions, swaggers[1], currentPath, currentMethod, parsedPath, middlewareOptions.ajvConfigBody);
+                        schemas[parsedPath][currentMethod].body = buildBodyValidation(bodySchema[0].schema, dereferenced.definitions, swaggers[1], currentPath, currentMethod, parsedPath);
                     }
 
                     let localParameters = parameters.filter(function (parameter) {
                         return parameter.in !== 'body';
                     }).concat(pathParameters);
                     if (localParameters.length > 0) {
-                        schemas[parsedPath][currentMethod].parameters = buildParametersValidation(localParameters, middlewareOptions.ajvConfigParams);
+                        schemas[parsedPath][currentMethod].parameters = buildParametersValidation(localParameters);
                     }
                 });
         });
@@ -161,13 +166,12 @@ function extractPath(req) {
     return path.endsWith('/') ? path.substring(0, path.length - 1) : path;
 }
 
-function buildBodyValidation(schema, swaggerDefinitions, originalSwagger, currentPath, currentMethod, parsedPath, ajvOptions) {
-    ajvOptions = ajvOptions || {};
+function buildBodyValidation(schema, swaggerDefinitions, originalSwagger, currentPath, currentMethod, parsedPath) {
     const defaultAjvOptions = {
         allErrors: true
         // unknownFormats: 'ignore'
     };
-    const options = Object.assign({}, defaultAjvOptions, ajvOptions);
+    const options = Object.assign({}, defaultAjvOptions, ajvConfigBody);
     let ajv = new Ajv(options);
 
     addCustomKeyword(ajv, middlewareOptions.formats);
@@ -200,14 +204,13 @@ function buildInheritance(discriminator, dereferencedDefinitions, swagger, curre
     return new Validators.OneOfValidator(inheritsObject);
 }
 
-function buildParametersValidation(parameters, ajvOptions) {
+function buildParametersValidation(parameters) {
     const defaultAjvOptions = {
         allErrors: true,
         coerceTypes: 'array'
         // unknownFormats: 'ignore'
     };
-    ajvOptions = ajvOptions || {};
-    const options = Object.assign({}, defaultAjvOptions, ajvOptions);
+    const options = Object.assign({}, defaultAjvOptions, ajvConfigParams);
     let ajv = new Ajv(options);
 
     addCustomKeyword(ajv, middlewareOptions.formats);
