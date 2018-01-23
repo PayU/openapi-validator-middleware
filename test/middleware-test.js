@@ -379,6 +379,26 @@ describe('input-validation middleware tests', function () {
                 });
         });
     });
+    describe('Simple server - type coercion enabled', function () {
+        var app;
+        before(function () {
+            return require('./test-simple-server-with-coercion').then(function (testServer) {
+                app = testServer;
+            });
+        });
+        it('request with wrong parameter type - should pass validation due to coercion', function (done) {
+            request(app)
+                .put('/pets')
+                .send([{
+                    name: 1,
+                    tag: 'tag',
+                    test: {
+                        field1: 'enum1'
+                    }
+                }])
+                .expect(200, done);
+        });
+    });
     describe('Simple server - with base path', function () {
         var app;
         before(function () {
