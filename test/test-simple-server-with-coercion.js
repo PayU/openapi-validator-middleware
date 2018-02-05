@@ -22,7 +22,7 @@ module.exports = inputValidation.init('test/pet-store-swagger.yaml', {
             res.json({ result: 'OK' });
         });
         app.put('/pets', inputValidation.validate, function (req, res, next) {
-            res.json({ result: 'OK' });
+            res.json({ result: 'OK', receivedParams: req.body });
         });
         app.use(function (err, req, res, next) {
             if (err instanceof inputValidation.InputValidationError) {
