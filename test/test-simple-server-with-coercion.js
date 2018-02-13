@@ -7,7 +7,8 @@ var inputValidation = require('../src/middleware');
 module.exports = inputValidation.init('test/pet-store-swagger.yaml', {
     ajvConfigBody: {
         coerceTypes: true
-    }
+    },
+    makeOptionalAttributesNullable: true
 })
     .then(function () {
         var app = express();
@@ -16,7 +17,7 @@ module.exports = inputValidation.init('test/pet-store-swagger.yaml', {
             res.json({ result: 'OK' });
         });
         app.post('/pets', inputValidation.validate, function (req, res, next) {
-            res.json({ result: 'OK' });
+            res.json({ result: 'OK', receivedParams: req.body });
         });
         app.get('/pets/:petId', inputValidation.validate, function (req, res, next) {
             res.json({ result: 'OK' });

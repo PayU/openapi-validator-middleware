@@ -398,8 +398,8 @@ describe('input-validation middleware tests', function () {
                 }])
                 .expect(200, done);
         });
-        // This fails because JSON schema does not include null as possible value
-        it.skip('request with wrong parameter type - should keep null values as null', function (done) {
+
+        it('request with wrong parameter type - should keep null values as null when payload is array', function (done) {
             request(app)
                 .put('/pets')
                 .send([{
@@ -407,7 +407,8 @@ describe('input-validation middleware tests', function () {
                     tag: 'tag',
                     age: null,
                     test: {
-                        field1: 'enum1'
+                        field1: 'enum1',
+                        field2: null
                     }
                 }])
                 .expect(200)
@@ -416,6 +417,31 @@ describe('input-validation middleware tests', function () {
                         return done(err);
                     }
                     const pet = res.body.receivedParams[0];
+                    expect(pet.test.field2).to.be.null;
+                    expect(pet.age).to.be.null;
+                    done();
+                });
+        });
+
+        it('request with wrong parameter type - should keep null values as null when payload is object', function (done) {
+            request(app)
+                .post('/pets')
+                .send({
+                    name: 1,
+                    tag: 'tag',
+                    age: null,
+                    test: {
+                        field1: 'enum1',
+                        field2: null
+                    }
+                })
+                .expect(200)
+                .end(function(err, res) {
+                    if (err) {
+                        return done(err);
+                    }
+                    const pet = res.body.receivedParams;
+                    expect(pet.test.field2).to.be.null;
                     expect(pet.age).to.be.null;
                     done();
                 });
