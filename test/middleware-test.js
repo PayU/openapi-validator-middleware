@@ -446,6 +446,28 @@ describe('input-validation middleware tests', function () {
                     done();
                 });
         });
+
+        it('request with wrong parameter type - should keep null values as null when (invalid) swagger with multiple types is provided', function (done) {
+            request(app)
+                .put('/pets')
+                .send([{
+                    name: 1,
+                    tag: 'tag',
+                    test: {
+                        field1: 'enum1',
+                        field3: null
+                    }
+                }])
+                .expect(200)
+                .end(function(err, res) {
+                    if (err) {
+                        return done(err);
+                    }
+                    const pet = res.body.receivedParams[0];
+                    expect(pet.test.field3).to.be.null;
+                    done();
+                });
+        });
     });
     describe('Simple server - with base path', function () {
         var app;

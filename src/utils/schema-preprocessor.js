@@ -28,7 +28,7 @@ function _processSchemaEntry(schema) {
     for (const property in properties) {
         if (properties.hasOwnProperty(property)) {
             if (schema.required.indexOf(property) === -1) {
-                if (!Array.isArray(property.type)) {
+                if (!Array.isArray(properties[property].type)) {
                     properties[property].type = [properties[property].type, 'null'];
                 } else {
                     properties[property].type.push('null');

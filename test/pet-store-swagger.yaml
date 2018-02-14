@@ -116,6 +116,10 @@ paths:
                         enum: ['enum1', 'enum2']
                       field2:
                         type: integer
+                      field3:
+                        type:
+                          - integer
+                          - string
       responses:
         "200":
           description: Expected response to a valid request
