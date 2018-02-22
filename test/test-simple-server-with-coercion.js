@@ -25,6 +25,9 @@ module.exports = inputValidation.init('test/pet-store-swagger.yaml', {
         app.put('/pets', inputValidation.validate, function (req, res, next) {
             res.json({ result: 'OK', receivedParams: req.body });
         });
+        app.patch('/pets', inputValidation.validate, function (req, res, next) {
+            res.json({ result: 'OK', receivedParams: req.body });
+        });
         app.use(function (err, req, res, next) {
             if (err instanceof inputValidation.InputValidationError) {
                 res.status(400).json({ more_info: JSON.stringify(err.errors) });

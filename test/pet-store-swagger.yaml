@@ -120,6 +120,29 @@ paths:
                         type:
                           - integer
                           - string
+                  test2:
+                    type: object
+
+      responses:
+        "200":
+          description: Expected response to a valid request
+          schema:
+            $ref: '#/definitions/Pets'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    patch:
+      summary: Info for a specific pet
+      operationId: incrementallyUpdatePet
+      tags:
+        - pets
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+              type: object
       responses:
         "200":
           description: Expected response to a valid request

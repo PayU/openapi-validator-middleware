@@ -423,6 +423,61 @@ describe('input-validation middleware tests', function () {
                 });
         });
 
+        it('handles request body objects without specified schema correctly', function (done) {
+            request(app)
+                .put('/pets')
+                .send([{
+                    name: 1,
+                    tag: 'tag',
+                    age: null,
+                    test: {
+                        field1: 'enum1'
+                    },
+                    test2: {
+                        arbitraryField: 'dummy',
+                        nullField: null
+                    }
+                }])
+                .expect(200)
+                .end(function(err, res) {
+                    if (err) {
+                        return done(err);
+                    }
+                    const pet = res.body.receivedParams[0];
+                    expect(pet.test2.arbitraryField).to.equal('dummy');
+                    expect(pet.test2.nullField).to.be.null;
+                    done();
+                });
+        });
+
+        it('handles request body without specified schema correctly', function (done) {
+            request(app)
+                .patch('/pets')
+                .send({
+                    name: 1,
+                    tag: 'tag',
+                    age: null,
+                    test: {
+                        field1: 'enum1'
+                    },
+                    test2: {
+                        arbitraryField: 'dummy',
+                        nullField: null
+                    }
+                })
+                .expect(200)
+                .end(function(err, res) {
+                    if (err) {
+                        return done(err);
+                    }
+                    const pet = res.body.receivedParams;
+                    expect(pet.test.field1).to.equal('enum1');
+                    expect(pet.test2.arbitraryField).to.equal('dummy');
+                    expect(pet.test2.nullField).to.be.null;
+                    done();
+                });
+        });
+
         it('request with wrong parameter type - should keep null values as null when payload is object', function (done) {
             request(app)
                 .post('/pets')
