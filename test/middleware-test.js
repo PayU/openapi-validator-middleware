@@ -502,6 +502,34 @@ describe('input-validation middleware tests', function () {
                 });
         });
 
+        it('request with wrong parameter type and no required fields defined - should keep null values as null when payload is object', function (done) {
+            request(app)
+                .post('/pets')
+                .send({
+                    name: 1,
+                    tag: 'tag',
+                    age: null,
+                    test: {
+                        field1: 'enum1'
+                    },
+                    test3: {
+                        field1: 'enum1',
+                        field2: null
+                    }
+                })
+                .expect(200)
+                .end(function(err, res) {
+                    if (err) {
+                        return done(err);
+                    }
+                    const pet = res.body.receivedParams;
+                    expect(pet.test3.field1).to.equal('enum1');
+                    expect(pet.test3.field2).to.be.null;
+                    expect(pet.age).to.be.null;
+                    done();
+                });
+        });
+
         it('request with wrong parameter type - should keep null values as null when (invalid) swagger with multiple types is provided', function (done) {
             request(app)
                 .put('/pets')
