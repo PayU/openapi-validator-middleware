@@ -133,5 +133,5 @@ npm test
 [coveralls-url]: https://coveralls.io/github/Zooz/express-ajv-swagger-validation?branch=master
 [downloads-image]: http://img.shields.io/npm/dm/express-ajv-swagger-validation.svg?style=flat
 [downloads-url]: https://npmjs.org/package/express-ajv-swagger-validation
-[license-image]: http://img.shields.io/badge/license-MIT-blue.svg?style=flat
+[license-image]: https://img.shields.io/badge/license-Apache_2.0-green.svg?style=flat
 [license-url]: LICENSE
