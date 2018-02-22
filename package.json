@@ -58,6 +58,6 @@
     "supertest": "^3.0.0"
   },
   "publishConfig": {
-    "registry":"https://www.npmjs.com"
+    "registry":"https://registry.npmjs.org/"
   }
 }
