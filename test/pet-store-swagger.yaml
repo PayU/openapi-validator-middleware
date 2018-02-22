@@ -122,6 +122,14 @@ paths:
                           - string
                   test2:
                     type: object
+                  test3:
+                    type: object
+                    properties:
+                      field1:
+                        type: string
+                        enum: ['enum1', 'enum2']
+                      field2:
+                        type: integer
 
       responses:
         "200":
