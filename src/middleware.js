@@ -3,7 +3,8 @@
 var SwaggerParser = require('swagger-parser'),
     Ajv = require('ajv'),
     Validators = require('./validators'),
-    filesKeyword = require('./customKeywords/files');
+    filesKeyword = require('./customKeywords/files'),
+    schemaPreprocessor = require('./utils/schema-preprocessor');
 
 var schemas = {};
 var middlewareOptions;
@@ -19,6 +20,7 @@ function init(swaggerPath, options) {
     middlewareOptions = options || {};
     ajvConfigBody = middlewareOptions.ajvConfigBody || {};
     ajvConfigParams = middlewareOptions.ajvConfigParams || {};
+    const makeOptionalAttributesNullable = middlewareOptions.makeOptionalAttributesNullable || false;
 
     return Promise.all([
         SwaggerParser.dereference(swaggerPath),
@@ -35,6 +37,9 @@ function init(swaggerPath, options) {
 
                     const parameters = dereferenced.paths[currentPath][currentMethod].parameters || [];
                     let bodySchema = parameters.filter(function (parameter) { return parameter.in === 'body' });
+                    if (makeOptionalAttributesNullable) {
+                        schemaPreprocessor.makeOptionalAttributesNullable(bodySchema);
+                    }
                     if (bodySchema.length > 0) {
                         schemas[parsedPath][currentMethod].body = buildBodyValidation(bodySchema[0].schema, dereferenced.definitions, swaggers[1], currentPath, currentMethod, parsedPath);
                     }
