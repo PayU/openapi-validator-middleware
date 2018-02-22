@@ -7,8 +7,8 @@
 [![NPM Downloads][downloads-image]][downloads-url]
 [![Build Status][travis-image]][travis-url]
 [![Test Coverage][coveralls-image]][coveralls-url]
-[![NSP Status](https://nodesecurity.io/orgs/zooz-test/projects/49d2a5f4-9408-4d08-81d5-0bf23eda19ec/badge)](https://nodesecurity.io/orgs/zooz-test/projects/012e3ff9-f6a8-4eb2-86ef-4173af622196)
-[![MIT License][license-image]][license-url]
+[![NSP Status](https://nodesecurity.io/orgs/zooz/projects/91986a79-6151-44df-a6f4-b12982a8858a/badge)](https://nodesecurity.io/orgs/zooz/projects/91986a79-6151-44df-a6f4-b12982a8858a)
+[![Apache 2.0 License][license-image]][license-url]
 
 This package is used to perform input validation to express app using a [Swagger (Open API)](https://swagger.io/specification/) definition and [ajv](https://www.npmjs.com/package/ajv)
 
@@ -127,10 +127,10 @@ npm test
 
 [npm-image]: https://img.shields.io/npm/v/express-ajv-swagger-validation.svg?style=flat
 [npm-url]: https://npmjs.org/package/express-ajv-swagger-validation
-[travis-image]: https://travis-ci.org/idanto/express-ajv-swagger-validation.svg?branch=master
-[travis-url]: https://travis-ci.org/idanto/express-ajv-swagger-validation
-[coveralls-image]: https://coveralls.io/repos/github/idanto/express-ajv-swagger-validation/badge.svg?branch=master
-[coveralls-url]: https://coveralls.io/github/idanto/express-ajv-swagger-validation?branch=master
+[travis-image]: https://travis-ci.org/Zooz/express-ajv-swagger-validation.svg?branch=master
+[travis-url]: https://travis-ci.org/Zooz/express-ajv-swagger-validation
+[coveralls-image]: https://coveralls.io/repos/github/Zooz/express-ajv-swagger-validation/badge.svg?branch=master
+[coveralls-url]: https://coveralls.io/github/Zooz/express-ajv-swagger-validation?branch=master
 [downloads-image]: http://img.shields.io/npm/dm/express-ajv-swagger-validation.svg?style=flat
 [downloads-url]: https://npmjs.org/package/express-ajv-swagger-validation
 [license-image]: http://img.shields.io/badge/license-MIT-blue.svg?style=flat
