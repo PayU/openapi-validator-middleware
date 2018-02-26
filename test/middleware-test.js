@@ -573,6 +573,18 @@ describe('input-validation middleware tests', function () {
                     done();
                 });
         });
+        it('valid request - should pass validation', function (done) {
+            request(app)
+                .get('/v1/capital')
+                .set('Capital-Letters', '1.0')
+                .expect(200, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.result).to.equal('OK');
+                    done();
+                });
+        });
         it('missing header - should fail', function (done) {
             request(app)
                 .get('/v1/pets')
