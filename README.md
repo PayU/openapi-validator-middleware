@@ -7,7 +7,7 @@
 [![NPM Downloads][downloads-image]][downloads-url]
 [![Build Status][travis-image]][travis-url]
 [![Test Coverage][coveralls-image]][coveralls-url]
-[![NSP Status](https://nodesecurity.io/orgs/zooz/projects/91986a79-6151-44df-a6f4-b12982a8858a/badge)](https://nodesecurity.io/orgs/zooz/projects/91986a79-6151-44df-a6f4-b12982a8858a)
+[![NSP Status](https://nodesecurity.io/orgs/zooz/projects/3244db73-7215-4526-8cb0-b5b1e640fc6e/badge)](https://nodesecurity.io/orgs/zooz/projects/3244db73-7215-4526-8cb0-b5b1e640fc6e)
 [![Apache 2.0 License][license-image]][license-url]
 
 This package is used to perform input validation to express app using a [Swagger (Open API)](https://swagger.io/specification/) definition and [ajv](https://www.npmjs.com/package/ajv)
