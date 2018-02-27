@@ -1,6 +1,6 @@
 {
   "name": "express-ajv-swagger-validation",
-  "version": "0.4.0",
+  "version": "0.5.2",
   "description": "Input validation using Swagger (Open API) and ajv",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/idanto/express-ajv-swagger-validation.git"
+    "url": "git://github.com/Zooz/express-ajv-swagger-validation.git"
   },
   "keywords": [
     "ajv",
@@ -24,9 +24,9 @@
     "validator"
   ],
   "bugs": {
-    "url": "https://github.com/idanto/express-ajv-swagger-validation"
+    "url": "https://github.com/Zooz/express-ajv-swagger-validation"
   },
-  "homepage": "https://github.com/idanto/express-ajv-swagger-validation",
+  "homepage": "https://github.com/Zooz/express-ajv-swagger-validation",
   "author": "Idan Tovi",
   "license": "MIT",
   "dependencies": {
@@ -56,5 +56,8 @@
     "rewire": "^2.5.2",
     "sinon": "^4.0.1",
     "supertest": "^3.0.0"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
   }
 }

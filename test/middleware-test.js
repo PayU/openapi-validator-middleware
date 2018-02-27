@@ -379,6 +379,179 @@ describe('input-validation middleware tests', function () {
                 });
         });
     });
+    describe('Simple server - type coercion enabled', function () {
+        var app;
+        before(function () {
+            return require('./test-simple-server-with-coercion').then(function (testServer) {
+                app = testServer;
+            });
+        });
+        it('request with wrong parameter type - should pass validation due to coercion', function (done) {
+            request(app)
+                .put('/pets')
+                .send([{
+                    name: 1,
+                    tag: 'tag',
+                    test: {
+                        field1: 'enum1'
+                    }
+                }])
+                .expect(200, done);
+        });
+
+        it('request with wrong parameter type - should keep null values as null when payload is array', function (done) {
+            request(app)
+                .put('/pets')
+                .send([{
+                    name: 1,
+                    tag: 'tag',
+                    age: null,
+                    test: {
+                        field1: 'enum1',
+                        field2: null
+                    }
+                }])
+                .expect(200)
+                .end(function(err, res) {
+                    if (err) {
+                        return done(err);
+                    }
+                    const pet = res.body.receivedParams[0];
+                    expect(pet.test.field2).to.be.null;
+                    expect(pet.age).to.be.null;
+                    done();
+                });
+        });
+
+        it('handles request body objects without specified schema correctly', function (done) {
+            request(app)
+                .put('/pets')
+                .send([{
+                    name: 1,
+                    tag: 'tag',
+                    age: null,
+                    test: {
+                        field1: 'enum1'
+                    },
+                    test2: {
+                        arbitraryField: 'dummy',
+                        nullField: null
+                    }
+                }])
+                .expect(200)
+                .end(function(err, res) {
+                    if (err) {
+                        return done(err);
+                    }
+                    const pet = res.body.receivedParams[0];
+                    expect(pet.test2.arbitraryField).to.equal('dummy');
+                    expect(pet.test2.nullField).to.be.null;
+                    done();
+                });
+        });
+
+        it('handles request body without specified schema correctly', function (done) {
+            request(app)
+                .patch('/pets')
+                .send({
+                    name: 1,
+                    tag: 'tag',
+                    age: null,
+                    test: {
+                        field1: 'enum1'
+                    },
+                    test2: {
+                        arbitraryField: 'dummy',
+                        nullField: null
+                    }
+                })
+                .expect(200)
+                .end(function(err, res) {
+                    if (err) {
+                        return done(err);
+                    }
+                    const pet = res.body.receivedParams;
+                    expect(pet.test.field1).to.equal('enum1');
+                    expect(pet.test2.arbitraryField).to.equal('dummy');
+                    expect(pet.test2.nullField).to.be.null;
+                    done();
+                });
+        });
+
+        it('request with wrong parameter type - should keep null values as null when payload is object', function (done) {
+            request(app)
+                .post('/pets')
+                .send({
+                    name: 1,
+                    tag: 'tag',
+                    age: null,
+                    test: {
+                        field1: 'enum1',
+                        field2: null
+                    }
+                })
+                .expect(200)
+                .end(function(err, res) {
+                    if (err) {
+                        return done(err);
+                    }
+                    const pet = res.body.receivedParams;
+                    expect(pet.test.field2).to.be.null;
+                    expect(pet.age).to.be.null;
+                    done();
+                });
+        });
+
+        it('request with wrong parameter type and no required fields defined - should keep null values as null when payload is object', function (done) {
+            request(app)
+                .post('/pets')
+                .send({
+                    name: 1,
+                    tag: 'tag',
+                    age: null,
+                    test: {
+                        field1: 'enum1'
+                    },
+                    test3: {
+                        field1: 'enum1',
+                        field2: null
+                    }
+                })
+                .expect(200)
+                .end(function(err, res) {
+                    if (err) {
+                        return done(err);
+                    }
+                    const pet = res.body.receivedParams;
+                    expect(pet.test3.field1).to.equal('enum1');
+                    expect(pet.test3.field2).to.be.null;
+                    expect(pet.age).to.be.null;
+                    done();
+                });
+        });
+
+        it('request with wrong parameter type - should keep null values as null when (invalid) swagger with multiple types is provided', function (done) {
+            request(app)
+                .put('/pets')
+                .send([{
+                    name: 1,
+                    tag: 'tag',
+                    test: {
+                        field1: 'enum1',
+                        field3: null
+                    }
+                }])
+                .expect(200)
+                .end(function(err, res) {
+                    if (err) {
+                        return done(err);
+                    }
+                    const pet = res.body.receivedParams[0];
+                    expect(pet.test.field3).to.be.null;
+                    done();
+                });
+        });
+    });
     describe('Simple server - with base path', function () {
         var app;
         before(function () {
@@ -392,6 +565,30 @@ describe('input-validation middleware tests', function () {
                 .set('api-version', '1.0')
                 .set('request-id', '123456')
                 .query({ page: 0 })
+                .expect(200, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.result).to.equal('OK');
+                    done();
+                });
+        });
+        it('headers are in capital letters - should pass validation', function (done) {
+            request(app)
+                .get('/v1/capital')
+                .set('Capital-Letters', '1.0')
+                .expect(200, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.result).to.equal('OK');
+                    done();
+                });
+        });
+        it('headers are in lowercase letters - should pass validation', function (done) {
+            request(app)
+                .get('/v1/capital')
+                .set('capital-letters', '1.0')
                 .expect(200, function (err, res) {
                     if (err) {
                         throw err;

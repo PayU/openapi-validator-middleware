@@ -64,6 +64,8 @@ paths:
             properties:
               name:
                 type: string
+              age:
+                type: integer
               tag:
                 type: string
               test:
@@ -100,6 +102,8 @@ paths:
                 properties:
                   name:
                     type: string
+                  age:
+                    type: integer
                   tag:
                     type: string
                   test:
@@ -110,6 +114,43 @@ paths:
                       field1:
                         type: string
                         enum: ['enum1', 'enum2']
+                      field2:
+                        type: integer
+                      field3:
+                        type:
+                          - integer
+                          - string
+                  test2:
+                    type: object
+                  test3:
+                    type: object
+                    properties:
+                      field1:
+                        type: string
+                        enum: ['enum1', 'enum2']
+                      field2:
+                        type: integer
+
+      responses:
+        "200":
+          description: Expected response to a valid request
+          schema:
+            $ref: '#/definitions/Pets'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    patch:
+      summary: Info for a specific pet
+      operationId: incrementallyUpdatePet
+      tags:
+        - pets
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+              type: object
       responses:
         "200":
           description: Expected response to a valid request

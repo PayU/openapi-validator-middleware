@@ -3,18 +3,25 @@
 var SwaggerParser = require('swagger-parser'),
     Ajv = require('ajv'),
     Validators = require('./validators'),
-    filesKeyword = require('./customKeywords/files');
+    filesKeyword = require('./customKeywords/files'),
+    schemaPreprocessor = require('./utils/schema-preprocessor');
 
 var schemas = {};
 var middlewareOptions;
+var ajvConfigBody;
+var ajvConfigParams;
 
 /**
  * Initialize the input validation middleware
  * @param {string} swaggerPath - the path for the swagger file
- * @param {Object} options - options.formats to add formats to ajv, options.beautifyErrors, options.firstError, options.fileNameField (default is 'fieldname' - multer package)
+ * @param {Object} options - options.formats to add formats to ajv, options.beautifyErrors, options.firstError, options.fileNameField (default is 'fieldname' - multer package), options.ajvConfigBody and options.ajvConfigParams for config object that will be passed for creation of Ajv instance used for validation of body and parameters appropriately
  */
 function init(swaggerPath, options) {
     middlewareOptions = options || {};
+    ajvConfigBody = middlewareOptions.ajvConfigBody || {};
+    ajvConfigParams = middlewareOptions.ajvConfigParams || {};
+    const makeOptionalAttributesNullable = middlewareOptions.makeOptionalAttributesNullable || false;
+
     return Promise.all([
         SwaggerParser.dereference(swaggerPath),
         SwaggerParser.parse(swaggerPath)
@@ -30,6 +37,12 @@ function init(swaggerPath, options) {
 
                     const parameters = dereferenced.paths[currentPath][currentMethod].parameters || [];
                     let bodySchema = parameters.filter(function (parameter) { return parameter.in === 'body' });
+                    if (makeOptionalAttributesNullable) {
+                        schemaPreprocessor.makeOptionalAttributesNullable(bodySchema);
+                    }
+                    if (bodySchema.length > 0) {
+                        schemas[parsedPath][currentMethod].body = buildBodyValidation(bodySchema[0].schema, dereferenced.definitions, swaggers[1], currentPath, currentMethod, parsedPath);
+                    }
 
                     let localParameters = parameters.filter(function (parameter) {
                         return parameter.in !== 'body';
@@ -49,7 +62,7 @@ function init(swaggerPath, options) {
         .catch(function (error) {
             return Promise.reject(error);
         });
-};
+}
 
 /**
  * The middleware - should be called for each express route
@@ -165,10 +178,12 @@ function extractPath(req) {
 }
 
 function buildBodyValidation(schema, swaggerDefinitions, originalSwagger, currentPath, currentMethod, parsedPath) {
-    let ajv = new Ajv({
+    const defaultAjvOptions = {
         allErrors: true
         // unknownFormats: 'ignore'
-    });
+    };
+    const options = Object.assign({}, defaultAjvOptions, ajvConfigBody);
+    let ajv = new Ajv(options);
 
     addCustomKeyword(ajv, middlewareOptions.formats);
 
@@ -213,11 +228,13 @@ function createContentTypeHeaders(contentTypes) {
 }
 
 function buildParametersValidation(parameters) {
-    let ajv = new Ajv({
+    const defaultAjvOptions = {
         allErrors: true,
         coerceTypes: 'array'
         // unknownFormats: 'ignore'
-    });
+    };
+    const options = Object.assign({}, defaultAjvOptions, ajvConfigParams);
+    let ajv = new Ajv(options);
 
     addCustomKeyword(ajv, middlewareOptions.formats);
 
@@ -260,7 +277,7 @@ function buildParametersValidation(parameters) {
 
         const required = parameter.required;
         const source = typeNameConversion[parameter.in] || parameter.in;
-        const key = parameter.name;
+        const key = parameter.in === 'header' ? parameter.name.toLowerCase() : parameter.name;
 
         var destination = ajvParametersSchema.properties[source];
 
