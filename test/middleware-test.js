@@ -378,27 +378,6 @@ describe('input-validation middleware tests', function () {
                     done();
                 });
         });
-        it('bad request - wrong content-type (should be application/json)', function (done) {
-            request(app)
-                .put('/pets')
-                .set('Content-Type', 'application/x-www-form-urlencoded')
-                .send([{
-                    name: 'name',
-                    tag: 'tag',
-                    test: {
-                        field1: 'enum1'
-                    }
-                }])
-                .expect(400, function (err, res) {
-                    if (err) {
-                        throw err;
-                    }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
-                    // ToDo not sure what data will arrive in response that could be asserted
-					expect(res.body.more_info).to.not.includes('should be array');
-                    done();
-                });
-        });
     });
     describe('Simple server - with base path', function () {
         var app;
@@ -1428,6 +1407,26 @@ describe('input-validation middleware tests', function () {
                     }
                     expect(res.body.more_info).to.be.a('string');
                     expect(res.body.more_info).to.includes('body should be array');
+                    done();
+                });
+        });
+        it('bad request - wrong content-type (should be application/json)', function (done) {
+            request(app)
+                .put('/pets')
+                .set('content-type', 'application/x-www-form-urlencoded')
+                .send([{
+                    name: 'name',
+                    tag: 'tag',
+                    test: {
+                        field1: 'enum1'
+                    }
+                }])
+                .expect(400, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.more_info).to.be.a('string');
+                    expect(res.body.more_info).to.not.includes('header/content-type should be equal to one of the allowed values [application/json]');
                     done();
                 });
         });

@@ -30,13 +30,16 @@ function init(swaggerPath, options) {
 
                     const parameters = dereferenced.paths[currentPath][currentMethod].parameters || [];
                     let bodySchema = parameters.filter(function (parameter) { return parameter.in === 'body' });
-                    if (bodySchema.length > 0) {
-                        schemas[parsedPath][currentMethod].body = buildBodyValidation(bodySchema[0].schema, dereferenced.definitions, swaggers[1], currentPath, currentMethod, parsedPath);
-                    }
 
                     let localParameters = parameters.filter(function (parameter) {
                         return parameter.in !== 'body';
                     }).concat(pathParameters);
+
+                    if (bodySchema.length > 0) {
+                        schemas[parsedPath][currentMethod].body = buildBodyValidation(bodySchema[0].schema, dereferenced.definitions, swaggers[1], currentPath, currentMethod, parsedPath);
+                        localParameters.push(createContentTypeHeaders(dereferenced.paths[currentPath].consumes || dereferenced.consumes));
+                    }
+
                     if (localParameters.length > 0) {
                         schemas[parsedPath][currentMethod].parameters = buildParametersValidation(localParameters);
                     }
@@ -195,6 +198,18 @@ function buildInheritance(discriminator, dereferencedDefinitions, swagger, curre
     }, this);
 
     return new Validators.OneOfValidator(inheritsObject);
+}
+
+function createContentTypeHeaders(contentTypes) {
+    return {
+        'name': 'content-type',
+        'description': 'Allowed content types',
+        'required': true,
+        'enum': ['application/json'],
+        // 'enum': contentTypes,
+        'type': 'string',
+        'in': 'header'
+    };
 }
 
 function buildParametersValidation(parameters) {

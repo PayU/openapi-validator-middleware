@@ -8,13 +8,13 @@ host: petstore.swagger.io
 basePath: /v1
 schemes:
   - http
-consumes:
-  - application/json
-produces:
-  - application/json
 paths:
   /pets:
     get:
+      consumes:
+        - application/json
+      produces:
+        - application/json
       summary: List all pets
       operationId: listPets
       tags:
@@ -53,6 +53,10 @@ paths:
     post:
       summary: Create a pet
       operationId: createPets
+      consumes:
+        - application/json
+      produces:
+        - application/json
       parameters:
         - $ref: '#/parameters/ApiRequestId'
         - name: body
@@ -83,6 +87,10 @@ paths:
           schema:
             $ref: '#/definitions/Error'
     put:
+      consumes:
+        - application/json
+      produces:
+        - application/json
       summary: Info for a specific pet
       operationId: updatePats
       tags:
@@ -121,6 +129,10 @@ paths:
           schema:
             $ref: '#/definitions/Error'
   /pets/{petId}:
+    consumes:
+      - application/json
+    produces:
+      - application/json
     get:
       summary: Info for a specific pet
       operationId: showPetById
