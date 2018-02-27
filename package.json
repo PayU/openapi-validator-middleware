@@ -1,6 +1,6 @@
 {
   "name": "express-ajv-swagger-validation",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Input validation using Swagger (Open API) and ajv",
   "main": "index.js",
   "scripts": {
@@ -58,6 +58,6 @@
     "supertest": "^3.0.0"
   },
   "publishConfig": {
-    "registry":"https://registry.npmjs.org/"
+    "registry": "https://registry.npmjs.org/"
   }
 }
