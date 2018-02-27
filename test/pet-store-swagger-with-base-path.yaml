@@ -158,6 +158,13 @@ paths:
           description: unexpected error
           schema:
             $ref: '#/definitions/Error'
+  /capital:
+    get:
+      parameters:
+        - $ref: '#/parameters/CapitalLetters'
+      responses:
+        "200":
+          description: An paged array of pets
 definitions:
   Pet:
     required:
@@ -211,3 +218,8 @@ parameters:
     type: string
     minLength: 1
     x-example: '123456'
+  CapitalLetters:
+    name: 'Capital-Letters'
+    in: header
+    required: true
+    type: string

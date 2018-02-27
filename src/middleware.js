@@ -259,7 +259,7 @@ function buildParametersValidation(parameters) {
 
         const required = parameter.required;
         const source = typeNameConversion[parameter.in] || parameter.in;
-        const key = parameter.name;
+        const key = parameter.in === 'header' ? parameter.name.toLowerCase() : parameter.name;
 
         var destination = ajvParametersSchema.properties[source];
 

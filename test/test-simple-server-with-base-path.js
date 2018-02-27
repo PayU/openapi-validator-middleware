@@ -16,6 +16,9 @@ module.exports = inputValidation.init('test/pet-store-swagger-with-base-path.yam
         app.post('/v1/pets', inputValidation.validate, function (req, res, next) {
             res.json({ result: 'OK' });
         });
+        app.get('/v1/capital', inputValidation.validate, function (req, res, next) {
+            res.json({ result: 'OK' });
+        });
 
         app.use('/v1', router);
 
