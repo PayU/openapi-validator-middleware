@@ -1623,7 +1623,7 @@ describe('input-validation middleware tests', function () {
                         throw err;
                     }
                     expect(res.body.more_info).to.be.a('string');
-                    expect(res.body.more_info).to.not.includes('header/content-type should be equal to one of the allowed values [application/json]');
+                    expect(res.body.more_info).to.includes('headers/content-type should match pattern "application/json.*s*S*"');
                     done();
                 });
         });

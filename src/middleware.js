@@ -220,7 +220,7 @@ function createContentTypeHeaders(contentTypes) {
         'name': 'content-type',
         'description': 'Allowed content types',
         'required': true,
-        'enum': ['application/json'],
+        'pattern': 'application\/json.*\s*\S*',
         // 'enum': contentTypes,
         'type': 'string',
         'in': 'header'
