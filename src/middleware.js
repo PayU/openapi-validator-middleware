@@ -169,33 +169,11 @@ function buildInheritance(discriminator, dereferencedDefinitions, swagger, curre
 }
 
 function createContentTypeHeaders(validate, contentTypes) {
-    // return {
-    //     'name': 'content',
-    //     'description': 'Allowed content',
-    //     // 'required': true,
-    //     'switch': [
-    //         { if: { 'not': { 'length': { 'pattern': '0' } } }, then: { 'type': { 'pattern': buildContentTypeRegex(contentTypes) } } },
-    //         { then: true }
-    //     ],
-    //     'type': 'object',
-    //     'in': 'header'
-    // };
-
     if (!validate || !contentTypes) return;
 
     return {
-        types: contentTypes,
-        pattern: buildContentTypeRegex(contentTypes)
+        types: contentTypes
     };
-}
-
-function buildContentTypeRegex(contentTypes) {
-    let pattern = '';
-    contentTypes.forEach(type => {
-        pattern += `(${type.replace(/\//g, '\\/')}.*\\s*\\S*)|`;
-    });
-
-    return pattern.substring(0, pattern.length - 1);
 }
 
 function buildParametersValidation(parameters, contentTypes) {
