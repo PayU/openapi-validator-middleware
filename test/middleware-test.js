@@ -1623,7 +1623,52 @@ describe('input-validation middleware tests', function () {
                         throw err;
                     }
                     expect(res.body.more_info).to.be.a('string');
-                    expect(res.body.more_info).to.includes('headers/content-type should match pattern "application/json.*s*S*"');
+                    expect(res.body.more_info).to.includes('headers content-type must be one of application/json,form-data');
+                    done();
+                });
+        });
+        it('valid content-type when multiple content-types defind - should pass validation', function (done) {
+            request(app)
+                .put('/text')
+                .set('content-type', 'text/plain')
+                .send('text')
+                .expect(200, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.result).to.equal('OK');
+                    done();
+                });
+        });
+        it('more detailed content-type - should pass validation', function (done) {
+            request(app)
+                .put('/pets')
+                .set('content-type', 'application/json; charset=utf-8')
+                .send([{
+                    name: 'name',
+                    tag: 'tag',
+                    test: {
+                        field1: 'enum1'
+                    }
+                }])
+                .expect(200, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.result).to.equal('OK');
+                    done();
+                });
+        });
+        it('valid empty request - should pass validation', function (done) {
+            request(app)
+                .put('/pets/1234')
+                .set('request-id', '1234')
+                .set('api-version', '1.0')
+                .expect(200, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.result).to.equal('OK');
                     done();
                 });
         });
