@@ -52,7 +52,7 @@ class InputValidationError extends Error {
         }
 
         if (error.dataPath.startsWith('[')) {
-            error.dataPath = 'body/' + error.dataPath;
+            error.dataPath = `body/${error.dataPath}`;
         }
 
         if (error.dataPath === '') {
@@ -60,14 +60,14 @@ class InputValidationError extends Error {
         }
 
         if (error.keyword === 'enum') {
-            error.message += ' [' + error.params.allowedValues.toString() + ']';
+            error.message += ` [${error.params.allowedValues.toString()}]`;
         }
 
         if (error.validation) {
             error.message = error.errors.message;
         }
 
-        return error.dataPath + ' ' + error.message;
+        return `${error.dataPath} ${error.message}`;
     }
 }
 
