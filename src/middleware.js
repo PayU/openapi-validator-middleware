@@ -4,11 +4,9 @@ var SwaggerParser = require('swagger-parser'),
     Ajv = require('ajv'),
     Validators = require('./utils/validators'),
     filesKeyword = require('./customKeywords/files'),
-    contentKeyword = require('./customKeywords/content'),
+    contentKeyword = require('./customKeywords/contentTypeValidation'),
     InputValidationError = require('./inputValidationError'),
     schemaPreprocessor = require('./utils/schema-preprocessor');
-
-// require('ajv-keywords')(Ajv);
 
 var schemas = {};
 var middlewareOptions;
@@ -54,7 +52,6 @@ function init(swaggerPath, options) {
 
                     if (bodySchema.length > 0) {
                         schemas[parsedPath][currentMethod].body = buildBodyValidation(bodySchema[0].schema, dereferenced.definitions, swaggers[1], currentPath, currentMethod, parsedPath);
-                        // localParameters.push(createContentTypeHeaders(dereferenced.paths[currentPath][currentMethod].consumes || dereferenced.paths[currentPath].consumes || dereferenced.consumes));
                     }
 
                     if (localParameters.length > 0 || middlewareOptions.contentTypeValidation) {
