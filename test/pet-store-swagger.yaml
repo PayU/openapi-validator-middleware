@@ -7,10 +7,6 @@ info:
 host: petstore.swagger.io
 schemes:
   - http
-consumes:
-  - application/json
-produces:
-  - application/json
 paths:
   /pets:
     get:
@@ -94,14 +90,10 @@ paths:
       parameters:
         - name: body
           in: body
-          # required: true
           schema:
               type: array
               items:
                 type: object
-                # required:
-                #   - name
-                #   - test
                 properties:
                   name:
                     type: string
@@ -145,6 +137,10 @@ paths:
     patch:
       summary: Info for a specific pet
       operationId: incrementallyUpdatePet
+      consumes:
+        - application/json
+      produces:
+        - application/json
       tags:
         - pets
       parameters:
@@ -192,6 +188,8 @@ paths:
       operationId: showPetById
       tags:
         - pets
+      consumes:
+        - application/json
       parameters:
         - $ref: '#/parameters/ApiVersion'
         - $ref: '#/parameters/ApiRequestId'
