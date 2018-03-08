@@ -9,8 +9,7 @@ var inputValidationOptions = {
         { name: 'double', pattern: /\d+(\.\d+)?/ },
         { name: 'int64', pattern: /^\d{1,18}$/ }
     ],
-    beautifyErrors: true,
-    contentTypeValidation: true
+    beautifyErrors: true
 };
 
 module.exports = inputValidation.init('test/pet-store-swagger.yaml', inputValidationOptions)

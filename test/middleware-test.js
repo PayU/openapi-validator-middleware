@@ -573,6 +573,25 @@ describe('input-validation middleware tests', function () {
                     done();
                 });
         });
+        it('bad request - wrong content-type (should be application/json)', function (done) {
+            request(app)
+                .put('/v1/pets')
+                .set('content-type', 'application/x-www-form-urlencoded')
+                .send([{
+                    name: 'name',
+                    tag: 'tag',
+                    test: {
+                        field1: 'enum1'
+                    }
+                }])
+                .expect(400, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.more_info).to.includes('content-type must be one of application/json');
+                    done();
+                });
+        });
         it('headers are in capital letters - should pass validation', function (done) {
             request(app)
                 .get('/v1/capital')

@@ -14,6 +14,8 @@ produces:
   - application/json
 paths:
   /pets:
+    consumes:
+      - application/json
     get:
       summary: List all pets
       operationId: listPets

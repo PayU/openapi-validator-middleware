@@ -14,10 +14,6 @@ produces:
  - application/json
 paths:
   /pets:
-    consumes:
-      - application/json
-    produces:
-      - application/json
     get:
       consumes:
         - application/json
