@@ -3,6 +3,7 @@
 
 [![NPM](https://nodei.co/npm-dl/express-ajv-swagger-validation.png?height=3)](https://nodei.co/npm/express-ajv-swagger-validation/)
 
+[![Join the chat at https://gitter.im/Zooz/express-ajv-swagger-validation](https://badges.gitter.im/Zooz/express-ajv-swagger-validation.svg)](https://gitter.im/Zooz/express-ajv-swagger-validation?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![NPM Version][npm-image]][npm-url]
 [![NPM Downloads][downloads-image]][downloads-url]
 [![Build Status][travis-image]][travis-url]
