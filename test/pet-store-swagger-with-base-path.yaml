@@ -9,12 +9,16 @@ basePath: /v1
 schemes:
   - http
 consumes:
-  - application/json
+ - application/json
 produces:
-  - application/json
+ - application/json
 paths:
   /pets:
     get:
+      consumes:
+        - application/json
+      produces:
+        - application/json
       summary: List all pets
       operationId: listPets
       tags:
@@ -53,6 +57,10 @@ paths:
     post:
       summary: Create a pet
       operationId: createPets
+      consumes:
+        - application/json
+      produces:
+        - application/json
       parameters:
         - $ref: '#/parameters/ApiRequestId'
         - name: body

@@ -2,8 +2,10 @@
 
 var SwaggerParser = require('swagger-parser'),
     Ajv = require('ajv'),
-    Validators = require('./validators'),
+    Validators = require('./utils/validators'),
     filesKeyword = require('./customKeywords/files'),
+    contentKeyword = require('./customKeywords/contentTypeValidation'),
+    InputValidationError = require('./inputValidationError'),
     schemaPreprocessor = require('./utils/schema-preprocessor');
 
 var schemas = {};
@@ -47,8 +49,14 @@ function init(swaggerPath, options) {
                     let localParameters = parameters.filter(function (parameter) {
                         return parameter.in !== 'body';
                     }).concat(pathParameters);
-                    if (localParameters.length > 0) {
-                        schemas[parsedPath][currentMethod].parameters = buildParametersValidation(localParameters);
+
+                    if (bodySchema.length > 0) {
+                        schemas[parsedPath][currentMethod].body = buildBodyValidation(bodySchema[0].schema, dereferenced.definitions, swaggers[1], currentPath, currentMethod, parsedPath);
+                    }
+
+                    if (localParameters.length > 0 || middlewareOptions.contentTypeValidation) {
+                        schemas[parsedPath][currentMethod].parameters = buildParametersValidation(localParameters,
+                            dereferenced.paths[currentPath][currentMethod].consumes || dereferenced.paths[currentPath].consumes || dereferenced.consumes);
                     }
                 });
         });
@@ -67,6 +75,7 @@ function init(swaggerPath, options) {
  */
 function validate(req, res, next) {
     let path = extractPath(req);
+
     return Promise.all([
         _validateParams(req.headers, req.params, req.query, req.files, path, req.method.toLowerCase()).catch(e => e),
         _validateBody(req.body, path, req.method.toLowerCase()).catch(e => e)
@@ -76,13 +85,10 @@ function validate(req, res, next) {
         }
         return next();
     }).catch(function (errors) {
-        if (middlewareOptions.beautifyErrors && middlewareOptions.firstError) {
-            errors = parseAjvError(errors[0], path, req.method.toLowerCase());
-        } else if (middlewareOptions.beautifyErrors) {
-            errors = parseAjvErrors(errors, path, req.method.toLowerCase());
-        }
-
-        return next(new InputValidationError(errors));
+        const error = new InputValidationError(errors, path, req.method.toLowerCase(),
+            { beautifyErrors: middlewareOptions.beautifyErrors,
+                firstError: middlewareOptions.firstError });
+        return next(error);
     });
 };
 
@@ -105,57 +111,6 @@ function _validateParams(headers, pathParams, query, files, path, method) {
     });
 }
 
-function parseAjvErrors(errors, path, method) {
-    var parsedError = [];
-    errors.forEach(function (error) {
-        parsedError.push(parseAjvError(error, path, method));
-    }, this);
-
-    return parsedError;
-}
-
-function parseAjvError(error, path, method) {
-    if (error.dataPath.startsWith('.header')) {
-        error.dataPath = error.dataPath.replace('.', '');
-        error.dataPath = error.dataPath.replace('[', '/');
-        error.dataPath = error.dataPath.replace(']', '');
-        error.dataPath = error.dataPath.replace('\'', '');
-        error.dataPath = error.dataPath.replace('\'', '');
-    }
-
-    if (error.dataPath.startsWith('.path')) {
-        error.dataPath = error.dataPath.replace('.', '');
-        error.dataPath = error.dataPath.replace('.', '/');
-    }
-
-    if (error.dataPath.startsWith('.query')) {
-        error.dataPath = error.dataPath.replace('.', '');
-        error.dataPath = error.dataPath.replace('.', '/');
-    }
-
-    if (error.dataPath.startsWith('.')) {
-        error.dataPath = error.dataPath.replace('.', 'body/');
-    }
-
-    if (error.dataPath.startsWith('[')) {
-        error.dataPath = 'body/' + error.dataPath;
-    }
-
-    if (error.dataPath === '') {
-        error.dataPath = 'body';
-    }
-
-    if (error.keyword === 'enum') {
-        error.message += ' [' + error.params.allowedValues.toString() + ']';
-    }
-
-    if (error.validation) {
-        error.message = error.errors.message;
-    }
-
-    return error.dataPath + ' ' + error.message;
-}
-
 function addCustomKeyword(ajv, formats) {
     if (formats) {
         formats.forEach(function (format) {
@@ -164,6 +119,7 @@ function addCustomKeyword(ajv, formats) {
     }
 
     ajv.addKeyword('files', filesKeyword);
+    ajv.addKeyword('content', contentKeyword);
 }
 
 function extractPath(req) {
@@ -209,7 +165,15 @@ function buildInheritance(discriminator, dereferencedDefinitions, swagger, curre
     return new Validators.OneOfValidator(inheritsObject);
 }
 
-function buildParametersValidation(parameters) {
+function createContentTypeHeaders(validate, contentTypes) {
+    if (!validate || !contentTypes) return;
+
+    return {
+        types: contentTypes
+    };
+}
+
+function buildParametersValidation(parameters, contentTypes) {
     const defaultAjvOptions = {
         allErrors: true,
         coerceTypes: 'array'
@@ -278,20 +242,9 @@ function buildParametersValidation(parameters) {
         }
     }, this);
 
-    return ajv.compile(ajvParametersSchema);
-}
+    ajvParametersSchema.properties.headers.content = createContentTypeHeaders(middlewareOptions.contentTypeValidation, contentTypes);
 
-/**
- * Represent an input validation error
- * errors field will include the `ajv` error
- * @class InputValidationError
- * @extends {Error}
- */
-class InputValidationError extends Error {
-    constructor(errors, place, message) {
-        super(message);
-        this.errors = errors;
-    }
+    return ajv.compile(ajvParametersSchema);
 }
 
 module.exports = {

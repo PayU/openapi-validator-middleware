@@ -7,7 +7,7 @@
 [![NPM Downloads][downloads-image]][downloads-url]
 [![Build Status][travis-image]][travis-url]
 [![Test Coverage][coveralls-image]][coveralls-url]
-[![NSP Status](https://nodesecurity.io/orgs/zooz/projects/91986a79-6151-44df-a6f4-b12982a8858a/badge)](https://nodesecurity.io/orgs/zooz/projects/91986a79-6151-44df-a6f4-b12982a8858a)
+[![NSP Status](https://nodesecurity.io/orgs/zooz/projects/3244db73-7215-4526-8cb0-b5b1e640fc6e/badge)](https://nodesecurity.io/orgs/zooz/projects/3244db73-7215-4526-8cb0-b5b1e640fc6e)
 [![Apache 2.0 License][license-image]][license-url]
 
 This package is used to perform input validation to express app using a [Swagger (Open API)](https://swagger.io/specification/) definition and [ajv](https://www.npmjs.com/package/ajv)
@@ -74,9 +74,9 @@ Options currently supports:
 
 - `firstError` - Boolean that indicates if to return only the first error.
 - `makeOptionalAttributesNullable` - Boolean that forces preprocessing of Swagger schema to include 'null' as possible type for all non-required properties. Main use-case for this is to ensure correct handling of null values when Ajv type coercion is enabled
-
 - `ajvConfigBody` - Object that will be passed as config to new Ajv instance which will be used for validating request body. Can be useful to e. g. enable type coercion (to automatically convert strings to numbers etc). See Ajv documentation for supported values.
 - `ajvConfigParams` - Object that will be passed as config to new Ajv instance which will be used for validating request body. See Ajv documentation for supported values.
+- `contentTypeValidation` - Boolean that indicates if to perform content type validation in case `consume` field is specified and the request body is not empty.
 
 ```js
 formats: [

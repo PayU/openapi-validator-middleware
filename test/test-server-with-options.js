@@ -11,7 +11,8 @@ var inputValidationOptions = {
         { name: 'int32', pattern: /^\d{1,10}$/ }
     ],
     beautifyErrors: true,
-    firstError: true
+    firstError: true,
+    contentTypeValidation: true
 };
 
 module.exports = inputValidation.init('test/pet-store-swagger.yaml', inputValidationOptions)
@@ -27,7 +28,13 @@ module.exports = inputValidation.init('test/pet-store-swagger.yaml', inputValida
         app.get('/pets/:petId', inputValidation.validate, function (req, res, next) {
             res.json({ result: 'OK' });
         });
+        app.put('/pets/:petId', inputValidation.validate, function (req, res, next) {
+            res.json({ result: 'OK' });
+        });
         app.put('/pets', inputValidation.validate, function (req, res, next) {
+            res.json({ result: 'OK' });
+        });
+        app.put('/text', bodyParser.text(), inputValidation.validate, function (req, res, next) {
             res.json({ result: 'OK' });
         });
         app.use(function (err, req, res, next) {
