@@ -50,6 +50,27 @@ paths:
       responses:
         '200':
           description: Auth result
+  /kennels/import:
+    post:
+      description: Login operation
+      produces:
+        - application/json
+      consumes:
+        - multipart/form-data
+      parameters:
+        - name: name
+          in: formData
+          required: true
+          type: string
+          description: Kennel name.
+        - name: blueprintFile
+          in: formData
+          required: true
+          type: file
+          description: File to import from.
+      responses:
+        '200':
+          description: Import result
 definitions:
 
 parameters:

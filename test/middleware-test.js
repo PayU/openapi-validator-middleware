@@ -2289,6 +2289,20 @@ describe('input-validation middleware tests', function () {
                     done();
                 });
         });
+        it('supports mix of files and fields', function (done) {
+            request(app)
+                .post('/kennels/import')
+                .set('api-version', '1.0')
+                .field('name', 'kennel 1 ')
+                .attach('blueprintFile', 'LICENSE')
+                .expect(200, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.result).to.equal('OK');
+                    done();
+                });
+        });
         it('validates string formData', function (done) {
             request(app)
                 .post('/login')
