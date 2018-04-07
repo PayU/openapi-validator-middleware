@@ -47,6 +47,10 @@ paths:
           required: true
           type: string
           description: Authentication password.
+        - name: params
+          in: formData
+          type: string
+          description: Optional params.
       responses:
         '200':
           description: Auth result
