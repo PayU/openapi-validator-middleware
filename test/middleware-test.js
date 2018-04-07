@@ -2275,5 +2275,21 @@ describe('input-validation middleware tests', function () {
                     done();
                 });
         });
+        it('supports string formData', function (done) {
+            request(app)
+                .post('/login')
+                .set('api-version', '1.0')
+                .send({
+                    username: 'user',
+                    password: 'pass'
+                })
+                .expect(200, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.result).to.equal('OK');
+                    done();
+                });
+        });
     });
 });

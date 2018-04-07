@@ -29,6 +29,27 @@ paths:
       responses:
         '200':
           description: Import result
+  /login:
+    post:
+      description: Login operation
+      produces:
+        - application/json
+      consumes:
+        - multipart/form-data
+      parameters:
+        - name: username
+          in: formData
+          required: true
+          type: string
+          description: Authentication username.
+        - name: password
+          in: formData
+          required: true
+          type: string
+          description: Authentication password.
+      responses:
+        '200':
+          description: Auth result
 definitions:
 
 parameters:
