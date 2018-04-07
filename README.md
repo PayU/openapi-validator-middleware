@@ -78,6 +78,7 @@ Options currently supports:
 - `ajvConfigBody` - Object that will be passed as config to new Ajv instance which will be used for validating request body. Can be useful to e. g. enable type coercion (to automatically convert strings to numbers etc). See Ajv documentation for supported values.
 - `ajvConfigParams` - Object that will be passed as config to new Ajv instance which will be used for validating request body. See Ajv documentation for supported values.
 - `contentTypeValidation` - Boolean that indicates if to perform content type validation in case `consume` field is specified and the request body is not empty.
+- `expectFormFieldsInBody` - Boolean that indicates whether fields of non-file type that are specified in the schema should be validated against request body (e. g. Multer is copying text fields to body)
 
 ```js
 formats: [
