@@ -29,7 +29,7 @@ function init(swaggerPath, options) {
         SwaggerParser.dereference(swaggerPath),
         SwaggerParser.parse(swaggerPath)
     ]).then(function (swaggers) {
-        var dereferenced = swaggers[0];
+        const dereferenced = swaggers[0];
         Object.keys(dereferenced.paths).forEach(function (currentPath) {
             let pathParameters = dereferenced.paths[currentPath].parameters || [];
             let parsedPath = dereferenced.basePath && dereferenced.basePath !== '/' ? dereferenced.basePath.concat(currentPath.replace(/{/g, ':').replace(/}/g, '')) : currentPath.replace(/{/g, ':').replace(/}/g, '');
@@ -48,25 +48,7 @@ function init(swaggerPath, options) {
                         schemaPreprocessor.makeOptionalAttributesNullable(bodySchema);
                     }
                     if (bodySchema.length > 0) {
-                        let validatedBodySchema;
-                        if (bodySchema[0].in === 'body') {
-                            validatedBodySchema = bodySchema[0].schema;
-                        } else if (bodySchema[0].in === 'formData') {
-                            validatedBodySchema = {
-                                required: [],
-                                properties: {}
-                            };
-                            bodySchema.forEach((formField) => {
-                                if (formField.type !== 'file') {
-                                    validatedBodySchema.properties[formField.name] = {
-                                        type: formField.type
-                                    };
-                                    if (formField.required) {
-                                        validatedBodySchema.required.push(formField.name);
-                                    }
-                                }
-                            });
-                        }
+                        const validatedBodySchema = _getValidatedBodySchema(bodySchema);
                         schemas[parsedPath][currentMethod].body = buildBodyValidation(validatedBodySchema, dereferenced.definitions, swaggers[1], currentPath, currentMethod, parsedPath);
                     }
 
@@ -84,6 +66,31 @@ function init(swaggerPath, options) {
         .catch(function (error) {
             return Promise.reject(error);
         });
+}
+
+function _getValidatedBodySchema(bodySchema) {
+    let validatedBodySchema;
+    if (bodySchema[0].in === 'body') {
+        // if we are processing schema for a simple JSON payload, no additional processing needed
+        validatedBodySchema = bodySchema[0].schema;
+    } else if (bodySchema[0].in === 'formData') {
+        // if we are processing multipart form, assemble body schema from form field schemas
+        validatedBodySchema = {
+            required: [],
+            properties: {}
+        };
+        bodySchema.forEach((formField) => {
+            if (formField.type !== 'file') {
+                validatedBodySchema.properties[formField.name] = {
+                    type: formField.type
+                };
+                if (formField.required) {
+                    validatedBodySchema.required.push(formField.name);
+                }
+            }
+        });
+    }
+    return validatedBodySchema;
 }
 
 /**
