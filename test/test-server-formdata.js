@@ -14,7 +14,8 @@ var inputValidationOptions = {
         { name: 'file', validate: () => { return true } }
     ],
     beautifyErrors: true,
-    firstError: true
+    firstError: true,
+    expectFormFieldsInBody: true
 };
 
 module.exports = inputValidation.init('test/form-data-swagger.yaml', inputValidationOptions)
@@ -22,6 +23,12 @@ module.exports = inputValidation.init('test/form-data-swagger.yaml', inputValida
         var app = express();
         app.use(bodyParser.json());
         app.post('/pets/import', upload.any(), inputValidation.validate, function (req, res, next) {
+            res.json({ result: 'OK' });
+        });
+        app.post('/kennels/import', upload.any(), inputValidation.validate, function (req, res, next) {
+            res.json({ result: 'OK' });
+        });
+        app.post('/login', upload.any(), inputValidation.validate, function (req, res, next) {
             res.json({ result: 'OK' });
         });
         app.use(function (err, req, res, next) {

@@ -6,7 +6,8 @@ var SwaggerParser = require('swagger-parser'),
     filesKeyword = require('./customKeywords/files'),
     contentKeyword = require('./customKeywords/contentTypeValidation'),
     InputValidationError = require('./inputValidationError'),
-    schemaPreprocessor = require('./utils/schema-preprocessor');
+    schemaPreprocessor = require('./utils/schema-preprocessor'),
+    sourceResolver = require('./utils/sourceResolver');
 
 var schemas = {};
 var middlewareOptions;
@@ -16,7 +17,7 @@ var ajvConfigParams;
 /**
  * Initialize the input validation middleware
  * @param {string} swaggerPath - the path for the swagger file
- * @param {Object} options - options.formats to add formats to ajv, options.beautifyErrors, options.firstError, options.fileNameField (default is 'fieldname' - multer package), options.ajvConfigBody and options.ajvConfigParams for config object that will be passed for creation of Ajv instance used for validation of body and parameters appropriately
+ * @param {Object} options - options.formats to add formats to ajv, options.beautifyErrors, options.firstError, options.expectFormFieldsInBody, options.fileNameField (default is 'fieldname' - multer package), options.ajvConfigBody and options.ajvConfigParams for config object that will be passed for creation of Ajv instance used for validation of body and parameters appropriately
  */
 function init(swaggerPath, options) {
     middlewareOptions = options || {};
@@ -28,7 +29,7 @@ function init(swaggerPath, options) {
         SwaggerParser.dereference(swaggerPath),
         SwaggerParser.parse(swaggerPath)
     ]).then(function (swaggers) {
-        var dereferenced = swaggers[0];
+        const dereferenced = swaggers[0];
         Object.keys(dereferenced.paths).forEach(function (currentPath) {
             let pathParameters = dereferenced.paths[currentPath].parameters || [];
             let parsedPath = dereferenced.basePath && dereferenced.basePath !== '/' ? dereferenced.basePath.concat(currentPath.replace(/{/g, ':').replace(/}/g, '')) : currentPath.replace(/{/g, ':').replace(/}/g, '');
@@ -38,21 +39,22 @@ function init(swaggerPath, options) {
                     schemas[parsedPath][currentMethod.toLowerCase()] = {};
 
                     const parameters = dereferenced.paths[currentPath][currentMethod].parameters || [];
-                    let bodySchema = parameters.filter(function (parameter) { return parameter.in === 'body' });
+
+                    let bodySchema = middlewareOptions.expectFormFieldsInBody
+                        ? parameters.filter(function (parameter) { return (parameter.in === 'body' || (parameter.in === 'formData' && parameter.type !== 'file')) })
+                        : parameters.filter(function (parameter) { return parameter.in === 'body' });
+
                     if (makeOptionalAttributesNullable) {
                         schemaPreprocessor.makeOptionalAttributesNullable(bodySchema);
                     }
                     if (bodySchema.length > 0) {
-                        schemas[parsedPath][currentMethod].body = buildBodyValidation(bodySchema[0].schema, dereferenced.definitions, swaggers[1], currentPath, currentMethod, parsedPath);
+                        const validatedBodySchema = _getValidatedBodySchema(bodySchema);
+                        schemas[parsedPath][currentMethod].body = buildBodyValidation(validatedBodySchema, dereferenced.definitions, swaggers[1], currentPath, currentMethod, parsedPath);
                     }
 
                     let localParameters = parameters.filter(function (parameter) {
                         return parameter.in !== 'body';
                     }).concat(pathParameters);
-
-                    if (bodySchema.length > 0) {
-                        schemas[parsedPath][currentMethod].body = buildBodyValidation(bodySchema[0].schema, dereferenced.definitions, swaggers[1], currentPath, currentMethod, parsedPath);
-                    }
 
                     if (localParameters.length > 0 || middlewareOptions.contentTypeValidation) {
                         schemas[parsedPath][currentMethod].parameters = buildParametersValidation(localParameters,
@@ -64,6 +66,31 @@ function init(swaggerPath, options) {
         .catch(function (error) {
             return Promise.reject(error);
         });
+}
+
+function _getValidatedBodySchema(bodySchema) {
+    let validatedBodySchema;
+    if (bodySchema[0].in === 'body') {
+        // if we are processing schema for a simple JSON payload, no additional processing needed
+        validatedBodySchema = bodySchema[0].schema;
+    } else if (bodySchema[0].in === 'formData') {
+        // if we are processing multipart form, assemble body schema from form field schemas
+        validatedBodySchema = {
+            required: [],
+            properties: {}
+        };
+        bodySchema.forEach((formField) => {
+            if (formField.type !== 'file') {
+                validatedBodySchema.properties[formField.name] = {
+                    type: formField.type
+                };
+                if (formField.required) {
+                    validatedBodySchema.required.push(formField.name);
+                }
+            }
+        });
+    }
+    return validatedBodySchema;
 }
 
 /**
@@ -90,7 +117,7 @@ function validate(req, res, next) {
                 firstError: middlewareOptions.firstError });
         return next(error);
     });
-};
+}
 
 function _validateBody(body, path, method) {
     return new Promise(function (resolve, reject) {
@@ -209,7 +236,7 @@ function buildParametersValidation(parameters, contentTypes) {
                 additionalProperties: false
             },
             files: {
-                title: 'HTTP form',
+                title: 'HTTP form files',
                 files: {
                     required: [],
                     optional: []
@@ -222,7 +249,7 @@ function buildParametersValidation(parameters, contentTypes) {
         var data = Object.assign({}, parameter);
 
         const required = parameter.required;
-        const source = typeNameConversion[parameter.in] || parameter.in;
+        const source = sourceResolver.resolveParameterSource(parameter);
         const key = parameter.in === 'header' ? parameter.name.toLowerCase() : parameter.name;
 
         var destination = ajvParametersSchema.properties[source];
@@ -233,7 +260,7 @@ function buildParametersValidation(parameters, contentTypes) {
 
         if (data.type === 'file') {
             required ? destination.files.required.push(key) : destination.files.optional.push(key);
-        } else {
+        } else if (source !== 'fields') {
             if (required) {
                 destination.required = destination.required || [];
                 destination.required.push(key);
@@ -251,9 +278,4 @@ module.exports = {
     init: init,
     validate: validate,
     InputValidationError: InputValidationError
-};
-
-var typeNameConversion = {
-    header: 'headers',
-    formData: 'files'
 };
