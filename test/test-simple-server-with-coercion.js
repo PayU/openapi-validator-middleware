@@ -6,7 +6,8 @@ var inputValidation = require('../src/middleware');
 
 module.exports = inputValidation.init('test/pet-store-swagger.yaml', {
     ajvConfigBody: {
-        coerceTypes: true
+        coerceTypes: true,
+        useDefaults: true
     },
     makeOptionalAttributesNullable: true
 })
