@@ -7,7 +7,9 @@ var SwaggerParser = require('swagger-parser'),
     contentKeyword = require('./customKeywords/contentTypeValidation'),
     InputValidationError = require('./inputValidationError'),
     schemaPreprocessor = require('./utils/schema-preprocessor'),
-    sourceResolver = require('./utils/sourceResolver');
+    sourceResolver = require('./utils/sourceResolver'),
+    {Node} = require('./tree'),
+    {cloneDeep, findKey} = require('lodash');
 
 var schemas = {};
 var middlewareOptions;
@@ -37,19 +39,21 @@ function init(swaggerPath, options) {
             Object.keys(dereferenced.paths[currentPath]).filter(function (parameter) { return parameter !== 'parameters' })
                 .forEach(function (currentMethod) {
                     schemas[parsedPath][currentMethod.toLowerCase()] = {};
-
+                    const isOpenApi3 = dereferenced.openapi === '3.0.0';
                     const parameters = dereferenced.paths[currentPath][currentMethod].parameters || [];
-
-                    let bodySchema = middlewareOptions.expectFormFieldsInBody
-                        ? parameters.filter(function (parameter) { return (parameter.in === 'body' || (parameter.in === 'formData' && parameter.type !== 'file')) })
-                        : parameters.filter(function (parameter) { return parameter.in === 'body' });
-
-                    if (makeOptionalAttributesNullable) {
-                        schemaPreprocessor.makeOptionalAttributesNullable(bodySchema);
-                    }
-                    if (bodySchema.length > 0) {
-                        const validatedBodySchema = _getValidatedBodySchema(bodySchema);
-                        schemas[parsedPath][currentMethod].body = buildBodyValidation(validatedBodySchema, dereferenced.definitions, swaggers[1], currentPath, currentMethod, parsedPath);
+                    if (isOpenApi3){
+                        schemas[parsedPath][currentMethod].body = buildV3BodyValidation(dereferenced, swaggers[1], currentPath, currentMethod);
+                    } else {
+                        let bodySchema = middlewareOptions.expectFormFieldsInBody
+                            ? parameters.filter(function (parameter) { return (parameter.in === 'body' || (parameter.in === 'formData' && parameter.type !== 'file')) })
+                            : parameters.filter(function (parameter) { return parameter.in === 'body' });
+                        if (makeOptionalAttributesNullable) {
+                            schemaPreprocessor.makeOptionalAttributesNullable(bodySchema);
+                        }
+                        if (bodySchema.length > 0) {
+                            const validatedBodySchema = _getValidatedBodySchema(bodySchema);
+                            schemas[parsedPath][currentMethod].body = buildBodyValidation(validatedBodySchema, dereferenced.definitions, swaggers[1], currentPath, currentMethod, parsedPath);
+                        }
                     }
 
                     let localParameters = parameters.filter(function (parameter) {
@@ -169,6 +173,79 @@ function buildBodyValidation(schema, swaggerDefinitions, originalSwagger, curren
     } else {
         return new Validators.SimpleValidator(ajv.compile(schema));
     }
+}
+function buildV3BodyValidation(dereferenced, originalSwagger, currentPath, currentMethod) {
+    const bodySchemaV3 = dereferenced.paths[currentPath][currentMethod].requestBody.content['application/json'].schema;
+    const defaultAjvOptions = {
+        allErrors: true
+    };
+    const options = Object.assign({}, defaultAjvOptions, ajvConfigBody);
+    let ajv = new Ajv(options);
+
+    addCustomKeyword(ajv, middlewareOptions.formats);
+
+    if (bodySchemaV3.discriminator) {
+        return buildV3Inheritance(dereferenced, originalSwagger, currentPath, currentMethod, ajv);
+    } else {
+        return new Validators.SimpleValidator(ajv.compile(bodySchemaV3));
+    }
+}
+
+function buildV3Inheritance(dereferencedDefinitions, swagger, currentPath, currentMethod, ajv) {
+    const bodySchema = swagger.paths[currentPath][currentMethod].requestBody.content['application/json'];
+    const schemas = swagger.components.schemas;
+    const dereferencedSchemas = dereferencedDefinitions.components.schemas;
+    const rootKey = bodySchema.schema['$ref'].split('/components/schemas/')[1];
+    const tree = new Node();
+    function getKeyFromRef(ref) {
+        return ref.split('/components/schemas/')[1];
+    }
+
+    function recursiveDiscriminatorBuilder(ancestor, option, refValue, propertiesAcc = {required: [], properties: {}}) {
+        // assume first time is discriminator.
+
+        const discriminator = dereferencedSchemas[refValue].discriminator,
+            currentSchema = schemas[refValue],
+            currentDereferencedSchema = dereferencedSchemas[refValue];
+
+        if (!discriminator){
+            // need to stop and just add validator on ancesstor;
+            const newSchema = cloneDeep(currentDereferencedSchema);
+            newSchema.required.push(...(propertiesAcc.required || []));
+            newSchema.properties = Object.assign(newSchema.properties, propertiesAcc.properties);
+            ancestor.getValue().validators[option] = ajv.compile(newSchema); // think about key
+            return;
+        }
+        propertiesAcc = cloneDeep(propertiesAcc);
+        propertiesAcc.required.push(...(currentDereferencedSchema.required || []));
+        propertiesAcc.properties = Object.assign(propertiesAcc.properties, currentDereferencedSchema.properties);
+
+        const discriminatorObject = {validators: {}};
+        discriminatorObject.discriminator = discriminator.propertyName;
+
+        const currentDiscriminatorNode = new Node(discriminatorObject);
+        if (!ancestor.getValue()){
+            ancestor.setValue(currentDiscriminatorNode);
+        } else {
+            ancestor.addChild(currentDiscriminatorNode, option);
+        }
+
+        if (!currentSchema.oneOf){
+            throw new Error('oneOf must be part of discriminator');
+        }
+
+        const options = currentSchema.oneOf.map((refObject) => {
+            let option = findKey(currentSchema.discriminator.mapping, (key) => (key === refObject['$ref']));
+            const ref = getKeyFromRef(refObject['$ref']);
+            return {option: option || ref, ref};
+        });
+        discriminatorObject.allowedValues = options.map((option) => option.option);
+        options.forEach(function (optionObject) {
+            recursiveDiscriminatorBuilder(currentDiscriminatorNode, optionObject.option, optionObject.ref, propertiesAcc);
+        });
+    }
+    recursiveDiscriminatorBuilder(tree, rootKey, rootKey);
+    return new Validators.DiscriminatorValidator(tree);
 }
 
 function buildInheritance(discriminator, dereferencedDefinitions, swagger, currentPath, currentMethod, parsedPath, ajv) {

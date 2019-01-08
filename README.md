@@ -121,6 +121,11 @@ swaggerValidator.init('test/unit-tests/input-validation/pet-store-swagger.yaml')
 - Objects - it is important to set any objects with the property `type: object` inside your swagger file, although it isn't a must in the Swagger (OpenAPI) spec in order to validate it accurately with [ajv](https://www.npmjs.com/package/ajv) it must be marked as `object`
 - multipart/form-data (files) supports is based on [`express/multer`](https://github.com/expressjs/multer)
 
+## Open api 3 - known issues
+- supporting inheritance with discriminator , only if the ancestor object is the discriminator.
+- The discriminator supporting in inheritance chain, stops when get to child with no discriminator,
+so child with no discriminator cant point to other child with discriminator.
+
 ## Running Tests
 Using mocha, istanbul and mochawesome
 ```bash
