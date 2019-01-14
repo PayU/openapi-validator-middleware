@@ -15,6 +15,7 @@ var schemas = {};
 var middlewareOptions;
 var ajvConfigBody;
 var ajvConfigParams;
+var framework;
 
 /**
  * Initialize the input validation middleware
@@ -25,6 +26,7 @@ function init(swaggerPath, options) {
     middlewareOptions = options || {};
     ajvConfigBody = middlewareOptions.ajvConfigBody || {};
     ajvConfigParams = middlewareOptions.ajvConfigParams || {};
+    framework = middlewareOptions.framework || 'express';
     const makeOptionalAttributesNullable = middlewareOptions.makeOptionalAttributesNullable || false;
 
     return Promise.all([
@@ -104,23 +106,77 @@ function _getValidatedBodySchema(bodySchema) {
  * @param {any} next
  * @returns In case of an error will call `next` with `InputValidationError`
  */
-function validate(req, res, next) {
-    let path = extractPath(req);
+async function validate(...args) {
+    switch (framework) {
+    case ('koa'): {
+        await _validateKoaRequest(...args);
+        break;
+    }
+    default:
+        await _validateExpressRequest(...args);
+        break;
+    }
+}
 
+async function _validateKoaRequest(ctx, next) {
+    let requestOptions, errors;
+    requestOptions = _getKoaParameters(ctx, next);
+    errors = await _validateRequest(requestOptions);
+    if (errors) {
+        throw errors;
+    }
+    next();
+}
+
+async function _validateExpressRequest(req, res, next) {
+    let requestOptions, errors;
+    requestOptions = _getExpressParameters(req);
+    errors = await _validateRequest(requestOptions);
+    next(errors);
+}
+
+function _validateRequest(requestOptions) {
     return Promise.all([
-        _validateParams(req.headers, req.params, req.query, req.files, path, req.method.toLowerCase()).catch(e => e),
-        _validateBody(req.body, path, req.method.toLowerCase()).catch(e => e)
+        _validateParams(requestOptions.headers, requestOptions.params, requestOptions.query, requestOptions.files, requestOptions.path, requestOptions.method.toLowerCase()).catch(e => e),
+        _validateBody(requestOptions.body, requestOptions.path, requestOptions.method.toLowerCase()).catch(e => e)
     ]).then(function (errors) {
         if (errors[0] || errors[1]) {
             return errors[0] && errors[1] ? Promise.reject(errors[0].concat(errors[1])) : errors[0] ? Promise.reject(errors[0]) : Promise.reject(errors[1]);
         }
-        return next();
     }).catch(function (errors) {
-        const error = new InputValidationError(errors, path, req.method.toLowerCase(),
+        const error = new InputValidationError(errors, requestOptions.path, requestOptions.method.toLowerCase(),
             { beautifyErrors: middlewareOptions.beautifyErrors,
                 firstError: middlewareOptions.firstError });
-        return next(error);
+        return Promise.resolve(error);
     });
+}
+
+function _getExpressParameters(req) {
+    let requestOptions = {};
+    let path = req.baseUrl.concat(req.route.path);
+    requestOptions.path = path.endsWith('/') ? path.substring(0, path.length - 1) : path;
+    requestOptions.headers = req.headers;
+    requestOptions.params = req.params;
+    requestOptions.query = req.query;
+    requestOptions.files = req.files;
+    requestOptions.method = req.method;
+    requestOptions.body = req.body;
+
+    return requestOptions;
+}
+
+function _getKoaParameters(ctx) {
+    let requestOptions = {};
+    let path = ctx._matchedRoute;
+    requestOptions.path = path.endsWith('/') ? path.substring(0, path.length - 1) : path;
+    requestOptions.headers = ctx.request.req.headers;
+    requestOptions.params = ctx.params;
+    requestOptions.query = ctx.query;
+    requestOptions.files = ctx.req.files;
+    requestOptions.method = ctx.req.method;
+    requestOptions.body = ctx.req.body || ctx.request.body;
+
+    return requestOptions;
 }
 
 function _validateBody(body, path, method) {
@@ -154,8 +210,18 @@ function addCustomKeyword(ajv, formats) {
 }
 
 function extractPath(req) {
-    let path = req.baseUrl.concat(req.route.path);
-    return path.endsWith('/') ? path.substring(0, path.length - 1) : path;
+    switch (framework) {
+    case ('koa'): {
+        let path = req._matchedRoute;
+        return path.endsWith('/') ? path.substring(0, path.length - 1) : path;
+    }
+    case ('express'): {
+        let path = req.baseUrl.concat(req.route.path);
+        return path.endsWith('/') ? path.substring(0, path.length - 1) : path;
+    }
+    default:
+        break;
+    }
 }
 
 function buildBodyValidation(schema, swaggerDefinitions, originalSwagger, currentPath, currentMethod, parsedPath) {
