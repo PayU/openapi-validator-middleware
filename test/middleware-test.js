@@ -386,6 +386,27 @@ describe('input-validation middleware tests', function () {
                 app = testServer;
             });
         });
+        it('uses default value for an unspecified parameter', function (done) {
+            request(app)
+                .put('/pets')
+                .send([{
+                    name: 1,
+                    tag: 'tag',
+                    test: {
+                        field1: 'enum1'
+                    }
+                }])
+                .expect(200)
+                .end(function(err, res) {
+                    if (err) {
+                        return done(err);
+                    }
+                    const pet = res.body.receivedParams[0];
+                    expect(pet.awards).to.deep.equal([]);
+                    expect(pet.colour).to.equal('unknown');
+                    done();
+                });
+        });
         it('request with wrong parameter type - should pass validation due to coercion', function (done) {
             request(app)
                 .put('/pets')

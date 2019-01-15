@@ -101,6 +101,12 @@ paths:
                     type: integer
                   tag:
                     type: string
+                  awards:
+                    type: array
+                    default: []
+                  colour:
+                    type: string
+                    default: unknown
                   test:
                     type: object
                     required:
