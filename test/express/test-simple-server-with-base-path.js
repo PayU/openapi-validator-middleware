@@ -2,8 +2,8 @@
 
 var express = require('express');
 var bodyParser = require('body-parser');
-var inputValidation = require('../src/middleware');
-var router = require('./router');
+var inputValidation = require('../../src/middleware');
+var router = require('../router');
 
 module.exports = inputValidation.init('test/pet-store-swagger-with-base-path.yaml', { contentTypeValidation: true })
     .then(function () {
