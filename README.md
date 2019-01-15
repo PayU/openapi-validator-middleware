@@ -3,12 +3,13 @@
 
 [![NPM](https://nodei.co/npm-dl/express-ajv-swagger-validation.png?height=3)](https://nodei.co/npm/express-ajv-swagger-validation/)
 
+[![Join the chat at https://gitter.im/Zooz/express-ajv-swagger-validation](https://badges.gitter.im/Zooz/express-ajv-swagger-validation.svg)](https://gitter.im/Zooz/express-ajv-swagger-validation?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![NPM Version][npm-image]][npm-url]
 [![NPM Downloads][downloads-image]][downloads-url]
 [![Build Status][travis-image]][travis-url]
 [![Test Coverage][coveralls-image]][coveralls-url]
-[![NSP Status](https://nodesecurity.io/orgs/zooz-test/projects/49d2a5f4-9408-4d08-81d5-0bf23eda19ec/badge)](https://nodesecurity.io/orgs/zooz-test/projects/012e3ff9-f6a8-4eb2-86ef-4173af622196)
-[![MIT License][license-image]][license-url]
+[![NSP Status](https://nodesecurity.io/orgs/zooz/projects/3244db73-7215-4526-8cb0-b5b1e640fc6e/badge)](https://nodesecurity.io/orgs/zooz/projects/3244db73-7215-4526-8cb0-b5b1e640fc6e)
+[![Apache 2.0 License][license-image]][license-url]
 
 This package is used to perform input validation to express app using a [Swagger (Open API)](https://swagger.io/specification/) definition and [ajv](https://www.npmjs.com/package/ajv)
 
@@ -73,6 +74,11 @@ Options currently supports:
     You can see more examples in the tests
 
 - `firstError` - Boolean that indicates if to return only the first error.
+- `makeOptionalAttributesNullable` - Boolean that forces preprocessing of Swagger schema to include 'null' as possible type for all non-required properties. Main use-case for this is to ensure correct handling of null values when Ajv type coercion is enabled
+- `ajvConfigBody` - Object that will be passed as config to new Ajv instance which will be used for validating request body. Can be useful to e. g. enable type coercion (to automatically convert strings to numbers etc). See Ajv documentation for supported values.
+- `ajvConfigParams` - Object that will be passed as config to new Ajv instance which will be used for validating request body. See Ajv documentation for supported values.
+- `contentTypeValidation` - Boolean that indicates if to perform content type validation in case `consume` field is specified and the request body is not empty.
+- `expectFormFieldsInBody` - Boolean that indicates whether form fields of non-file type that are specified in the schema should be validated against request body (e. g. Multer is copying text form fields to body)
 
 ```js
 formats: [
@@ -113,6 +119,7 @@ swaggerValidator.init('test/unit-tests/input-validation/pet-store-swagger.yaml')
 ## Important Notes
 
 - Objects - it is important to set any objects with the property `type: object` inside your swagger file, although it isn't a must in the Swagger (OpenAPI) spec in order to validate it accurately with [ajv](https://www.npmjs.com/package/ajv) it must be marked as `object`
+- multipart/form-data (files) supports is based on [`express/multer`](https://github.com/expressjs/multer)
 
 ## Running Tests
 Using mocha, istanbul and mochawesome
@@ -122,11 +129,11 @@ npm test
 
 [npm-image]: https://img.shields.io/npm/v/express-ajv-swagger-validation.svg?style=flat
 [npm-url]: https://npmjs.org/package/express-ajv-swagger-validation
-[travis-image]: https://travis-ci.org/idanto/express-ajv-swagger-validation.svg?branch=master
-[travis-url]: https://travis-ci.org/idanto/express-ajv-swagger-validation
-[coveralls-image]: https://coveralls.io/repos/github/idanto/express-ajv-swagger-validation/badge.svg?branch=master
-[coveralls-url]: https://coveralls.io/github/idanto/express-ajv-swagger-validation?branch=master
+[travis-image]: https://travis-ci.org/Zooz/express-ajv-swagger-validation.svg?branch=master
+[travis-url]: https://travis-ci.org/Zooz/express-ajv-swagger-validation
+[coveralls-image]: https://coveralls.io/repos/github/Zooz/express-ajv-swagger-validation/badge.svg?branch=master
+[coveralls-url]: https://coveralls.io/github/Zooz/express-ajv-swagger-validation?branch=master
 [downloads-image]: http://img.shields.io/npm/dm/express-ajv-swagger-validation.svg?style=flat
 [downloads-url]: https://npmjs.org/package/express-ajv-swagger-validation
-[license-image]: http://img.shields.io/badge/license-MIT-blue.svg?style=flat
+[license-image]: https://img.shields.io/badge/license-Apache_2.0-green.svg?style=flat
 [license-url]: LICENSE

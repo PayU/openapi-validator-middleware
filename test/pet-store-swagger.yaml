@@ -7,10 +7,6 @@ info:
 host: petstore.swagger.io
 schemes:
   - http
-consumes:
-  - application/json
-produces:
-  - application/json
 paths:
   /pets:
     get:
@@ -64,6 +60,8 @@ paths:
             properties:
               name:
                 type: string
+              age:
+                type: integer
               tag:
                 type: string
               test:
@@ -86,20 +84,21 @@ paths:
       operationId: updatePats
       tags:
         - pets
+      consumes:
+        - application/json
+        - form-data
       parameters:
         - name: body
           in: body
-          required: true
           schema:
               type: array
               items:
                 type: object
-                required:
-                  - name
-                  - test
                 properties:
                   name:
                     type: string
+                  age:
+                    type: integer
                   tag:
                     type: string
                   test:
@@ -110,6 +109,46 @@ paths:
                       field1:
                         type: string
                         enum: ['enum1', 'enum2']
+                      field2:
+                        type: integer
+                      field3:
+                        type:
+                          - integer
+                          - string
+                  test2:
+                    type: object
+                  test3:
+                    type: object
+                    properties:
+                      field1:
+                        type: string
+                        enum: ['enum1', 'enum2']
+                      field2:
+                        type: integer
+      responses:
+        "200":
+          description: Expected response to a valid request
+          schema:
+            $ref: '#/definitions/Pets'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    patch:
+      summary: Info for a specific pet
+      operationId: incrementallyUpdatePet
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - pets
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+              type: object
       responses:
         "200":
           description: Expected response to a valid request
@@ -144,6 +183,43 @@ paths:
           description: unexpected error
           schema:
             $ref: '#/definitions/Error'
+    put:
+      summary: Info for a specific pet
+      operationId: showPetById
+      tags:
+        - pets
+      consumes:
+        - application/json
+      parameters:
+        - $ref: '#/parameters/ApiVersion'
+        - $ref: '#/parameters/ApiRequestId'
+        - name: petId
+          in: path
+          required: true
+          description: The id of the pet to retrieve
+          type: string
+          minLength: 3
+          maxLength: 10
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              age:
+                type: integer
+              tag:
+                type: string
+      responses:
+        "200":
+          description: Expected response to a valid request
+          schema:
+            $ref: '#/definitions/Pets'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
   /heartbeat:
     get:
       summary: Info for current system status
@@ -153,6 +229,24 @@ paths:
           description: Expected response to a valid request
           schema:
             $ref: '#/definitions/StatusReport'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /text:
+    put:
+      consumes:
+        - text/html
+        - text/plain
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: string
+          required: true
+      responses:
+        "200":
+          description: Expected response to a valid request
         default:
           description: unexpected error
           schema:

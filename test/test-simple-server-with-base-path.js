@@ -5,7 +5,7 @@ var bodyParser = require('body-parser');
 var inputValidation = require('../src/middleware');
 var router = require('./router');
 
-module.exports = inputValidation.init('test/pet-store-swagger-with-base-path.yaml')
+module.exports = inputValidation.init('test/pet-store-swagger-with-base-path.yaml', { contentTypeValidation: true })
     .then(function () {
         var app = express();
         app.use(bodyParser.json());
@@ -16,7 +16,12 @@ module.exports = inputValidation.init('test/pet-store-swagger-with-base-path.yam
         app.post('/v1/pets', inputValidation.validate, function (req, res, next) {
             res.json({ result: 'OK' });
         });
-
+        app.get('/v1/capital', inputValidation.validate, function (req, res, next) {
+            res.json({ result: 'OK' });
+        });
+        app.put('/v1/pets', inputValidation.validate, function (req, res, next) {
+            res.json({ result: 'OK' });
+        });
         app.use('/v1', router);
 
         app.use(function (err, req, res, next) {

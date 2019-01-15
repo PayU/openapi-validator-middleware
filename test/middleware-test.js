@@ -20,11 +20,11 @@ describe('input-validation middleware tests', function () {
         it('should resolve without formats', function () {
             let rewire = require('rewire');
             let middleware = rewire('../src/middleware');
-            let addFormats = middleware.__get__('addFormats');
-            let addFormatsSpy = sinon.spy(addFormats);
+            let addCustomKeyword = middleware.__get__('addCustomKeyword');
+            let addCustomKeywordSpy = sinon.spy(addCustomKeyword);
             return middleware.init('test/pet-store-swagger.yaml')
                 .then(function () {
-                    expect(addFormatsSpy).to.have.not.been.called;
+                    expect(addCustomKeywordSpy).to.have.not.been.called;
                 });
         });
     });
@@ -379,6 +379,179 @@ describe('input-validation middleware tests', function () {
                 });
         });
     });
+    describe('Simple server - type coercion enabled', function () {
+        var app;
+        before(function () {
+            return require('./test-simple-server-with-coercion').then(function (testServer) {
+                app = testServer;
+            });
+        });
+        it('request with wrong parameter type - should pass validation due to coercion', function (done) {
+            request(app)
+                .put('/pets')
+                .send([{
+                    name: 1,
+                    tag: 'tag',
+                    test: {
+                        field1: 'enum1'
+                    }
+                }])
+                .expect(200, done);
+        });
+
+        it('request with wrong parameter type - should keep null values as null when payload is array', function (done) {
+            request(app)
+                .put('/pets')
+                .send([{
+                    name: 1,
+                    tag: 'tag',
+                    age: null,
+                    test: {
+                        field1: 'enum1',
+                        field2: null
+                    }
+                }])
+                .expect(200)
+                .end(function(err, res) {
+                    if (err) {
+                        return done(err);
+                    }
+                    const pet = res.body.receivedParams[0];
+                    expect(pet.test.field2).to.be.null;
+                    expect(pet.age).to.be.null;
+                    done();
+                });
+        });
+
+        it('handles request body objects without specified schema correctly', function (done) {
+            request(app)
+                .put('/pets')
+                .send([{
+                    name: 1,
+                    tag: 'tag',
+                    age: null,
+                    test: {
+                        field1: 'enum1'
+                    },
+                    test2: {
+                        arbitraryField: 'dummy',
+                        nullField: null
+                    }
+                }])
+                .expect(200)
+                .end(function(err, res) {
+                    if (err) {
+                        return done(err);
+                    }
+                    const pet = res.body.receivedParams[0];
+                    expect(pet.test2.arbitraryField).to.equal('dummy');
+                    expect(pet.test2.nullField).to.be.null;
+                    done();
+                });
+        });
+
+        it('handles request body without specified schema correctly', function (done) {
+            request(app)
+                .patch('/pets')
+                .send({
+                    name: 1,
+                    tag: 'tag',
+                    age: null,
+                    test: {
+                        field1: 'enum1'
+                    },
+                    test2: {
+                        arbitraryField: 'dummy',
+                        nullField: null
+                    }
+                })
+                .expect(200)
+                .end(function(err, res) {
+                    if (err) {
+                        return done(err);
+                    }
+                    const pet = res.body.receivedParams;
+                    expect(pet.test.field1).to.equal('enum1');
+                    expect(pet.test2.arbitraryField).to.equal('dummy');
+                    expect(pet.test2.nullField).to.be.null;
+                    done();
+                });
+        });
+
+        it('request with wrong parameter type - should keep null values as null when payload is object', function (done) {
+            request(app)
+                .post('/pets')
+                .send({
+                    name: 1,
+                    tag: 'tag',
+                    age: null,
+                    test: {
+                        field1: 'enum1',
+                        field2: null
+                    }
+                })
+                .expect(200)
+                .end(function(err, res) {
+                    if (err) {
+                        return done(err);
+                    }
+                    const pet = res.body.receivedParams;
+                    expect(pet.test.field2).to.be.null;
+                    expect(pet.age).to.be.null;
+                    done();
+                });
+        });
+
+        it('request with wrong parameter type and no required fields defined - should keep null values as null when payload is object', function (done) {
+            request(app)
+                .post('/pets')
+                .send({
+                    name: 1,
+                    tag: 'tag',
+                    age: null,
+                    test: {
+                        field1: 'enum1'
+                    },
+                    test3: {
+                        field1: 'enum1',
+                        field2: null
+                    }
+                })
+                .expect(200)
+                .end(function(err, res) {
+                    if (err) {
+                        return done(err);
+                    }
+                    const pet = res.body.receivedParams;
+                    expect(pet.test3.field1).to.equal('enum1');
+                    expect(pet.test3.field2).to.be.null;
+                    expect(pet.age).to.be.null;
+                    done();
+                });
+        });
+
+        it('request with wrong parameter type - should keep null values as null when (invalid) swagger with multiple types is provided', function (done) {
+            request(app)
+                .put('/pets')
+                .send([{
+                    name: 1,
+                    tag: 'tag',
+                    test: {
+                        field1: 'enum1',
+                        field3: null
+                    }
+                }])
+                .expect(200)
+                .end(function(err, res) {
+                    if (err) {
+                        return done(err);
+                    }
+                    const pet = res.body.receivedParams[0];
+                    expect(pet.test.field3).to.be.null;
+                    done();
+                });
+        });
+    });
     describe('Simple server - with base path', function () {
         var app;
         before(function () {
@@ -392,6 +565,49 @@ describe('input-validation middleware tests', function () {
                 .set('api-version', '1.0')
                 .set('request-id', '123456')
                 .query({ page: 0 })
+                .expect(200, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.result).to.equal('OK');
+                    done();
+                });
+        });
+        it('bad request - wrong content-type (should be application/json)', function (done) {
+            request(app)
+                .put('/v1/pets')
+                .set('content-type', 'application/x-www-form-urlencoded')
+                .send([{
+                    name: 'name',
+                    tag: 'tag',
+                    test: {
+                        field1: 'enum1'
+                    }
+                }])
+                .expect(400, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.more_info).to.includes('content-type must be one of application/json');
+                    done();
+                });
+        });
+        it('headers are in capital letters - should pass validation', function (done) {
+            request(app)
+                .get('/v1/capital')
+                .set('Capital-Letters', '1.0')
+                .expect(200, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.result).to.equal('OK');
+                    done();
+                });
+        });
+        it('headers are in lowercase letters - should pass validation', function (done) {
+            request(app)
+                .get('/v1/capital')
+                .set('capital-letters', '1.0')
                 .expect(200, function (err, res) {
                     if (err) {
                         throw err;
@@ -1410,6 +1626,71 @@ describe('input-validation middleware tests', function () {
                     done();
                 });
         });
+        it('bad request - wrong content-type (should be application/json)', function (done) {
+            request(app)
+                .put('/pets')
+                .set('content-type', 'application/x-www-form-urlencoded')
+                .send([{
+                    name: 'name',
+                    tag: 'tag',
+                    test: {
+                        field1: 'enum1'
+                    }
+                }])
+                .expect(400, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.more_info).to.be.a('string');
+                    expect(res.body.more_info).to.includes('headers content-type must be one of application/json,form-data');
+                    done();
+                });
+        });
+        it('valid content-type when multiple content-types defind - should pass validation', function (done) {
+            request(app)
+                .put('/text')
+                .set('content-type', 'text/plain')
+                .send('text')
+                .expect(200, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.result).to.equal('OK');
+                    done();
+                });
+        });
+        it('more detailed content-type - should pass validation', function (done) {
+            request(app)
+                .put('/pets')
+                .set('content-type', 'application/json; charset=utf-8')
+                .send([{
+                    name: 'name',
+                    tag: 'tag',
+                    test: {
+                        field1: 'enum1'
+                    }
+                }])
+                .expect(200, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.result).to.equal('OK');
+                    done();
+                });
+        });
+        it('valid empty request - should pass validation', function (done) {
+            request(app)
+                .put('/pets/1234')
+                .set('request-id', '1234')
+                .set('api-version', '1.0')
+                .expect(200, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.result).to.equal('OK');
+                    done();
+                });
+        });
     });
     describe('Server with options - Only beautify errors', function () {
         var app;
@@ -2300,6 +2581,109 @@ describe('input-validation middleware tests', function () {
                         throw err;
                     }
                     expect(res.body.more_info).to.includes('body should have required property \'name\'');
+                    done();
+                });
+        });
+    });
+    describe('FormData', function () {
+        var app;
+        before(function () {
+            return require('./test-server-formdata').then(function (testServer) {
+                app = testServer;
+            });
+        });
+        it('only required files exists should pass', function (done) {
+            request(app)
+                .post('/pets/import')
+                .set('api-version', '1.0')
+                .attach('sourceFile', 'LICENSE')
+                .expect(200, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.result).to.equal('OK');
+                    done();
+                });
+        });
+        it('required and optional files exists should pass', function (done) {
+            request(app)
+                .post('/pets/import')
+                .set('api-version', '1.0')
+                .attach('sourceFile', 'LICENSE')
+                .attach('optionalFile', 'LICENSE')
+                .expect(200, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.result).to.equal('OK');
+                    done();
+                });
+        });
+        it('missing required file should fail', function (done) {
+            request(app)
+                .post('/pets/import')
+                .set('api-version', '1.0')
+                .attach('sourceFile1', 'LICENSE')
+                .expect(400, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.more_info).to.includes('body/files Missing required files: sourceFile');
+                    done();
+                });
+        });
+        it('extra files exists but not allowed should fail', function (done) {
+            request(app)
+                .post('/pets/import')
+                .set('api-version', '1.0')
+                .attach('sourceFile1', 'LICENSE')
+                .attach('sourceFile', 'LICENSE')
+                .expect(400, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.more_info).to.includes('body/files Extra files are not allowed. Not allowed files: sourceFile1');
+                    done();
+                });
+        });
+        it('supports string formData', function (done) {
+            request(app)
+                .post('/login')
+                .set('api-version', '1.0')
+                .field('username', 'user')
+                .field('password', 'pass')
+                .expect(200, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.result).to.equal('OK');
+                    done();
+                });
+        });
+        it('supports mix of files and fields', function (done) {
+            request(app)
+                .post('/kennels/import')
+                .set('api-version', '1.0')
+                .field('name', 'kennel 1 ')
+                .attach('blueprintFile', 'LICENSE')
+                .expect(200, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.result).to.equal('OK');
+                    done();
+                });
+        });
+        it('validates string formData', function (done) {
+            request(app)
+                .post('/login')
+                .set('api-version', '1.0')
+                .field('username', 'user')
+                .expect(400, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.more_info).to.includes('body should have required property \'password\'');
                     done();
                 });
         });
