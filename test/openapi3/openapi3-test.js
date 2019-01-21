@@ -283,6 +283,69 @@ describe('input-validation middleware tests', function () {
                     });
             });
         });
+        describe.skip('pet type is not on the root, only on child', function () {
+            //TODO - start and finish
+            it('missing discriminator field on the root', function (done) {
+                request(app)
+                    .post('/pet-discriminator-on-child')
+                    .set('public-key', '1.0')
+                    .send({
+                        pet: {
+
+                        }
+                    })
+                    .expect(400, function (err, res) {
+                        if (err) {
+                            throw err;
+                        }
+                        expect(res.body).to.eql({
+                            'more_info': '["body/type should be equal to one of the allowed values [mapped_dog,mapped_cat]"]'
+                        });
+                        done();
+                    });
+            });
+
+            it('when discriminator type is mapped_dog and model small_dog and missing root field name and specific dog field', function (done) {
+                request(app)
+                    .post('/pet-discriminator-mapping')
+                    .set('public-key', '1.0')
+                    .send({
+                        type: 'mapped_dog',
+                        model: 'small_dog'
+                    })
+                    .expect(400, function (err, res) {
+                        if (err) {
+                            throw err;
+                        }
+                        expect(res.body).to.eql({
+                            'more_info': "[\"body should have required property 'max_length'\",\"body should have required property 'name'\",\"body should have required property 'dog_age'\"]"
+                        });
+                        done();
+                    });
+            });
+
+            it('when valid discriminator type is mapped_dog and model small_dog', function (done) {
+                request(app)
+                    .post('/pet-discriminator-mapping')
+                    .set('public-key', '1.0')
+                    .send({
+                        name: 'sesna',
+                        max_length: 'max_length',
+                        dog_age: '200',
+                        type: 'mapped_dog',
+                        model: 'small_dog'
+                    })
+                    .expect(200, function (err, res) {
+                        if (err) {
+                            throw err;
+                        }
+                        expect(res.body).to.eql({
+                            'result': 'OK'
+                        });
+                        done();
+                    });
+            });
+        });
     });
     describe('firstError=true', function () {
         before(function () {

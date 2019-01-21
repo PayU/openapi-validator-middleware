@@ -192,6 +192,7 @@ function buildV3BodyValidation(dereferenced, originalSwagger, currentPath, curre
 }
 
 function buildV3Inheritance(dereferencedDefinitions, swagger, currentPath, currentMethod, ajv) {
+    const RECURSIVE__MAX_DEPTH = 20;
     const bodySchema = swagger.paths[currentPath][currentMethod].requestBody.content['application/json'];
     const schemas = swagger.components.schemas;
     const dereferencedSchemas = dereferencedDefinitions.components.schemas;
@@ -201,9 +202,11 @@ function buildV3Inheritance(dereferencedDefinitions, swagger, currentPath, curre
         return ref.split('/components/schemas/')[1];
     }
 
-    function recursiveDiscriminatorBuilder(ancestor, option, refValue, propertiesAcc = {required: [], properties: {}}) {
+    function recursiveDiscriminatorBuilder(ancestor, option, refValue, propertiesAcc = {required: [], properties: {}}, depth = RECURSIVE__MAX_DEPTH) {
         // assume first time is discriminator.
-
+        if (depth === 0){
+            throw new Error(`swagger schema exceed maximum supported depth of ${RECURSIVE__MAX_DEPTH} for swagger definitions inheritance`);
+        }
         const discriminator = dereferencedSchemas[refValue].discriminator,
             currentSchema = schemas[refValue],
             currentDereferencedSchema = dereferencedSchemas[refValue];
@@ -241,7 +244,7 @@ function buildV3Inheritance(dereferencedDefinitions, swagger, currentPath, curre
         });
         discriminatorObject.allowedValues = options.map((option) => option.option);
         options.forEach(function (optionObject) {
-            recursiveDiscriminatorBuilder(currentDiscriminatorNode, optionObject.option, optionObject.ref, propertiesAcc);
+            recursiveDiscriminatorBuilder(currentDiscriminatorNode, optionObject.option, optionObject.ref, propertiesAcc, depth - 1);
         });
     }
     recursiveDiscriminatorBuilder(tree, rootKey, rootKey);

@@ -275,6 +275,69 @@ paths:
               $ref: '#/components/schemas/pet-discriminator-mapping'
         description: Create pet
         required: true
+  /pet-discriminator-on-child:
+    post:
+      summary: Create a multiple pet
+      security:
+        - public-key: []
+      description: >-
+      tags:
+        - pets
+      operationId: create-a-token
+      parameters:
+        - $ref: '#/components/parameters/public-key'
+      responses:
+        '201':
+          description: pet created
+          headers:
+            x-zooz-request-id:
+              description: request id
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/pet'
+        '400':
+          description: Bad request
+          headers:
+            x-zooz-request-id:
+              description: request id
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_model'
+        '401':
+          description: Unauthorize
+          headers:
+            x-zooz-request-id:
+              description: request id
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_model'
+        '500':
+          description: Internal error
+          headers:
+            x-zooz-request-id:
+              description: request id
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_model'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/pet-discriminator-on-child'
+        description: Create pet
+        required: true
 components:
   parameters:
     public-key:
@@ -305,6 +368,14 @@ components:
       oneOf:
         - $ref: '#/components/schemas/dog_object'
         - $ref: '#/components/schemas/cat_object'
+    pet-discriminator-on-child:
+      description: pet
+      type: object
+      required:
+        - pet
+      properties:
+        pet:
+          $ref: '#/components/schemas/pet-discriminator'
     pet-discriminator:
       description: pet
       type: object

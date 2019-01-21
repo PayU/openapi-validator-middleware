@@ -15,25 +15,12 @@ var inputValidationOptions = {
 };
 
 module.exports = function (options) {
-    return inputValidation.init(`${__dirname}/pets.yaml`, options || inputValidationOptions)
+    return inputValidation.init(`${__dirname}/pets-unlimited-recursive.yaml`, options || inputValidationOptions)
         .then(function () {
             var app = express();
             app.use(bodyParser.json());
 
-            app.post('/pet', inputValidation.validate, function (req, res, next) {
-                res.json({ result: 'OK' });
-            });
-            app.post('/pet-discriminator', inputValidation.validate, function (req, res, next) {
-                res.json({ result: 'OK' });
-            });
-
-            app.post('/pet-discriminator-multiple', inputValidation.validate, function (req, res, next) {
-                res.json({ result: 'OK' });
-            });
-            app.post('/pet-discriminator-mapping', inputValidation.validate, function (req, res, next) {
-                res.json({ result: 'OK' });
-            });
-            app.post('/pet-discriminator-on-child', inputValidation.validate, function (req, res, next) {
+            app.post('/pet-recursive', inputValidation.validate, function (req, res, next) {
                 res.json({ result: 'OK' });
             });
 
