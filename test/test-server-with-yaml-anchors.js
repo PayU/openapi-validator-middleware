@@ -2,15 +2,9 @@
 
 var express = require('express');
 var bodyParser = require('body-parser');
-var inputValidation = require('../../src/middleware');
+var inputValidation = require('../src/middleware');
 
-module.exports = inputValidation.init('test/pet-store-swagger.yaml', {
-    ajvConfigBody: {
-        coerceTypes: true,
-        useDefaults: true
-    },
-    makeOptionalAttributesNullable: true
-})
+module.exports = inputValidation.init('test/pet-store-swagger-with-yaml-anchors.yaml')
     .then(function () {
         var app = express();
         app.use(bodyParser.json());
@@ -18,16 +12,13 @@ module.exports = inputValidation.init('test/pet-store-swagger.yaml', {
             res.json({ result: 'OK' });
         });
         app.post('/pets', inputValidation.validate, function (req, res, next) {
-            res.json({ result: 'OK', receivedParams: req.body });
+            res.json({ result: 'OK' });
         });
         app.get('/pets/:petId', inputValidation.validate, function (req, res, next) {
             res.json({ result: 'OK' });
         });
         app.put('/pets', inputValidation.validate, function (req, res, next) {
-            res.json({ result: 'OK', receivedParams: req.body });
-        });
-        app.patch('/pets', inputValidation.validate, function (req, res, next) {
-            res.json({ result: 'OK', receivedParams: req.body });
+            res.json({ result: 'OK' });
         });
         app.use(function (err, req, res, next) {
             if (err instanceof inputValidation.InputValidationError) {
