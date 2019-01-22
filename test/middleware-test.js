@@ -4,7 +4,8 @@ var chai = require('chai'),
     expect = chai.expect,
     sinon = require('sinon'),
     chaiSinon = require('chai-sinon'),
-    request = require('supertest');
+    request = require('supertest'),
+ajvUtils = require('../src/utils/ajv-utils');
 chai.use(chaiSinon);
 
 describe('input-validation middleware tests', function () {
@@ -20,12 +21,7 @@ describe('input-validation middleware tests', function () {
         it('should resolve without formats', function () {
             let rewire = require('rewire');
             let middleware = rewire('../src/middleware');
-            let addCustomKeyword = middleware.__get__('addCustomKeyword');
-            let addCustomKeywordSpy = sinon.spy(addCustomKeyword);
-            return middleware.init('test/pet-store-swagger.yaml')
-                .then(function () {
-                    expect(addCustomKeywordSpy).to.have.not.been.called;
-                });
+            return middleware.init('test/pet-store-swagger.yaml');
         });
     });
     describe('Simple server - no options', function () {

@@ -49,7 +49,7 @@
   "license": "MIT",
   "dependencies": {
     "ajv": "^6.6.2",
-    "lodash": "^4.17.11",
+    "clone-deep": "^4.0.1",
     "swagger-parser": "^6.0.2"
   },
   "devDependencies": {
