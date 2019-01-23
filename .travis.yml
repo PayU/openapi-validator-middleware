@@ -5,11 +5,11 @@ node_js:
   - "node"
 script: >
   node_version=$(node -v);
-    if  [ ${node_version:1:1} -ne 6 ]; then
-       npm test
-    else
-       npm run node6-test
-    fi
+  if  [ ${node_version:1:1} -ne 6 ]; then
+     npm test
+  else
+     npm run node6-test
+  fi
 after_success: >
   node_version=$(node -v);
   if  [ ${node_version:1:1} -ne 6 ]; then
