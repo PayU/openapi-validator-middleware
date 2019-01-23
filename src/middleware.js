@@ -102,7 +102,7 @@ function _getValidatedBodySchema(bodySchema) {
  * @param {any} next
  * @returns In case of an error will call `next` with `InputValidationError`
  */
-async function validate(...args) {
+function validate(...args) {
     return framework.validate(_validateRequest, ...args);
 }
 

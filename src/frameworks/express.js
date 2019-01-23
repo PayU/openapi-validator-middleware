@@ -12,11 +12,12 @@ function _getParameters(req) {
     return requestOptions;
 }
 
-async function validate(validateRequest, req, res, next) {
-    let requestOptions, errors;
+function validate(validateRequest, req, res, next) {
+    let requestOptions;
     requestOptions = _getParameters(req);
-    errors = await validateRequest(requestOptions);
-    next(errors);
+    validateRequest(requestOptions).then(function(errors) {
+        next(errors);
+    });
 }
 
 module.exports = {
