@@ -24,6 +24,7 @@
   },
   "scripts": {
     "test": "nyc node_modules/mocha/bin/_mocha --recursive ./test/*/*/*-test.js ./test/*/*-test.js ./test/*-test.js",
+    "node6-test": "nyc node_modules/mocha/bin/_mocha --recursive ./test/express/*/*-test.js ./test/express/*-test.js ./test/*-test.js",
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
     "doctoc": "npm install -g doctoc && doctoc README.md"
   },
