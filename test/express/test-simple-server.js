@@ -2,17 +2,9 @@
 
 var express = require('express');
 var bodyParser = require('body-parser');
-var inputValidation = require('../src/middleware');
+var inputValidation = require('../../src/middleware');
 
-var inputValidationOptions = {
-    formats: [
-        { name: 'double', pattern: /\d+(\.\d+)?/ },
-        { name: 'int64', pattern: /^\d{1,18}$/ }
-    ],
-    beautifyErrors: true
-};
-
-module.exports = inputValidation.init('test/pet-store-swagger.yaml', inputValidationOptions)
+module.exports = inputValidation.init('test/pet-store-swagger.yaml')
     .then(function () {
         var app = express();
         app.use(bodyParser.json());
@@ -30,7 +22,7 @@ module.exports = inputValidation.init('test/pet-store-swagger.yaml', inputValida
         });
         app.use(function (err, req, res, next) {
             if (err instanceof inputValidation.InputValidationError) {
-                res.status(400).json({ more_info: err.errors });
+                res.status(400).json({ more_info: JSON.stringify(err.errors) });
             }
         });
 

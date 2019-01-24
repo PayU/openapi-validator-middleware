@@ -2,7 +2,7 @@
 
 var express = require('express');
 var bodyParser = require('body-parser');
-var inputValidation = require('../src/middleware');
+var inputValidation = require('../../src/middleware');
 
 var router = express.Router();
 router.route('/').get(inputValidation.validate, function (req, res, next) {
