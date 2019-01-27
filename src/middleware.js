@@ -3,8 +3,11 @@
 var SwaggerParser = require('swagger-parser'),
     InputValidationError = require('./inputValidationError'),
     schemaPreprocessor = require('./utils/schema-preprocessor'),
-    swagger3 = require('./swagger3'),
-    swagger2 = require('./swagger2');
+    swagger3 = require('./swagger3/open-api3'),
+    swagger2 = require('./swagger2'),
+    ajvUtils = require('./utils/ajv-utils'),
+    Ajv = require('ajv'),
+    sourceResolver = require('./utils/sourceResolver');
 var schemas = {};
 var middlewareOptions;
 var framework;
@@ -34,7 +37,7 @@ function init(swaggerPath, options) {
                     const isOpenApi3 = dereferenced.openapi === '3.0.0';
                     const parameters = dereferenced.paths[currentPath][currentMethod].parameters || [];
                     if (isOpenApi3){
-                        schemas[parsedPath][currentMethod].body = swagger3.buildV3BodyValidation(dereferenced, swaggers[1], currentPath, currentMethod, middlewareOptions);
+                        schemas[parsedPath][currentMethod].body = swagger3.buildBodyValidation(dereferenced, swaggers[1], currentPath, currentMethod, middlewareOptions);
                     } else {
                         let bodySchema = middlewareOptions.expectFormFieldsInBody
                             ? parameters.filter(function (parameter) { return (parameter.in === 'body' || (parameter.in === 'formData' && parameter.type !== 'file')) })
@@ -53,7 +56,7 @@ function init(swaggerPath, options) {
                     }).concat(pathParameters);
 
                     if (localParameters.length > 0 || middlewareOptions.contentTypeValidation) {
-                        schemas[parsedPath][currentMethod].parameters = swagger2.buildParametersValidation(localParameters,
+                        schemas[parsedPath][currentMethod].parameters = buildParametersValidation(localParameters,
                             dereferenced.paths[currentPath][currentMethod].consumes || dereferenced.paths[currentPath].consumes || dereferenced.consumes, middlewareOptions);
                     }
                 });
@@ -107,6 +110,88 @@ function _validateParams(headers, pathParams, query, files, path, method) {
 
         return resolve();
     });
+}
+
+function createContentTypeHeaders(validate, contentTypes) {
+    if (!validate || !contentTypes) return;
+
+    return {
+        types: contentTypes
+    };
+}
+
+function buildParametersValidation(parameters, contentTypes, middlewareOptions) {
+    const defaultAjvOptions = {
+        allErrors: true,
+        coerceTypes: 'array'
+        // unknownFormats: 'ignore'
+    };
+    const options = Object.assign({}, defaultAjvOptions, middlewareOptions.ajvConfigParams);
+    let ajv = new Ajv(options);
+
+    ajvUtils.addCustomKeyword(ajv, middlewareOptions.formats);
+
+    var ajvParametersSchema = {
+        title: 'HTTP parameters',
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+            headers: {
+                title: 'HTTP headers',
+                type: 'object',
+                properties: {},
+                additionalProperties: true
+                // plural: 'headers'
+            },
+            path: {
+                title: 'HTTP path',
+                type: 'object',
+                properties: {},
+                additionalProperties: false
+            },
+            query: {
+                title: 'HTTP query',
+                type: 'object',
+                properties: {},
+                additionalProperties: false
+            },
+            files: {
+                title: 'HTTP form files',
+                files: {
+                    required: [],
+                    optional: []
+                }
+            }
+        }
+    };
+
+    parameters.forEach(parameter => {
+        var data = Object.assign({}, parameter);
+
+        const required = parameter.required;
+        const source = sourceResolver.resolveParameterSource(parameter);
+        const key = parameter.in === 'header' ? parameter.name.toLowerCase() : parameter.name;
+
+        var destination = ajvParametersSchema.properties[source];
+
+        delete data.name;
+        delete data.in;
+        delete data.required;
+
+        if (data.type === 'file') {
+            required ? destination.files.required.push(key) : destination.files.optional.push(key);
+        } else if (source !== 'fields') {
+            if (required) {
+                destination.required = destination.required || [];
+                destination.required.push(key);
+            }
+            destination.properties[key] = data;
+        }
+    }, this);
+
+    ajvParametersSchema.properties.headers.content = createContentTypeHeaders(middlewareOptions.contentTypeValidation, contentTypes);
+
+    return ajv.compile(ajvParametersSchema);
 }
 
 module.exports = {

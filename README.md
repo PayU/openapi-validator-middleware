@@ -159,10 +159,11 @@ module.exports = inputValidation.init('test/pet-store-swagger.yaml', {framework:
 ## Open api 3 - known issues
 - supporting inheritance with discriminator , only if the ancestor object is the discriminator.
 - The discriminator supports in the inheritance chain stop when getting to a child with no discriminator (a leaf in the inheritance tree), meaning a leaf can't have a field which starts a new inheritance tree.
+  so child with no discriminator cant point to other child with discriminator,
 
 ## Running Tests
 Using mocha, istanbul and mochawesome
-```bashso child with no discriminator cant point to other child with discriminator.
+```bash
 npm test
 ```
 

@@ -4,8 +4,7 @@ var chai = require('chai'),
     expect = chai.expect,
     sinon = require('sinon'),
     chaiSinon = require('chai-sinon'),
-    request = require('supertest'),
-ajvUtils = require('../src/utils/ajv-utils');
+    request = require('supertest');
 chai.use(chaiSinon);
 
 describe('input-validation middleware tests - Koa', function () {

@@ -6,10 +6,10 @@ const Validators = require('../validators'),
     {Node} = require('../data_structures/tree');
 
 module.exports = {
-    buildV3BodyValidation
+    buildBodyValidation
 };
 
-function buildV3BodyValidation(dereferenced, originalSwagger, currentPath, currentMethod, middlewareOptions = {}) {
+function buildBodyValidation(dereferenced, originalSwagger, currentPath, currentMethod, middlewareOptions = {}) {
     const bodySchemaV3 = dereferenced.paths[currentPath][currentMethod].requestBody.content['application/json'].schema;
     const defaultAjvOptions = {
         allErrors: true
