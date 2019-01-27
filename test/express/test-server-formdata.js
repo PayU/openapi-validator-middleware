@@ -2,7 +2,7 @@
 
 var express = require('express');
 var bodyParser = require('body-parser');
-var inputValidation = require('../src/middleware');
+var inputValidation = require('../../src/middleware');
 var multer = require('multer');
 var upload = multer();
 

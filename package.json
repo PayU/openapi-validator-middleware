@@ -1,6 +1,6 @@
 {
   "name": "express-ajv-swagger-validation",
-  "version": "0.6.3",
+  "version": "0.7.0",
   "description": "Input validation using Swagger (Open API) and ajv",
   "main": "index.js",
   "nyc": {
@@ -24,6 +24,7 @@
   },
   "scripts": {
     "test": "nyc node_modules/mocha/bin/_mocha --recursive ./test/*/*/*-test.js ./test/*/*-test.js ./test/*-test.js",
+    "node6-test": "nyc node_modules/mocha/bin/_mocha --recursive ./test/express/*/*-test.js ./test/express/*-test.js ./test/*-test.js",
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
     "doctoc": "npm install -g doctoc && doctoc README.md"
   },
@@ -39,7 +40,8 @@
     "open api",
     "input validation",
     "validation",
-    "validator"
+    "validator",
+    "koa"
   ],
   "bugs": {
     "url": "https://github.com/Zooz/express-ajv-swagger-validation"
@@ -67,6 +69,10 @@
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^3.0.1",
     "express": "^4.16.2",
+    "koa": "^2.6.2",
+    "koa-bodyparser": "^4.2.1",
+    "koa-multer": "^1.0.2",
+    "koa-router": "^7.4.0",
     "mocha": "^4.0.1",
     "multer": "^1.3.0",
     "nyc": "^13.1.0",

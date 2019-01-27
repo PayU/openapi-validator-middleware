@@ -7,6 +7,7 @@ var SwaggerParser = require('swagger-parser'),
     swagger2 = require('./swagger2');
 var schemas = {};
 var middlewareOptions;
+var framework;
 
 /**
  * Initialize the input validation middleware
@@ -15,6 +16,7 @@ var middlewareOptions;
  */
 function init(swaggerPath, options) {
     middlewareOptions = options || {};
+    framework = middlewareOptions.framework ? require(`./frameworks/${middlewareOptions.framework}`) : require('./frameworks/express');
     const makeOptionalAttributesNullable = middlewareOptions.makeOptionalAttributesNullable || false;
 
     return Promise.all([
@@ -68,22 +70,23 @@ function init(swaggerPath, options) {
  * @param {any} next
  * @returns In case of an error will call `next` with `InputValidationError`
  */
-function validate(req, res, next) {
-    let path = extractPath(req);
+function validate(...args) {
+    return framework.validate(_validateRequest, ...args);
+}
 
+function _validateRequest(requestOptions) {
     return Promise.all([
-        _validateParams(req.headers, req.params, req.query, req.files, path, req.method.toLowerCase()).catch(e => e),
-        _validateBody(req.body, path, req.method.toLowerCase()).catch(e => e)
+        _validateParams(requestOptions.headers, requestOptions.params, requestOptions.query, requestOptions.files, requestOptions.path, requestOptions.method.toLowerCase()).catch(e => e),
+        _validateBody(requestOptions.body, requestOptions.path, requestOptions.method.toLowerCase()).catch(e => e)
     ]).then(function (errors) {
         if (errors[0] || errors[1]) {
             return errors[0] && errors[1] ? Promise.reject(errors[0].concat(errors[1])) : errors[0] ? Promise.reject(errors[0]) : Promise.reject(errors[1]);
         }
-        return next();
     }).catch(function (errors) {
-        const error = new InputValidationError(errors, path, req.method.toLowerCase(),
+        const error = new InputValidationError(errors, requestOptions.path, requestOptions.method.toLowerCase(),
             { beautifyErrors: middlewareOptions.beautifyErrors,
                 firstError: middlewareOptions.firstError });
-        return next(error);
+        return Promise.resolve(error);
     });
 }
 
@@ -104,11 +107,6 @@ function _validateParams(headers, pathParams, query, files, path, method) {
 
         return resolve();
     });
-}
-
-function extractPath(req) {
-    let path = req.baseUrl.concat(req.route.path);
-    return path.endsWith('/') ? path.substring(0, path.length - 1) : path;
 }
 
 module.exports = {

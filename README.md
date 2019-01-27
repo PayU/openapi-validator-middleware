@@ -62,6 +62,7 @@ The function return Promise.
 ##### Options
 
 Options currently supports:
+- `framework` - Defines in which framework the middleware is working ('koa' or 'express'). As default, set to 'express'.
 - `formats` - Array of formats that can be added to `ajv` configuration, each element in the array should include `name` and `pattern`.
 - `beautifyErrors`- Boolean that indicates if to beautify the errors, in this case it will create a string from the Ajv error.
     - Examples:
@@ -89,7 +90,7 @@ formats: [
 ```
 
 ## Usage Example
-
+### Express
 ```js
 swaggerValidator.init('test/unit-tests/input-validation/pet-store-swagger.yaml')
     .then(function () {
@@ -115,11 +116,45 @@ swaggerValidator.init('test/unit-tests/input-validation/pet-store-swagger.yaml')
         });
     });
 ```
+### Koa
+```js
+'use strict';
+const Koa = require('koa');
+const Router = require('koa-router');
+const bodyParser = require('koa-bodyparser');
+const inputValidation = require('../../src/middleware');
+let app = new Koa();
+let router = new Router();
+app.use(bodyParser());
+app.use(router.routes());
+module.exports = inputValidation.init('test/pet-store-swagger.yaml', {framework: 'koa'})
+    .then(function () {
+        router.get('/pets', inputValidation.validate, async function(ctx, next) {
+            ctx.status = 200;
+            ctx.body = { result: 'OK' };
+        });
+        router.post('/pets', inputValidation.validate, async function (ctx, next) {
+            ctx.status = 200;
+            ctx.body = { result: 'OK' };
+        });
+        router.get('/pets/:petId', inputValidation.validate, async function (ctx, next) {
+            ctx.status = 200;
+            ctx.body = { result: 'OK' };
+        });
+        router.put('/pets', inputValidation.validate, async function (ctx, next) {
+            ctx.status = 200;
+            ctx.body = { result: 'OK' };
+        });
 
+        return Promise.resolve(app);
+    });
+```
 ## Important Notes
 
 - Objects - it is important to set any objects with the property `type: object` inside your swagger file, although it isn't a must in the Swagger (OpenAPI) spec in order to validate it accurately with [ajv](https://www.npmjs.com/package/ajv) it must be marked as `object`
 - multipart/form-data (files) supports is based on [`express/multer`](https://github.com/expressjs/multer)
+- koa support - When using this package as middleware for koa, the validations errors are being thrown.
+- koa packages - This package supports koa server that uses [`koa-router`](https://www.npmjs.com/package/koa-router), [`koa-bodyparser`](https://www.npmjs.com/package/koa-bodyparser) and [`koa-multer`](https://www.npmjs.com/package/koa-multer)
 
 ## Open api 3 - known issues
 - supporting inheritance with discriminator , only if the ancestor object is the discriminator.
