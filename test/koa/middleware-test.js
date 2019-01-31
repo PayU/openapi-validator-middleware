@@ -20,12 +20,7 @@ describe('input-validation middleware tests - Koa', function () {
         it('should resolve without formats', function () {
             let rewire = require('rewire');
             let middleware = rewire('../../src/middleware');
-            let addCustomKeyword = middleware.__get__('addCustomKeyword');
-            let addCustomKeywordSpy = sinon.spy(addCustomKeyword);
-            return middleware.init('test/pet-store-swagger.yaml')
-                .then(function () {
-                    expect(addCustomKeywordSpy).to.have.not.been.called;
-                });
+            return middleware.init('test/pet-store-swagger.yaml');
         });
     });
 

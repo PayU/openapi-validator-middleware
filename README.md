@@ -156,6 +156,11 @@ module.exports = inputValidation.init('test/pet-store-swagger.yaml', {framework:
 - koa support - When using this package as middleware for koa, the validations errors are being thrown.
 - koa packages - This package supports koa server that uses [`koa-router`](https://www.npmjs.com/package/koa-router), [`koa-bodyparser`](https://www.npmjs.com/package/koa-bodyparser) and [`koa-multer`](https://www.npmjs.com/package/koa-multer)
 
+## Open api 3 - known issues
+- supporting inheritance with discriminator , only if the ancestor object is the discriminator.
+- The discriminator supports in the inheritance chain stop when getting to a child with no discriminator (a leaf in the inheritance tree), meaning a leaf can't have a field which starts a new inheritance tree.
+  so child with no discriminator cant point to other child with discriminator,
+
 ## Running Tests
 Using mocha, istanbul and mochawesome
 ```bash

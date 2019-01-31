@@ -1,18 +1,15 @@
 'use strict';
 
 var SwaggerParser = require('swagger-parser'),
-    Ajv = require('ajv'),
-    Validators = require('./utils/validators'),
-    filesKeyword = require('./customKeywords/files'),
-    contentKeyword = require('./customKeywords/contentTypeValidation'),
     InputValidationError = require('./inputValidationError'),
     schemaPreprocessor = require('./utils/schema-preprocessor'),
+    swagger3 = require('./swagger3/open-api3'),
+    swagger2 = require('./swagger2'),
+    ajvUtils = require('./utils/ajv-utils'),
+    Ajv = require('ajv'),
     sourceResolver = require('./utils/sourceResolver');
-
 var schemas = {};
 var middlewareOptions;
-var ajvConfigBody;
-var ajvConfigParams;
 var framework;
 
 /**
@@ -22,8 +19,6 @@ var framework;
  */
 function init(swaggerPath, options) {
     middlewareOptions = options || {};
-    ajvConfigBody = middlewareOptions.ajvConfigBody || {};
-    ajvConfigParams = middlewareOptions.ajvConfigParams || {};
     framework = middlewareOptions.framework ? require(`./frameworks/${middlewareOptions.framework}`) : require('./frameworks/express');
     const makeOptionalAttributesNullable = middlewareOptions.makeOptionalAttributesNullable || false;
 
@@ -39,19 +34,21 @@ function init(swaggerPath, options) {
             Object.keys(dereferenced.paths[currentPath]).filter(function (parameter) { return parameter !== 'parameters' })
                 .forEach(function (currentMethod) {
                     schemas[parsedPath][currentMethod.toLowerCase()] = {};
-
+                    const isOpenApi3 = dereferenced.openapi === '3.0.0';
                     const parameters = dereferenced.paths[currentPath][currentMethod].parameters || [];
-
-                    let bodySchema = middlewareOptions.expectFormFieldsInBody
-                        ? parameters.filter(function (parameter) { return (parameter.in === 'body' || (parameter.in === 'formData' && parameter.type !== 'file')) })
-                        : parameters.filter(function (parameter) { return parameter.in === 'body' });
-
-                    if (makeOptionalAttributesNullable) {
-                        schemaPreprocessor.makeOptionalAttributesNullable(bodySchema);
-                    }
-                    if (bodySchema.length > 0) {
-                        const validatedBodySchema = _getValidatedBodySchema(bodySchema);
-                        schemas[parsedPath][currentMethod].body = buildBodyValidation(validatedBodySchema, dereferenced.definitions, swaggers[1], currentPath, currentMethod, parsedPath);
+                    if (isOpenApi3){
+                        schemas[parsedPath][currentMethod].body = swagger3.buildBodyValidation(dereferenced, swaggers[1], currentPath, currentMethod, middlewareOptions);
+                    } else {
+                        let bodySchema = middlewareOptions.expectFormFieldsInBody
+                            ? parameters.filter(function (parameter) { return (parameter.in === 'body' || (parameter.in === 'formData' && parameter.type !== 'file')) })
+                            : parameters.filter(function (parameter) { return parameter.in === 'body' });
+                        if (makeOptionalAttributesNullable) {
+                            schemaPreprocessor.makeOptionalAttributesNullable(bodySchema);
+                        }
+                        if (bodySchema.length > 0) {
+                            const validatedBodySchema = swagger2.getValidatedBodySchema(bodySchema);
+                            schemas[parsedPath][currentMethod].body = swagger2.buildBodyValidation(validatedBodySchema, dereferenced.definitions, swaggers[1], currentPath, currentMethod, parsedPath, middlewareOptions);
+                        }
                     }
 
                     let localParameters = parameters.filter(function (parameter) {
@@ -60,7 +57,7 @@ function init(swaggerPath, options) {
 
                     if (localParameters.length > 0 || middlewareOptions.contentTypeValidation) {
                         schemas[parsedPath][currentMethod].parameters = buildParametersValidation(localParameters,
-                            dereferenced.paths[currentPath][currentMethod].consumes || dereferenced.paths[currentPath].consumes || dereferenced.consumes);
+                            dereferenced.paths[currentPath][currentMethod].consumes || dereferenced.paths[currentPath].consumes || dereferenced.consumes, middlewareOptions);
                     }
                 });
         });
@@ -69,32 +66,6 @@ function init(swaggerPath, options) {
             return Promise.reject(error);
         });
 }
-
-function _getValidatedBodySchema(bodySchema) {
-    let validatedBodySchema;
-    if (bodySchema[0].in === 'body') {
-        // if we are processing schema for a simple JSON payload, no additional processing needed
-        validatedBodySchema = bodySchema[0].schema;
-    } else if (bodySchema[0].in === 'formData') {
-        // if we are processing multipart form, assemble body schema from form field schemas
-        validatedBodySchema = {
-            required: [],
-            properties: {}
-        };
-        bodySchema.forEach((formField) => {
-            if (formField.type !== 'file') {
-                validatedBodySchema.properties[formField.name] = {
-                    type: formField.type
-                };
-                if (formField.required) {
-                    validatedBodySchema.required.push(formField.name);
-                }
-            }
-        });
-    }
-    return validatedBodySchema;
-}
-
 /**
  * The middleware - should be called for each express route
  * @param {any} req
@@ -141,55 +112,6 @@ function _validateParams(headers, pathParams, query, files, path, method) {
     });
 }
 
-function addCustomKeyword(ajv, formats) {
-    if (formats) {
-        formats.forEach(function (format) {
-            ajv.addFormat(format.name, format.pattern);
-        });
-    }
-
-    ajv.addKeyword('files', filesKeyword);
-    ajv.addKeyword('content', contentKeyword);
-}
-
-function buildBodyValidation(schema, swaggerDefinitions, originalSwagger, currentPath, currentMethod, parsedPath) {
-    const defaultAjvOptions = {
-        allErrors: true
-        // unknownFormats: 'ignore'
-    };
-    const options = Object.assign({}, defaultAjvOptions, ajvConfigBody);
-    let ajv = new Ajv(options);
-
-    addCustomKeyword(ajv, middlewareOptions.formats);
-
-    if (schema.discriminator) {
-        return buildInheritance(schema.discriminator, swaggerDefinitions, originalSwagger, currentPath, currentMethod, parsedPath, ajv);
-    } else {
-        return new Validators.SimpleValidator(ajv.compile(schema));
-    }
-}
-
-function buildInheritance(discriminator, dereferencedDefinitions, swagger, currentPath, currentMethod, parsedPath, ajv) {
-    let bodySchema = swagger.paths[currentPath][currentMethod].parameters.filter(function (parameter) { return parameter.in === 'body' })[0];
-    var inheritsObject = {
-        inheritance: []
-    };
-    inheritsObject.discriminator = discriminator;
-
-    Object.keys(swagger.definitions).forEach(key => {
-        if (swagger.definitions[key].allOf) {
-            swagger.definitions[key].allOf.forEach(element => {
-                if (element['$ref'] && element['$ref'] === bodySchema.schema['$ref']) {
-                    inheritsObject[key] = ajv.compile(dereferencedDefinitions[key]);
-                    inheritsObject.inheritance.push(key);
-                }
-            });
-        }
-    }, this);
-
-    return new Validators.OneOfValidator(inheritsObject);
-}
-
 function createContentTypeHeaders(validate, contentTypes) {
     if (!validate || !contentTypes) return;
 
@@ -198,16 +120,16 @@ function createContentTypeHeaders(validate, contentTypes) {
     };
 }
 
-function buildParametersValidation(parameters, contentTypes) {
+function buildParametersValidation(parameters, contentTypes, middlewareOptions) {
     const defaultAjvOptions = {
         allErrors: true,
         coerceTypes: 'array'
         // unknownFormats: 'ignore'
     };
-    const options = Object.assign({}, defaultAjvOptions, ajvConfigParams);
+    const options = Object.assign({}, defaultAjvOptions, middlewareOptions.ajvConfigParams);
     let ajv = new Ajv(options);
 
-    addCustomKeyword(ajv, middlewareOptions.formats);
+    ajvUtils.addCustomKeyword(ajv, middlewareOptions.formats);
 
     var ajvParametersSchema = {
         title: 'HTTP parameters',
