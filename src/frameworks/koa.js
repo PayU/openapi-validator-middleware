@@ -19,7 +19,7 @@ async function validate(validateRequest, ctx, next) {
     if (errors) {
         throw errors;
     }
-    next();
+    await next();
 }
 
 module.exports = {
