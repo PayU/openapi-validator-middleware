@@ -10,6 +10,9 @@ module.exports = {
 };
 
 function buildBodyValidation(dereferenced, originalSwagger, currentPath, currentMethod, middlewareOptions = {}) {
+    if (!dereferenced.paths[currentPath][currentMethod].requestBody){
+        return;
+    }
     const bodySchemaV3 = dereferenced.paths[currentPath][currentMethod].requestBody.content['application/json'].schema;
     const defaultAjvOptions = {
         allErrors: true

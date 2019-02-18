@@ -26,6 +26,17 @@ describe('input-validation middleware tests', function () {
                 app = testServer;
             });
         });
+        it('valid pets', function (done) {
+            request(app)
+                .get('/pets')
+                .expect(200, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.result).to.equal('OK');
+                    done();
+                });
+        });
         it('valid dog', function (done) {
             request(app)
                 .post('/pet')

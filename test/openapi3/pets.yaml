@@ -23,6 +23,60 @@ security:
   - app-id: []
     private-key: []
 paths:
+  /pets:
+    get:
+      summary: get all pets
+      security:
+      - public-key: []
+      description: >-
+      tags:
+      - pets
+      operationId: listPets
+      responses:
+        '200':
+          description: list of pets
+          headers:
+            x-zooz-request-id:
+              description: request id
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/pets'
+        '400':
+          description: Bad request
+          headers:
+            x-zooz-request-id:
+              description: request id
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_model'
+        '401':
+          description: Unauthorize
+          headers:
+            x-zooz-request-id:
+              description: request id
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_model'
+        '500':
+          description: Internal error
+          headers:
+            x-zooz-request-id:
+              description: request id
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_model'
   /pet:
     post:
       summary: Create a Pet
@@ -368,6 +422,10 @@ components:
       oneOf:
         - $ref: '#/components/schemas/dog_object'
         - $ref: '#/components/schemas/cat_object'
+    pets:
+      type: array
+      items:
+        $ref: "#/components/schemas/pet"
     pet-discriminator-on-child:
       description: pet
       type: object
