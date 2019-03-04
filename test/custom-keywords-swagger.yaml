@@ -1,0 +1,34 @@
+swagger: "2.0"
+info:
+  version: 1.0.0
+  title: Swagger with custom ajv keywords
+schemes:
+  - http
+consumes:
+- application/json
+produces:
+- application/json
+paths:
+  /keywords:
+    post:
+      description: test custom keywords
+      produces:
+        - application/json
+      parameters:
+        - name: post data
+          in: body
+          required: true
+          description: body data
+          schema:
+            type: object
+            properties:
+              age:
+                type: number
+                range: [15, 30]
+            prohibited: ['ages']
+            required:
+              - age
+
+      responses:
+        '200':
+          description: Import result

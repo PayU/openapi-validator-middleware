@@ -2,7 +2,6 @@
 
 var chai = require('chai'),
     expect = chai.expect,
-    sinon = require('sinon'),
     chaiSinon = require('chai-sinon'),
     request = require('supertest');
 chai.use(chaiSinon);
@@ -2302,6 +2301,50 @@ describe('input-validation middleware tests - Express', function () {
                         throw err;
                     }
                     expect(res.body.more_info).to.includes('body should have required property \'password\'');
+                    done();
+                });
+        });
+    });
+    describe('Keywords', function () {
+        var app;
+        before(function () {
+            return require('./test-server-keywords').then(function (testServer) {
+                app = testServer;
+            });
+        });
+        it('should pass the validation by the range keyword', function (done) {
+            request(app)
+                .post('/keywords')
+                .send({ age: 20 })
+                .expect(200, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.result).to.equal('OK');
+                    done();
+                });
+        });
+        it('should be failed by the range keyword', function (done) {
+            request(app)
+                .post('/keywords')
+                .send({ age: 50 })
+                .expect(400, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.more_info).to.includes('body/age should be <= 30');
+                    done();
+                });
+        });
+        it('should be failed by the prohibited keyword', function (done) {
+            request(app)
+                .post('/keywords')
+                .send({ ages: 20, age: 20 })
+                .expect(400, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.more_info).to.includes('body should NOT be valid');
                     done();
                 });
         });

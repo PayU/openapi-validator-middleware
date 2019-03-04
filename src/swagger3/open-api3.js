@@ -20,7 +20,7 @@ function buildBodyValidation(dereferenced, originalSwagger, currentPath, current
     const options = Object.assign({}, defaultAjvOptions, middlewareOptions.ajvConfigBody);
     let ajv = new Ajv(options);
 
-    ajvUtils.addCustomKeyword(ajv, middlewareOptions.formats);
+    ajvUtils.addCustomKeyword(ajv, middlewareOptions.formats, middlewareOptions.keywords);
 
     if (bodySchemaV3.discriminator) {
         return buildV3Inheritance(dereferenced, originalSwagger, currentPath, currentMethod, ajv);

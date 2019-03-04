@@ -129,7 +129,7 @@ function buildParametersValidation(parameters, contentTypes, middlewareOptions) 
     const options = Object.assign({}, defaultAjvOptions, middlewareOptions.ajvConfigParams);
     let ajv = new Ajv(options);
 
-    ajvUtils.addCustomKeyword(ajv, middlewareOptions.formats);
+    ajvUtils.addCustomKeyword(ajv, middlewareOptions.formats, middlewareOptions.keywords);
 
     var ajvParametersSchema = {
         title: 'HTTP parameters',
