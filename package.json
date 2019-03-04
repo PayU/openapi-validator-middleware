@@ -55,6 +55,7 @@
     "swagger-parser": "^6.0.2"
   },
   "devDependencies": {
+    "ajv-keywords": "^3.4.0",
     "body-parser": "^1.18.3",
     "chai": "^4.2.0",
     "chai-sinon": "^2.8.1",
@@ -79,7 +80,6 @@
     "request": "^2.88.0",
     "rewire": "^2.5.2",
     "sinon": "^4.5.0",
-    "ajv-keywords": "^3.4.0",
     "supertest": "^3.4.2"
   },
   "publishConfig": {
