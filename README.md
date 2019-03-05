@@ -64,6 +64,8 @@ The function return Promise.
 Options currently supports:
 - `framework` - Defines in which framework the middleware is working ('koa' or 'express'). As default, set to 'express'.
 - `formats` - Array of formats that can be added to `ajv` configuration, each element in the array should include `name` and `pattern`.
+- `keywords` - Array of keywords that can be added to `ajv` configuration, each element in the array can be either an object or a function. 
+If the element is an object, it must include `name` and `definition`. If the element is a function, it should accept `ajv` as its first argument and inside the function you need to call `ajv.addKeyword` to add your custom keyword 
 - `beautifyErrors`- Boolean that indicates if to beautify the errors, in this case it will create a string from the Ajv error.
     - Examples:
         - `query/limit should be <= 100` - query param

@@ -41,7 +41,7 @@ function buildBodyValidation(schema, swaggerDefinitions, originalSwagger, curren
     const options = Object.assign({}, defaultAjvOptions, middlewareOptions.ajvConfigBody);
     let ajv = new Ajv(options);
 
-    ajvUtils.addCustomKeyword(ajv, middlewareOptions.formats);
+    ajvUtils.addCustomKeyword(ajv, middlewareOptions.formats, middlewareOptions.keywords);
 
     if (schema.discriminator) {
         return buildInheritance(schema.discriminator, swaggerDefinitions, originalSwagger, currentPath, currentMethod, parsedPath, ajv);
