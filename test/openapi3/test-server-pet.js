@@ -39,6 +39,9 @@ module.exports = function (options) {
             app.post('/pet-discriminator-on-child', inputValidation.validate, function (req, res, next) {
                 res.json({ result: 'OK' });
             });
+            app.post('/non-exist-path-in-swagger',inputValidation.validate, function (req, res, next) {
+                res.json({ result: 'OK' });
+            });
 
             app.use(function (err, req, res, next) {
                 if (err instanceof inputValidation.InputValidationError) {

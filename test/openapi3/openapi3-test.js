@@ -118,7 +118,20 @@ describe('input-validation middleware tests', function () {
                     done();
                 });
         });
-
+        it('when path does not exist in swagger - should not execute validation on request', function (done) {
+            request(app)
+                .post('/non-exist-path-in-swagger')
+                .send({})
+                .expect(200, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body).to.eql({
+                        'result': 'OK'
+                    });
+                    done();
+                });
+        });
         describe('discriminator-pet', function () {
             it('missing discriminator field', function (done) {
                 request(app)
