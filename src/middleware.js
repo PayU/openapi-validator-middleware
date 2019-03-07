@@ -1,43 +1,49 @@
 'use strict';
 
-var SwaggerParser = require('swagger-parser'),
-    InputValidationError = require('./inputValidationError'),
-    schemaPreprocessor = require('./utils/schema-preprocessor'),
-    swagger3 = require('./swagger3/open-api3'),
-    swagger2 = require('./swagger2'),
-    ajvUtils = require('./utils/ajv-utils'),
-    Ajv = require('ajv'),
-    sourceResolver = require('./utils/sourceResolver');
-var schemas = {};
-var middlewareOptions;
-var framework;
+const InputValidationError = require('./inputValidationError');
+const schemaPreprocessor = require('./utils/schema-preprocessor');
+const swagger3 = require('./swagger3/open-api3');
+const swagger2 = require('./swagger2');
+const ajvUtils = require('./utils/ajv-utils');
+const Ajv = require('ajv');
+const sourceResolver = require('./utils/sourceResolver');
+const yaml = require('js-yaml');
+const deref = require('json-schema-deref-sync');
+const fs = require('fs');
+
+let schemas = {};
+let middlewareOptions;
+let framework;
 
 /**
  * Initialize the input validation middleware
  * @param {string} swaggerPath - the path for the swagger file
  * @param {Object} options - options.formats to add formats to ajv, options.beautifyErrors, options.firstError, options.expectFormFieldsInBody, options.fileNameField (default is 'fieldname' - multer package), options.ajvConfigBody and options.ajvConfigParams for config object that will be passed for creation of Ajv instance used for validation of body and parameters appropriately
  */
-function init(swaggerPath, options) {
+
+function initSync(swaggerPath, options) {
     middlewareOptions = options || {};
     framework = middlewareOptions.framework ? require(`./frameworks/${middlewareOptions.framework}`) : require('./frameworks/express');
     const makeOptionalAttributesNullable = middlewareOptions.makeOptionalAttributesNullable || false;
 
-    return Promise.all([
-        SwaggerParser.dereference(swaggerPath),
-        SwaggerParser.parse(swaggerPath)
-    ]).then(function (swaggers) {
-        const dereferenced = swaggers[0];
-        Object.keys(dereferenced.paths).forEach(function (currentPath) {
+    const parsed = yaml.load(fs.readFileSync(swaggerPath), 'utf8');
+    const dereferenced = deref(parsed);
+
+    Object
+        .keys(dereferenced.paths)
+        .forEach(function (currentPath) {
             let pathParameters = dereferenced.paths[currentPath].parameters || [];
             let parsedPath = dereferenced.basePath && dereferenced.basePath !== '/' ? dereferenced.basePath.concat(currentPath.replace(/{/g, ':').replace(/}/g, '')) : currentPath.replace(/{/g, ':').replace(/}/g, '');
             schemas[parsedPath] = {};
-            Object.keys(dereferenced.paths[currentPath]).filter(function (parameter) { return parameter !== 'parameters' })
+            Object
+                .keys(dereferenced.paths[currentPath])
+                .filter(function (parameter) { return parameter !== 'parameters' })
                 .forEach(function (currentMethod) {
                     schemas[parsedPath][currentMethod.toLowerCase()] = {};
                     const isOpenApi3 = dereferenced.openapi === '3.0.0';
                     const parameters = dereferenced.paths[currentPath][currentMethod].parameters || [];
-                    if (isOpenApi3){
-                        schemas[parsedPath][currentMethod].body = swagger3.buildBodyValidation(dereferenced, swaggers[1], currentPath, currentMethod, middlewareOptions);
+                    if (isOpenApi3) {
+                        schemas[parsedPath][currentMethod].body = swagger3.buildBodyValidation(dereferenced, parsed, currentPath, currentMethod, middlewareOptions);
                     } else {
                         let bodySchema = middlewareOptions.expectFormFieldsInBody
                             ? parameters.filter(function (parameter) { return (parameter.in === 'body' || (parameter.in === 'formData' && parameter.type !== 'file')) })
@@ -47,7 +53,7 @@ function init(swaggerPath, options) {
                         }
                         if (bodySchema.length > 0) {
                             const validatedBodySchema = swagger2.getValidatedBodySchema(bodySchema);
-                            schemas[parsedPath][currentMethod].body = swagger2.buildBodyValidation(validatedBodySchema, dereferenced.definitions, swaggers[1], currentPath, currentMethod, parsedPath, middlewareOptions);
+                            schemas[parsedPath][currentMethod].body = swagger2.buildBodyValidation(validatedBodySchema, dereferenced.definitions, parsed, currentPath, currentMethod, parsedPath, middlewareOptions);
                         }
                     }
 
@@ -61,11 +67,19 @@ function init(swaggerPath, options) {
                     }
                 });
         });
-    })
-        .catch(function (error) {
-            return Promise.reject(error);
-        });
 }
+
+function init(swaggerPath, options) {
+    return new Promise((resolve, reject) => {
+        try {
+            initSync(swaggerPath, options);
+            resolve();
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
+
 /**
  * The middleware - should be called for each express route
  * @param {any} req
@@ -73,8 +87,8 @@ function init(swaggerPath, options) {
  * @param {any} next
  * @returns In case of an error will call `next` with `InputValidationError`
  */
-function validate(...args) {
-    return framework.validate(_validateRequest, ...args);
+function validate(req, res, next) {
+    return framework.validate(_validateRequest, req, res, next);
 }
 
 function _validateRequest(requestOptions) {
@@ -87,8 +101,10 @@ function _validateRequest(requestOptions) {
         }
     }).catch(function (errors) {
         const error = new InputValidationError(errors, requestOptions.path, requestOptions.method.toLowerCase(),
-            { beautifyErrors: middlewareOptions.beautifyErrors,
-                firstError: middlewareOptions.firstError });
+            {
+                beautifyErrors: middlewareOptions.beautifyErrors,
+                firstError: middlewareOptions.firstError
+            });
         return Promise.resolve(error);
     });
 }
@@ -195,7 +211,8 @@ function buildParametersValidation(parameters, contentTypes, middlewareOptions) 
 }
 
 module.exports = {
-    init: init,
-    validate: validate,
-    InputValidationError: InputValidationError
+    init,
+    initSync,
+    validate,
+    InputValidationError
 };
