@@ -1,0 +1,24 @@
+{
+    "extends": "standard",
+    "plugins": [
+        "standard",
+        "promise",
+        "chai-friendly"
+    ],
+    "env": {
+         "node": true,
+         "mocha": true
+     },
+    "rules": {
+        "eol-last": "off",
+        "space-before-function-paren": "off",
+        "indent": ["error", 4],
+        "quotes": ["error", "single", { "avoidEscape": true }],
+        "semi": ["error", "always",{ "omitLastInOneLineBlock": true}],
+        "one-var": ["off"],
+        "space-before-blocks": ["off"],
+        "camelcase": ["warn"],
+        "no-unused-expressions": 0,
+        "chai-friendly/no-unused-expressions": 2
+    }
+  }

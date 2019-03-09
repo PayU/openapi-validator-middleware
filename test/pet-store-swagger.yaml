@@ -1,0 +1,312 @@
+swagger: "2.0"
+info:
+  version: 1.0.0
+  title: Swagger Petstore
+  license:
+    name: MIT
+host: petstore.swagger.io
+schemes:
+  - http
+paths:
+  /pets:
+    get:
+      summary: List all pets
+      operationId: listPets
+      tags:
+        - pets
+      parameters:
+        - $ref: '#/parameters/ApiRequestId'
+        - $ref: '#/parameters/ApiVersion'
+        - name: limit
+          in: query
+          description: How many items to return at one time (max 100)
+          required: false
+          type: integer
+          # format: int32
+          minimum: 1
+          maximum: 100
+        - name: page
+          in: query
+          description: page number
+          required: true
+          type: integer
+          # format: int32
+          minimum: 0
+      responses:
+        "200":
+          description: An paged array of pets
+          headers:
+            x-next:
+              type: string
+              description: A link to the next page of responses
+          schema:
+            $ref: '#/definitions/Pets'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      summary: Create a pet
+      operationId: createPets
+      parameters:
+        - $ref: '#/parameters/ApiRequestId'
+        - name: body
+          in: body
+          required: true
+          schema:
+            required:
+              - name
+              - test
+            properties:
+              name:
+                type: string
+              age:
+                type: integer
+              tag:
+                type: string
+              test:
+                type: object
+                required:
+                  - field1
+                properties:
+                  field1:
+                    type: string
+                    enum: ['enum1', 'enum2']
+      responses:
+        "201":
+          description: Null response
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      summary: Info for a specific pet
+      operationId: updatePats
+      tags:
+        - pets
+      consumes:
+        - application/json
+        - form-data
+      parameters:
+        - name: body
+          in: body
+          schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  age:
+                    type: integer
+                  tag:
+                    type: string
+                  awards:
+                    type: array
+                    default: []
+                  colour:
+                    type: string
+                    default: unknown
+                  test:
+                    type: object
+                    required:
+                      - field1
+                    properties:
+                      field1:
+                        type: string
+                        enum: ['enum1', 'enum2']
+                      field2:
+                        type: integer
+                      field3:
+                        type:
+                          - integer
+                          - string
+                  test2:
+                    type: object
+                  test3:
+                    type: object
+                    properties:
+                      field1:
+                        type: string
+                        enum: ['enum1', 'enum2']
+                      field2:
+                        type: integer
+      responses:
+        "200":
+          description: Expected response to a valid request
+          schema:
+            $ref: '#/definitions/Pets'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    patch:
+      summary: Info for a specific pet
+      operationId: incrementallyUpdatePet
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - pets
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+              type: object
+      responses:
+        "200":
+          description: Expected response to a valid request
+          schema:
+            $ref: '#/definitions/Pets'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /pets/{petId}:
+    get:
+      summary: Info for a specific pet
+      operationId: showPetById
+      tags:
+        - pets
+      parameters:
+        - $ref: '#/parameters/ApiVersion'
+        - $ref: '#/parameters/ApiRequestId'
+        - name: petId
+          in: path
+          required: true
+          description: The id of the pet to retrieve
+          type: string
+          minLength: 3
+          maxLength: 10
+      responses:
+        "200":
+          description: Expected response to a valid request
+          schema:
+            $ref: '#/definitions/Pets'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      summary: Info for a specific pet
+      operationId: showPetById
+      tags:
+        - pets
+      consumes:
+        - application/json
+      parameters:
+        - $ref: '#/parameters/ApiVersion'
+        - $ref: '#/parameters/ApiRequestId'
+        - name: petId
+          in: path
+          required: true
+          description: The id of the pet to retrieve
+          type: string
+          minLength: 3
+          maxLength: 10
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              age:
+                type: integer
+              tag:
+                type: string
+      responses:
+        "200":
+          description: Expected response to a valid request
+          schema:
+            $ref: '#/definitions/Pets'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /heartbeat:
+    get:
+      summary: Info for current system status
+      operationId: getHearbeat
+      responses:
+        "200":
+          description: Expected response to a valid request
+          schema:
+            $ref: '#/definitions/StatusReport'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /text:
+    put:
+      consumes:
+        - text/html
+        - text/plain
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: string
+          required: true
+      responses:
+        "200":
+          description: Expected response to a valid request
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+definitions:
+  Pet:
+    required:
+      - id
+      - name
+    properties:
+      id:
+        type: integer
+        format: int64
+      name:
+        type: string
+      tag:
+        type: string
+  Pets:
+    type: array
+    items:
+      $ref: '#/definitions/Pet'
+  Error:
+    required:
+      - code
+      - message
+    properties:
+      code:
+        type: integer
+        # format: int32
+      message:
+        type: string
+  StatusReport:
+    required:
+      - text
+      - code
+    properties:
+      text:
+        type: string
+      code:
+        type: string
+parameters:
+  ApiVersion:
+    name: 'api-version'
+    in: header
+    description: 'The api version. It overwrites the account settings.'
+    required: true
+    type: string
+    minLength: 1
+    pattern: '^\d{1,3}\.\d{1,3}$'
+    x-example: '3.0'
+  ApiRequestId:
+    name: 'request-id'
+    in: header
+    description: 'global request id through the system.'
+    type: string
+    minLength: 1
+    x-example: '123456'

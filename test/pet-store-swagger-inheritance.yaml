@@ -1,0 +1,220 @@
+swagger: "2.0"
+info:
+  version: 1.0.0
+  title: Swagger Petstore
+  license:
+    name: MIT
+host: petstore.swagger.io
+basePath: /
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /pets:
+    consumes:
+      - application/json
+    get:
+      summary: List all pets
+      operationId: listPets
+      tags:
+        - pets
+      parameters:
+        - $ref: '#/parameters/ApiRequestId'
+        - $ref: '#/parameters/PetType'
+        - $ref: '#/parameters/ApiVersion'
+        - name: limit
+          in: query
+          description: How many items to return at one time (max 100)
+          required: false
+          type: integer
+          # format: int32
+          minimum: 1
+          maximum: 100
+        - name: page
+          in: query
+          description: page number
+          required: true
+          type: integer
+          # format: int32
+          minimum: 0
+      responses:
+        "200":
+          description: An paged array of pets
+          headers:
+            x-next:
+              type: string
+              description: A link to the next page of responses
+          schema:
+            $ref: '#/definitions/Pets'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      summary: Create a pet
+      operationId: createPets
+      parameters:
+        - $ref: '#/parameters/ApiRequestId'
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Pet'
+      responses:
+        "201":
+          description: Null response
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      summary: Info for a specific pet
+      operationId: updatePats
+      tags:
+        - pets
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+              type: array
+              items:
+                type: object
+                required:
+                  - name
+                  - test
+                properties:
+                  name:
+                    type: string
+                  tag:
+                    type: string
+                  test:
+                    type: object
+                    required:
+                      - field1
+                    properties:
+                      field1:
+                        type: string
+                        enum: ['enum1', 'enum2']
+      responses:
+        "200":
+          description: Expected response to a valid request
+          schema:
+            $ref: '#/definitions/Pets'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /{version}/pets/{petId}:
+    get:
+      summary: Info for a specific pet
+      operationId: showPetById
+      tags:
+        - pets
+      parameters:
+        - $ref: '#/parameters/version'
+        - $ref: '#/parameters/ApiRequestId'
+        - name: petId
+          in: path
+          required: true
+          description: The id of the pet to retrieve
+          type: string
+          minLength: 3
+          maxLength: 10
+      responses:
+        "200":
+          description: Expected response to a valid request
+          schema:
+            $ref: '#/definitions/Pets'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+definitions:
+  Pet:
+    type: object
+    discriminator: petType
+    properties:
+      name:
+        type: string
+      petType:
+        type: string
+    required:
+    - name
+    - petType
+  Cat:
+    description: A representation of a cat
+    allOf:
+    - $ref: '#/definitions/Pet'
+    - type: object
+      properties:
+        huntingSkill:
+          type: string
+          description: The measured skill for hunting
+          default: lazy
+          enum:
+          - clueless
+          - lazy
+          - adventurous
+          - aggressive
+      required:
+      - huntingSkill
+  Dog:
+    description: A representation of a dog
+    allOf:
+    - $ref: '#/definitions/Pet'
+    - type: object
+      properties:
+        packSize:
+          type: integer
+          format: int32
+          description: the size of the pack the dog is from
+          default: 0
+          minimum: 0
+      required:
+      - packSize
+  Pets:
+    type: array
+    items:
+      $ref: '#/definitions/Pet'
+  Error:
+    type: object
+    required:
+      - code
+      - message
+    properties:
+      code:
+        type: integer
+        # format: int32
+      message:
+        type: string
+parameters:
+  ApiVersion:
+    name: 'api-version'
+    in: header
+    description: 'The api version. It overwrites the account settings.'
+    required: true
+    type: string
+    enum: ['1.0', '1.1']
+  ApiRequestId:
+    name: 'request-id'
+    in: header
+    description: 'global request id through the system.'
+    type: string
+    minLength: 1
+    x-example: '123456'
+  PetType:
+    name: 'PetType'
+    in: query
+    description: 'filter by pet type'
+    type: string
+    enum: ['Dog', 'Cat']
+  version:
+    name: 'version'
+    in: path
+    description: 'api version in path'
+    type: string
+    enum: ['v1']
