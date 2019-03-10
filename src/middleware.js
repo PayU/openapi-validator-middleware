@@ -2,7 +2,7 @@
 
 var InputValidationError = require('./inputValidationError'),
     Ajv = require('ajv'),
-    apiSchemaBuilder = require('./api-schema-builder/src/index');
+    apiSchemaBuilder = require('api-schema-builder');
 
 var schemas = {};
 var middlewareOptions;
