@@ -74,6 +74,7 @@ const buildDataPath = function(error) {
         return 'body';
     }
 
+    /* istanbul ignore next */
     return undefined;
 };
 
