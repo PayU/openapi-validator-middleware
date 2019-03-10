@@ -104,7 +104,7 @@ function _validateBody(body, path, method) {
 
 function _validateParams(headers, pathParams, query, files, path, method) {
     return new Promise(function (resolve, reject) {
-        if (schemas[path] && schemas[path][method] && schemas[path][method].parameters && !schemas[path][method].parameters({ query: query, headers: headers, path: pathParams, files: files })) {
+        if (schemas[path] && schemas[path][method] && schemas[path][method].parameters && !schemas[path][method].parameters.validate({ query: query, headers: headers, path: pathParams, files: files })) {
             return reject(schemas[path][method].parameters.errors);
         }
 
