@@ -70,6 +70,7 @@ const buildDataPath = function(error) {
         return `body/${error.dataPath}`;
     }
 
+    /* istanbul ignore next */
     if (error.dataPath === '') {
         return 'body';
     }
