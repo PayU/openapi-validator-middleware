@@ -7,68 +7,75 @@
  * @extends {Error}
  */
 class InputValidationError extends Error {
-    constructor(errors, path, method, options) {
+    constructor(errors, options = {}) {
         super('Input validation error');
 
         if (options.beautifyErrors && options.firstError) {
-            this.errors = this.parseAjvError(errors[0], path, method);
+            this.errors = parseAjvError(errors[0]);
         } else if (options.beautifyErrors) {
-            this.errors = this.parseAjvErrors(errors, path, method);
+            this.errors = parseAjvErrors(errors);
         } else {
             this.errors = errors;
         }
     }
-
-    parseAjvErrors(errors, path, method) {
-        var parsedError = [];
-        errors.forEach(function (error) {
-            parsedError.push(this.parseAjvError(error, path, method));
-        }, this);
-
-        return parsedError;
-    }
-
-    parseAjvError(error, path, method) {
-        if (error.dataPath.startsWith('.header')) {
-            error.dataPath = error.dataPath.replace('.', '');
-            error.dataPath = error.dataPath.replace('[', '/');
-            error.dataPath = error.dataPath.replace(']', '');
-            error.dataPath = error.dataPath.replace('\'', '');
-            error.dataPath = error.dataPath.replace('\'', '');
-        }
-
-        if (error.dataPath.startsWith('.path')) {
-            error.dataPath = error.dataPath.replace('.', '');
-            error.dataPath = error.dataPath.replace('.', '/');
-        }
-
-        if (error.dataPath.startsWith('.query')) {
-            error.dataPath = error.dataPath.replace('.', '');
-            error.dataPath = error.dataPath.replace('.', '/');
-        }
-
-        if (error.dataPath.startsWith('.')) {
-            error.dataPath = error.dataPath.replace('.', 'body/');
-        }
-
-        if (error.dataPath.startsWith('[')) {
-            error.dataPath = `body/${error.dataPath}`;
-        }
-
-        if (error.dataPath === '') {
-            error.dataPath = 'body';
-        }
-
-        if (error.keyword === 'enum') {
-            error.message += ` [${error.params.allowedValues.toString()}]`;
-        }
-
-        if (error.validation) {
-            error.message = error.errors.message;
-        }
-
-        return `${error.dataPath} ${error.message}`;
-    }
 }
+
+const parseAjvError = function(error) {
+    return `${buildDataPath(error)} ${buildMessage(error)}`;
+};
+
+const parseAjvErrors = function(errors) {
+    return errors.map(parseAjvError);
+};
+
+const buildMessage = function(error){
+    if (error.keyword === 'enum') {
+        return `${error.message} [${error.params.allowedValues.toString()}]`;
+    }
+
+    if (error.validation) {
+        return error.errors.message;
+    }
+
+    return error.message;
+};
+
+const buildDataPath = function(error) {
+    if (error.dataPath.startsWith('.header')) {
+        return error.dataPath
+            .replace('.', '')
+            .replace('[', '/')
+            .replace(']', '')
+            .replace('\'', '')
+            .replace('\'', '');
+    }
+
+    if (error.dataPath.startsWith('.path')) {
+        return error.dataPath
+            .replace('.', '')
+            .replace('.', '/');
+    }
+
+    if (error.dataPath.startsWith('.query')) {
+        return error.dataPath
+            .replace('.', '')
+            .replace('.', '/');
+    }
+
+    if (error.dataPath.startsWith('.')) {
+        return error.dataPath.replace('.', 'body/');
+    }
+
+    if (error.dataPath.startsWith('[')) {
+        return `body/${error.dataPath}`;
+    }
+
+    if (error.dataPath === '') {
+        return 'body';
+    }
+
+    /* istanbul ignore next */
+    return undefined;
+};
 
 module.exports = InputValidationError;
