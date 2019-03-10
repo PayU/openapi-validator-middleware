@@ -86,7 +86,7 @@ function _validateRequest(requestOptions) {
             return errors[0] && errors[1] ? Promise.reject(errors[0].concat(errors[1])) : errors[0] ? Promise.reject(errors[0]) : Promise.reject(errors[1]);
         }
     }).catch(function (errors) {
-        const error = new InputValidationError(errors, requestOptions.path, requestOptions.method.toLowerCase(),
+        const error = new InputValidationError(errors,
             { beautifyErrors: middlewareOptions.beautifyErrors,
                 firstError: middlewareOptions.firstError });
         return Promise.resolve(error);

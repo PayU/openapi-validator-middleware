@@ -7,7 +7,7 @@
  * @extends {Error}
  */
 class InputValidationError extends Error {
-    constructor(errors, path, method, options = {}) {
+    constructor(errors, options = {}) {
         super('Input validation error');
 
         if (options.beautifyErrors && options.firstError) {
