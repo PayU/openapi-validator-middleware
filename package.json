@@ -50,7 +50,9 @@
   "author": "Idan Tovi",
   "license": "MIT",
   "dependencies": {
-    "ajv": "^6.6.2"
+    "ajv": "^6.6.2",
+    "clone-deep": "^4.0.1",
+    "swagger-parser": "^6.0.2"
   },
   "devDependencies": {
     "ajv-keywords": "^3.4.0",
