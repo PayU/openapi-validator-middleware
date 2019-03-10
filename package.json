@@ -51,8 +51,7 @@
   "license": "MIT",
   "dependencies": {
     "ajv": "^6.6.2",
-    "clone-deep": "^4.0.1",
-    "swagger-parser": "^6.0.2"
+    "api-schema-builder": "git+ssh://git@github.com/galcohen92/api-schema-builder.git"
   },
   "devDependencies": {
     "ajv-keywords": "^3.4.0",
