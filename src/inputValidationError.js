@@ -70,13 +70,9 @@ const buildDataPath = function(error) {
         return `body/${error.dataPath}`;
     }
 
-    /* istanbul ignore start */
     if (error.dataPath === '') {
         return 'body';
     }
-
-    return undefined;
-    /* istanbul ignore end */
 };
 
 module.exports = InputValidationError;
