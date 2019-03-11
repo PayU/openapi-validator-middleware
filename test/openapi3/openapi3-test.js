@@ -18,7 +18,6 @@ let inputValidationOptions = function () {
     };
 };
 
-console.log('test');
 describe('input-validation middleware tests', function () {
     let app;
 
