@@ -16,7 +16,7 @@ var framework;
 function init(swaggerPath, options) {
     middlewareOptions = options || {};
     framework = middlewareOptions.framework ? require(`./frameworks/${middlewareOptions.framework}`) : require('./frameworks/express');
-    return apiSchemaBuilder.getSchema(swaggerPath, options).then((receivedSchemas) => {
+    return apiSchemaBuilder.buildSchema(swaggerPath, options).then((receivedSchemas) => {
         schemas = receivedSchemas;
     });
 }
