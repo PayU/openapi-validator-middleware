@@ -48,7 +48,7 @@
   },
   "homepage": "https://github.com/Zooz/express-ajv-swagger-validation",
   "author": "Idan Tovi",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "dependencies": {
     "ajv": "^6.6.2",
     "clone-deep": "^4.0.1",
