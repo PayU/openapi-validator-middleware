@@ -339,6 +339,7 @@ paths:
         - pets
       operationId: listPets
       parameters:
+        - $ref: '#/components/schemas/header_ref'
         - in: path
           name: pet_id
           required: true
@@ -475,6 +476,7 @@ components:
           type: string
       required:
         - name
+
     pet-discriminator-mapping:
       description: pet
       type: object
@@ -519,6 +521,13 @@ components:
           type: string
           pattern: '^\d+$'
 
+    header_ref:
+      name: header_ref
+      in: header
+      required: true
+      schema:
+        type: string
+        format: uuid
     small_dog:
       type: object
       required:

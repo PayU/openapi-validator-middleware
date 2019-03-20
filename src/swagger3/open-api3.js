@@ -11,21 +11,21 @@ module.exports = {
 };
 
 function buildPathParameters(parameters, pathParameters) {
-    let localParameters = [].concat(parameters, pathParameters);
-    localParameters.forEach(data => {
-        handleSchema(data);
-    });
+    let allParameters = [].concat(parameters, pathParameters);
+    let localParameters = allParameters.map(handleSchema);
     return localParameters;
 }
 
 function handleSchema(data) {
+    let clonedData = cloneDeep(data);
     let schema = data.schema;
     if (schema) {
-        delete data['schema'];
+        delete clonedData['schema'];
         Object.keys(schema).forEach(key => {
-            data[key] = schema[key];
+            clonedData[key] = schema[key];
         });
     }
+    return clonedData;
 }
 
 function buildBodyValidation(dereferenced, originalSwagger, currentPath, currentMethod, middlewareOptions = {}) {

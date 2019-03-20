@@ -4,6 +4,7 @@ let chai = require('chai'),
     expect = chai.expect,
     sinon = require('sinon'),
     chaiSinon = require('chai-sinon'),
+    uuid = require('uuid'),
     request = require('supertest');
 chai.use(chaiSinon);
 let inputValidationOptions = function () {
@@ -71,7 +72,7 @@ describe('input-validation middleware tests', function () {
         });
         it('valid cat', function (done) {
             request(app)
-                .get('/pets')
+                .post('/pet')
                 .set('public-key', '1.0')
                 .send({
                     fur: '6'
@@ -87,10 +88,8 @@ describe('input-validation middleware tests', function () {
         it('Not uuid  pet id in path', function (done) {
             request(app)
                 .get('/pets/not_uuid_value')
-                .set('public-key', '1.0')
-                .send({
-                    fur: '6'
-                })
+                .set('header_ref', uuid())
+                .send({})
                 .expect(400, function (err, res) {
                     if (err) {
                         throw err;
@@ -102,10 +101,8 @@ describe('input-validation middleware tests', function () {
         it('Valid uuid pet id in path', function (done) {
             request(app)
                 .get('/pets/c1745658-46a1-4653-9bb0-7846e6d8a522')
-                .set('public-key', '1.0')
-                .send({
-                    fur: '6'
-                })
+                .set('header_ref', uuid())
+                .send({})
                 .expect(200, function (err, res) {
                     if (err) {
                         throw err;
@@ -113,6 +110,31 @@ describe('input-validation middleware tests', function () {
                     expect(res.body).to.eql({
                         'result': 'OK'
                     });
+                    done();
+                });
+        });
+        it('Valid uuid header_ref in header', function (done) {
+            request(app)
+                .get('/pets/c1745658-46a1-4653-9bb0-7846e6d8a522')
+                .set('header_ref', 'not uuid value')
+                .send({})
+                .expect(400, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.more_info).to.eql('["headers.header_ref should match format \\"uuid\\""]');
+                    done();
+                });
+        });
+        it('Valid uuid header_ref id required', function (done) {
+            request(app)
+                .get('/pets/c1745658-46a1-4653-9bb0-7846e6d8a522')
+                .send({})
+                .expect(400, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.more_info).to.eql('["headers should have required property \'header_ref\'"]');
                     done();
                 });
         });

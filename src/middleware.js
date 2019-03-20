@@ -21,7 +21,7 @@ function init(swaggerPath, options) {
         SwaggerParser.dereference(swaggerPath),
         SwaggerParser.parse(swaggerPath)
     ]).then(function (swaggers) {
-        let localParameters =[];
+        let localParameters = [];
         const dereferenced = swaggers[0];
         Object.keys(dereferenced.paths).forEach(function (currentPath) {
             let pathParameters = dereferenced.paths[currentPath].parameters || [];
