@@ -16,10 +16,14 @@ var framework;
 function init(swaggerPath, options) {
     middlewareOptions = options || {};
     framework = middlewareOptions.framework ? require(`./frameworks/${middlewareOptions.framework}`) : require('./frameworks/express');
-    return apiSchemaBuilder.buildSchema(swaggerPath, options).then((receivedSchemas) => {
+
+    // build schema for requests only
+    let schemaBuilderOptions = Object.assign({}, options, {buildRequests: true, buildResponses: false});
+    return apiSchemaBuilder.buildSchema(swaggerPath, schemaBuilderOptions).then((receivedSchemas) => {
         schemas = receivedSchemas;
     });
 }
+
 /**
  * The middleware - should be called for each express route
  * @param {any} req
