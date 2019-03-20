@@ -21,6 +21,7 @@ function init(swaggerPath, options) {
         SwaggerParser.dereference(swaggerPath),
         SwaggerParser.parse(swaggerPath)
     ]).then(function (swaggers) {
+        let localParameters =[];
         const dereferenced = swaggers[0];
         Object.keys(dereferenced.paths).forEach(function (currentPath) {
             let pathParameters = dereferenced.paths[currentPath].parameters || [];
@@ -33,6 +34,7 @@ function init(swaggerPath, options) {
                     const parameters = dereferenced.paths[currentPath][currentMethod].parameters || [];
                     if (isOpenApi3) {
                         schemas[parsedPath][currentMethod].body = swagger3.buildBodyValidation(dereferenced, swaggers[1], currentPath, currentMethod, middlewareOptions);
+                        localParameters = swagger3.buildPathParameters(parameters, pathParameters);
                     } else {
                         let bodySchema = middlewareOptions.expectFormFieldsInBody
                             ? parameters.filter(function (parameter) { return (parameter.in === 'body' || (parameter.in === 'formData' && parameter.type !== 'file')) })
@@ -44,11 +46,8 @@ function init(swaggerPath, options) {
                             const validatedBodySchema = swagger2.getValidatedBodySchema(bodySchema);
                             schemas[parsedPath][currentMethod].body = swagger2.buildBodyValidation(validatedBodySchema, dereferenced.definitions, swaggers[1], currentPath, currentMethod, parsedPath, middlewareOptions);
                         }
+                        localParameters = swagger2.buildPathParameters(parameters, pathParameters);
                     }
-
-                    let localParameters = parameters.filter(function (parameter) {
-                        return parameter.in !== 'body';
-                    }).concat(pathParameters);
 
                     if (localParameters.length > 0 || middlewareOptions.contentTypeValidation) {
                         schemas[parsedPath][currentMethod].parameters = buildParametersValidation(localParameters,

@@ -5,8 +5,15 @@ const Validators = require('../validators'),
 
 module.exports = {
     getValidatedBodySchema,
+    buildPathParameters,
     buildBodyValidation
 };
+function buildPathParameters(parameters,pathParameters) {
+    let localParameters = parameters.filter(function (parameter) {
+        return parameter.in !== 'body';
+    }).concat(pathParameters);
+    return localParameters;
+}
 
 function getValidatedBodySchema(bodySchema) {
     let validatedBodySchema;

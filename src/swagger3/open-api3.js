@@ -6,8 +6,27 @@ const Validators = require('../validators'),
     {Node} = require('../data_structures/tree');
 
 module.exports = {
-    buildBodyValidation
+    buildBodyValidation,
+    buildPathParameters
 };
+
+function buildPathParameters(parameters, pathParameters) {
+    let localParameters = [].concat(parameters, pathParameters);
+    localParameters.forEach(data => {
+        handleSchema(data);
+    });
+    return localParameters;
+}
+
+function handleSchema(data) {
+    let schema = data.schema;
+    if (schema) {
+        delete data['schema'];
+        Object.keys(schema).forEach(key => {
+            data[key] = schema[key];
+        });
+    }
+}
 
 function buildBodyValidation(dereferenced, originalSwagger, currentPath, currentMethod, middlewareOptions = {}) {
     if (!dereferenced.paths[currentPath][currentMethod].requestBody){
