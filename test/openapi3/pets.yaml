@@ -27,10 +27,10 @@ paths:
     get:
       summary: get all pets
       security:
-      - public-key: []
+        - public-key: []
       description: >-
       tags:
-      - pets
+        - pets
       operationId: listPets
       responses:
         '200':
@@ -329,6 +329,26 @@ paths:
               $ref: '#/components/schemas/pet-discriminator-mapping'
         description: Create pet
         required: true
+  /pets/{pet_id}:
+    get:
+      summary: get pet by id
+      security:
+        - public-key: []
+      description: >-
+      tags:
+        - pets
+      operationId: listPets
+      parameters:
+        - in: path
+          name: pet_id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: get pet with id
+
   /pet-discriminator-on-child:
     post:
       summary: Create a multiple pet

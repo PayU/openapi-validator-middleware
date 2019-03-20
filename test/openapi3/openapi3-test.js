@@ -71,7 +71,7 @@ describe('input-validation middleware tests', function () {
         });
         it('valid cat', function (done) {
             request(app)
-                .post('/pet')
+                .get('/pets/test')
                 .set('public-key', '1.0')
                 .send({
                     fur: '6'
@@ -81,6 +81,38 @@ describe('input-validation middleware tests', function () {
                         throw err;
                     }
                     expect(res.body.result).to.equal('OK');
+                    done();
+                });
+        });
+        it('Not uuid  pet id in path', function (done) {
+            request(app)
+                .get('/pets/not_uuid_value')
+                .set('public-key', '1.0')
+                .send({
+                    fur: '6'
+                })
+                .expect(400, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.more_info).to.equal('["path/pet_id should match format \\"uuid\\""]');
+                    done();
+                });
+        });
+        it('Valid uuid pet id in path', function (done) {
+            request(app)
+                .get('/pets/c1745658-46a1-4653-9bb0-7846e6d8a522')
+                .set('public-key', '1.0')
+                .send({
+                    fur: '6'
+                })
+                .expect(200, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body).to.eql({
+                        'result': 'OK'
+                    });
                     done();
                 });
         });
