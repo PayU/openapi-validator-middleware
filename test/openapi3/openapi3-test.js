@@ -71,7 +71,7 @@ describe('input-validation middleware tests', function () {
         });
         it('valid cat', function (done) {
             request(app)
-                .get('/pets/test')
+                .get('/pets')
                 .set('public-key', '1.0')
                 .send({
                     fur: '6'
