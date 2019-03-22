@@ -19,7 +19,13 @@ var framework;
  */
 function init(swaggerPath, options) {
     middlewareOptions = options || {};
-    framework = middlewareOptions.framework ? require(`./frameworks/${middlewareOptions.framework}`) : require('./frameworks/express');
+
+    var allowedFrameworks = ['express', 'koa'];
+    var frameworkToLoad = allowedFrameworks.find(function (frameworkName) {
+        return middlewareOptions.framework === frameworkName;
+    });
+
+    framework = frameworkToLoad ? require(`./frameworks/${frameworkToLoad}`) : require('./frameworks/express');
     const makeOptionalAttributesNullable = middlewareOptions.makeOptionalAttributesNullable || false;
 
     return Promise.all([
@@ -36,7 +42,7 @@ function init(swaggerPath, options) {
                     schemas[parsedPath][currentMethod.toLowerCase()] = {};
                     const isOpenApi3 = dereferenced.openapi === '3.0.0';
                     const parameters = dereferenced.paths[currentPath][currentMethod].parameters || [];
-                    if (isOpenApi3){
+                    if (isOpenApi3) {
                         schemas[parsedPath][currentMethod].body = swagger3.buildBodyValidation(dereferenced, swaggers[1], currentPath, currentMethod, middlewareOptions);
                     } else {
                         let bodySchema = middlewareOptions.expectFormFieldsInBody
@@ -87,8 +93,10 @@ function _validateRequest(requestOptions) {
         }
     }).catch(function (errors) {
         const error = new InputValidationError(errors, requestOptions.path, requestOptions.method.toLowerCase(),
-            { beautifyErrors: middlewareOptions.beautifyErrors,
-                firstError: middlewareOptions.firstError });
+            {
+                beautifyErrors: middlewareOptions.beautifyErrors,
+                firstError: middlewareOptions.firstError
+            });
         return Promise.resolve(error);
     });
 }
