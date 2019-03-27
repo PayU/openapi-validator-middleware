@@ -50,8 +50,7 @@
   "author": "Idan Tovi",
   "license": "MIT",
   "dependencies": {
-    "ajv": "^6.6.2",
-    "api-schema-builder": "^1.0.1"
+    "api-schema-builder": "^1.0.4"
   },
   "devDependencies": {
     "ajv-keywords": "^3.4.0",

@@ -1,7 +1,6 @@
 'use strict';
 
 var InputValidationError = require('./inputValidationError'),
-    Ajv = require('ajv'),
     apiSchemaBuilder = require('api-schema-builder');
 
 var schemas = {};
