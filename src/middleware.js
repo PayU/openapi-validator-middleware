@@ -7,14 +7,34 @@ var schemas = {};
 var middlewareOptions;
 var framework;
 
+/**
+ * Initialize the input validation middleware
+ * @param {string} swaggerPath - the path for the swagger file
+ * @param {Object} options - options.formats to add formats to ajv, options.beautifyErrors, options.firstError, options.expectFormFieldsInBody, options.fileNameField (default is 'fieldname' - multer package), options.ajvConfigBody and options.ajvConfigParams for config object that will be passed for creation of Ajv instance used for validation of body and parameters appropriately
+ */
 function init(swaggerPath, options) {
     middlewareOptions = options || {};
-    framework = middlewareOptions.framework ? require(`./frameworks/${middlewareOptions.framework}`) : require('./frameworks/express');
-    return apiSchemaBuilder.getSchema(swaggerPath, options).then((receivedSchemas) => {
+    var allowedFrameworks = ['express', 'koa'];
+    var frameworkToLoad = allowedFrameworks.find(function (frameworkName) {
+        return middlewareOptions.framework === frameworkName;
+    });
+
+    framework = frameworkToLoad ? require(`./frameworks/${frameworkToLoad}`) : require('./frameworks/express');
+
+    // build schema for requests only
+    let schemaBuilderOptions = Object.assign({}, options, {buildRequests: true, buildResponses: false});
+    return apiSchemaBuilder.buildSchema(swaggerPath, schemaBuilderOptions).then((receivedSchemas) => {
         schemas = receivedSchemas;
     });
 }
 
+/**
+ * The middleware - should be called for each express route
+ * @param {any} req
+ * @param {any} res
+ * @param {any} next
+ * @returns In case of an error will call `next` with `InputValidationError`
+ */
 function validate(...args) {
     return framework.validate(_validateRequest, ...args);
 }
@@ -29,10 +49,8 @@ function _validateRequest(requestOptions) {
         }
     }).catch(function (errors) {
         const error = new InputValidationError(errors,
-            {
-                beautifyErrors: middlewareOptions.beautifyErrors,
-                firstError: middlewareOptions.firstError
-            });
+            { beautifyErrors: middlewareOptions.beautifyErrors,
+                firstError: middlewareOptions.firstError });
         return Promise.resolve(error);
     });
 }

@@ -48,10 +48,9 @@
   },
   "homepage": "https://github.com/Zooz/express-ajv-swagger-validation",
   "author": "Idan Tovi",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "dependencies": {
-    "ajv": "^6.6.2",
-    "api-schema-builder": "^0.0.2"
+    "api-schema-builder": "^1.0.7"
   },
   "devDependencies": {
     "ajv-keywords": "^3.4.0",
@@ -69,7 +68,7 @@
     "eslint-plugin-promise": "^3.8.0",
     "eslint-plugin-standard": "^3.1.0",
     "express": "^4.16.4",
-    "koa": "^2.6.2",
+    "koa": "^2.7.0",
     "koa-bodyparser": "^4.2.1",
     "koa-multer": "^1.0.2",
     "koa-router": "^7.4.0",

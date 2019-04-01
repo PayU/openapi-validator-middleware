@@ -40,28 +40,27 @@ npm install --save express-ajv-swagger-validation
 ### How to use
 
 ```js
-var swaggerValidator = require('express-ajv-swagger-validation');
+const swaggerValidator = require('express-ajv-swagger-validation');
 ```
 
 ### express-ajv-swagger-validation.validate
 
-This Middleware validate the request body, headers, path parameters and query parameters according to the path definition in the swagger file.
-Please make sure to use this middleware inside route definition in order to have `req.route.path` assign to the most accurate express route.
+This middleware validates the request body, headers, path parameters and query parameters according to the path definition in the swagger file. Please make sure to use this middleware inside a route definition in order to have `req.route.path` assign to the most accurate express route.
 
 ### express-ajv-swagger-validation.init(PathToSwaggerFile, options)
 
 Init the middleware with the swagger definition.
 
-The function return Promise.
+The function returns a Promise.
 
 #### Arguments
 
-* `PathToSwaggerFile` &ndash; Path to the swagger definition
-* `options` &ndash; Additional options for the middleware.
+* `PathToSwaggerFile` - Path to the swagger definition
+* `options` - Additional options for the middleware
 
 ##### Options
 
-Options currently supports:
+Options currently supported:
 - `framework` - Defines in which framework the middleware is working ('koa' or 'express'). As default, set to 'express'.
 - `formats` - Array of formats that can be added to `ajv` configuration, each element in the array should include `name` and `pattern`.
 - `keywords` - Array of keywords that can be added to `ajv` configuration, each element in the array can be either an object or a function. 
@@ -74,7 +73,7 @@ If the element is an object, it must include `name` and `definition`. If the ele
         - `body/test should have required property 'field1'` - nested field
         - `body should have required property 'name'` - Missing field in body
 
-    You can see more examples in the tests
+    You can see more examples in [the tests](./test)
 
 - `firstError` - Boolean that indicates if to return only the first error.
 - `makeOptionalAttributesNullable` - Boolean that forces preprocessing of Swagger schema to include 'null' as possible type for all non-required properties. Main use-case for this is to ensure correct handling of null values when Ajv type coercion is enabled
@@ -96,28 +95,28 @@ formats: [
 ```js
 swaggerValidator.init('test/unit-tests/input-validation/pet-store-swagger.yaml')
     .then(function () {
-        var app = express();
+        const app = express();
         app.use(bodyParser.json());
         app.get('/pets', swaggerValidator.validate, function (req, res, next) {
-            res.json({ result: 'OK' });
+            return res.json({ result: 'OK' });
         });
         app.post('/pets', swaggerValidator.validate, function (req, res, next) {
-            res.json({ result: 'OK' });
+            return res.json({ result: 'OK' });
         });
         app.get('/pets/:petId', swaggerValidator.validate, function (req, res, next) {
-            res.json({ result: 'OK' });
+            return res.json({ result: 'OK' });
         });
 
-        app.use(function (err, req, res, next) {
+        app.use(function (err, req, res) {
             if (err instanceof swaggerValidator.InputValidationError) {
-                res.status(400).json({ more_info: JSON.stringify(err.errors) });
+                return res.status(400).json({ more_info: JSON.stringify(err.errors) });
             }
         });
 
-        var server = app.listen(serverPort, function () {
-        });
+        const server = app.listen(serverPort, function () {});
     });
 ```
+
 ### Koa
 ```js
 'use strict';
@@ -151,6 +150,7 @@ module.exports = inputValidation.init('test/pet-store-swagger.yaml', {framework:
         return Promise.resolve(app);
     });
 ```
+
 ## Important Notes
 
 - Objects - it is important to set any objects with the property `type: object` inside your swagger file, although it isn't a must in the Swagger (OpenAPI) spec in order to validate it accurately with [ajv](https://www.npmjs.com/package/ajv) it must be marked as `object`
@@ -165,6 +165,7 @@ module.exports = inputValidation.init('test/pet-store-swagger.yaml', {framework:
 
 ## Running Tests
 Using mocha, istanbul and mochawesome
+
 ```bash
 npm test
 ```
