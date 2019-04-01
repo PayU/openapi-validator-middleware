@@ -14,7 +14,13 @@ var framework;
 
 function init(swaggerPath, options) {
     middlewareOptions = options || {};
-    framework = middlewareOptions.framework ? require(`./frameworks/${middlewareOptions.framework}`) : require('./frameworks/express');
+
+    var allowedFrameworks = ['express', 'koa'];
+    var frameworkToLoad = allowedFrameworks.find(function (frameworkName) {
+        return middlewareOptions.framework === frameworkName;
+    });
+
+    framework = frameworkToLoad ? require(`./frameworks/${frameworkToLoad}`) : require('./frameworks/express');
     const makeOptionalAttributesNullable = middlewareOptions.makeOptionalAttributesNullable || false;
 
     return Promise.all([
