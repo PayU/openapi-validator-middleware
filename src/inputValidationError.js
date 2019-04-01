@@ -73,6 +73,8 @@ const buildDataPath = function(error) {
     if (error.dataPath === '') {
         return 'body';
     }
+
+    return undefined;
 };
 
 module.exports = InputValidationError;
