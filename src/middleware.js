@@ -12,11 +12,6 @@ var schemas = {};
 var middlewareOptions;
 var framework;
 
-/**
- * Initialize the input validation middleware
- * @param {string} swaggerPath - the path for the swagger file
- * @param {Object} options - options.formats to add formats to ajv, options.beautifyErrors, options.firstError, options.expectFormFieldsInBody, options.fileNameField (default is 'fieldname' - multer package), options.ajvConfigBody and options.ajvConfigParams for config object that will be passed for creation of Ajv instance used for validation of body and parameters appropriately
- */
 function init(swaggerPath, options) {
     middlewareOptions = options || {};
 
@@ -72,13 +67,7 @@ function init(swaggerPath, options) {
             return Promise.reject(error);
         });
 }
-/**
- * The middleware - should be called for each express route
- * @param {any} req
- * @param {any} res
- * @param {any} next
- * @returns In case of an error will call `next` with `InputValidationError`
- */
+
 function validate(...args) {
     return framework.validate(_validateRequest, ...args);
 }

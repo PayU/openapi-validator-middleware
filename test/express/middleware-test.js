@@ -10,7 +10,13 @@ describe('input-validation middleware tests - Express', function () {
     describe('init function tests', function () {
         it('should reject the promise in case the file doesn\'t exists', function () {
             let rewire = require('rewire');
-            let middleware = rewire('../../src/middleware');
+            // let middleware = rewire('../../src/middleware');
+            let middleware = require('../../src/middleware');
+
+            middleware.init('', {
+                ajvConfigBody: true,
+                firstError: 'dsadsa'
+            });
             return middleware.init('test/pet-store-swagger1.yaml')
                 .catch(function (err) {
                     expect(err).to.exist;
@@ -405,7 +411,7 @@ describe('input-validation middleware tests - Express', function () {
                     }
                 }])
                 .expect(200)
-                .end(function(err, res) {
+                .end(function (err, res) {
                     if (err) {
                         return done(err);
                     }
@@ -431,7 +437,7 @@ describe('input-validation middleware tests - Express', function () {
                     }
                 }])
                 .expect(200)
-                .end(function(err, res) {
+                .end(function (err, res) {
                     if (err) {
                         return done(err);
                     }
@@ -457,7 +463,7 @@ describe('input-validation middleware tests - Express', function () {
                     }
                 })
                 .expect(200)
-                .end(function(err, res) {
+                .end(function (err, res) {
                     if (err) {
                         return done(err);
                     }
@@ -481,7 +487,7 @@ describe('input-validation middleware tests - Express', function () {
                     }
                 })
                 .expect(200)
-                .end(function(err, res) {
+                .end(function (err, res) {
                     if (err) {
                         return done(err);
                     }
@@ -507,7 +513,7 @@ describe('input-validation middleware tests - Express', function () {
                     }
                 })
                 .expect(200)
-                .end(function(err, res) {
+                .end(function (err, res) {
                     if (err) {
                         return done(err);
                     }
@@ -530,7 +536,7 @@ describe('input-validation middleware tests - Express', function () {
                     }
                 }])
                 .expect(200)
-                .end(function(err, res) {
+                .end(function (err, res) {
                     if (err) {
                         return done(err);
                     }
