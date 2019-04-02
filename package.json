@@ -50,9 +50,7 @@
   "author": "Idan Tovi",
   "license": "Apache-2.0",
   "dependencies": {
-    "ajv": "^6.10.0",
-    "clone-deep": "^4.0.1",
-    "swagger-parser": "^6.0.2"
+    "api-schema-builder": "^1.0.7"
   },
   "devDependencies": {
     "ajv-keywords": "^3.4.0",

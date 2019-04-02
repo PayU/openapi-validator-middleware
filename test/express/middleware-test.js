@@ -9,8 +9,6 @@ chai.use(chaiSinon);
 describe('input-validation middleware tests - Express', function () {
     describe('init function tests', function () {
         it('should reject the promise in case the file doesn\'t exists', function () {
-            let rewire = require('rewire');
-            // let middleware = rewire('../../src/middleware');
             let middleware = require('../../src/middleware');
 
             middleware.init('', {

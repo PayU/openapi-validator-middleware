@@ -17,6 +17,7 @@ let inputValidationOptions = function () {
         firstError: false
     };
 };
+
 describe('input-validation middleware tests', function () {
     let app;
 
