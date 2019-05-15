@@ -17,22 +17,21 @@ This package provides data validation within an Express or Koa app according to 
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  <!-- *generated with [DocToc](https://github.com/thlorenz/doctoc)* -->
 
-- [express-ajv-swagger-validation](#express-ajv-swagger-validation)
-  - [Installation](#installation)
-  - [API](#api)
-    - [express-ajv-swagger-validation.validate](#express-ajv-swagger-validationvalidate)
-    - [express-ajv-swagger-validation.init(pathToSwaggerFile, options)](#express-ajv-swagger-validationinitpathtoswaggerfile-options)
-      - [Options](#options)
-  - [Usage Example](#usage-example)
-    - [Express](#express)
-    - [Koa](#koa)
-  - [Important Notes](#important-notes)
-    - [Schema Objects](#schema-objects)
-    - [Multipart/form-data (files)](#multipartform-data-files)
-    - [Koa support](#koa-support)
-    - [Koa packages](#koa-packages)
-  - [Known Issues with OpenAPI 3](#known-issues-with-openapi-3)
-  - [Running Tests](#running-tests)
+- [Installation](#installation)
+- [API](#api)
+  - [express-ajv-swagger-validation.validate](#express-ajv-swagger-validationvalidate)
+  - [express-ajv-swagger-validation.init(pathToSwaggerFile, options)](#express-ajv-swagger-validationinitpathtoswaggerfile-options)
+    - [Options](#options)
+- [Usage Example](#usage-example)
+  - [Express](#express)
+  - [Koa](#koa)
+- [Important Notes](#important-notes)
+  - [Schema Objects](#schema-objects)
+  - [Multipart/form-data (files)](#multipartform-data-files)
+  - [Koa support](#koa-support)
+  - [Koa packages](#koa-packages)
+- [Known Issues with OpenAPI 3](#known-issues-with-openapi-3)
+- [Running Tests](#running-tests)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
