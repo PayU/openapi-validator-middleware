@@ -377,6 +377,65 @@ describe('input-validation middleware tests - Express', function () {
                 });
         });
     });
+
+    describe('App-level middleware server', () => {
+        var app;
+        before(function () {
+            return require('./test-simple-server-app-level-middleware').then(function (testServer) {
+                app = testServer;
+            });
+        });
+        it('bad body - missing required object attribute', function (done) {
+            request(app)
+                .post('/pets')
+                .set('request-id', '123434')
+                .set('api-version', '1.0')
+                .send({
+                    name: 'name',
+                    tag: 'tag'
+                })
+                .expect(400, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    expect(moreInfoAsJson).to.be.instanceof(Array);
+                    expect(res.body.more_info).to.includes('test');
+                    done();
+                });
+        });
+
+        it('valid empty request - should pass validation', function (done) {
+            request(app)
+                .put('/pets/1234')
+                .set('request-id', '1234')
+                .set('api-version', '1.0')
+                .expect(400, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.result).to.equal('OK');
+                    done();
+                });
+        });
+
+        it('bad format of GET uid', function (done) {
+            request(app)
+                .get('/pets/gargar')
+                .set('request-id', '123434')
+                .set('api-version', '1.0')
+                .expect(400, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    expect(moreInfoAsJson).to.be.instanceof(Array);
+                    expect(res.body.more_info).to.includes(`should have required property 'petId'`);
+                    done();
+                });
+        });
+    });
+
     describe('Simple server - type coercion enabled', function () {
         var app;
         before(function () {

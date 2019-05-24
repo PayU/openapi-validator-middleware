@@ -12,7 +12,7 @@ function _getParameters(ctx) {
     return requestOptions;
 }
 
-async function validate(validateRequest, ctx, next) {
+async function validate(_schema, _pathObjects, validateRequest, ctx, next) {
     let requestOptions, errors;
     requestOptions = _getParameters(ctx, next);
     errors = await validateRequest(requestOptions);

@@ -1,11 +1,23 @@
 'use strict';
 
+const pathToRegexp = require('path-to-regexp');
 var InputValidationError = require('./inputValidationError'),
     apiSchemaBuilder = require('api-schema-builder');
 
 var schemas = {};
 var middlewareOptions;
 var framework;
+let pathObjects;
+
+const buildPathObjects = (schema) => schema.map(([path, pathDef]) => {
+    return {
+        definition: pathDef,
+        original: ['paths', path],
+        regexp: pathToRegexp(path.replace(/\{/g, ':').replace(/\}/g, '')),
+        path,
+        pathDef
+    };
+});
 
 function init(swaggerPath, options) {
     middlewareOptions = options || {};
@@ -20,11 +32,12 @@ function init(swaggerPath, options) {
     let schemaBuilderOptions = Object.assign({}, options, {buildRequests: true, buildResponses: false});
     return apiSchemaBuilder.buildSchema(swaggerPath, schemaBuilderOptions).then((receivedSchemas) => {
         schemas = receivedSchemas;
+        pathObjects = buildPathObjects(Object.entries(schemas));
     });
 }
 
 function validate(...args) {
-    return framework.validate(_validateRequest, ...args);
+    return framework.validate(schemas, pathObjects, _validateRequest, ...args);
 }
 
 function _validateRequest(requestOptions) {
