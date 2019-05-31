@@ -3,7 +3,7 @@
 let chai = require('chai'),
     expect = chai.expect,
     sinon = require('sinon'),
-    chaiSinon = require('chai-sinon'),
+    chaiSinon = require('sinon-chai'),
     InputValidationError = require('../../src/inputValidationError');
 chai.use(chaiSinon);
 
