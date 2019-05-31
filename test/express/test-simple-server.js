@@ -1,6 +1,6 @@
 'use strict';
 
-var express = require('express');
+const express = require('express');
 var bodyParser = require('body-parser');
 var inputValidation = require('../../src/middleware');
 

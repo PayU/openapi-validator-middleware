@@ -2,7 +2,7 @@
 
 let chai = require('chai'),
     expect = chai.expect,
-    chaiSinon = require('chai-sinon');
+    chaiSinon = require('sinon-chai');
 chai.use(chaiSinon);
 
 let inputValidationOptions = function () {
