@@ -3,13 +3,17 @@
     "plugins": [
         "standard",
         "promise",
-        "chai-friendly"
+        "chai-friendly",
+        "@typescript-eslint"
     ],
+    "parser": "@typescript-eslint/parser",
     "env": {
          "node": true,
          "mocha": true
      },
     "rules": {
+        "no-useless-constructor": "off",
+        "no-unused-vars":  "warn",
         "eol-last": "off",
         "space-before-function-paren": "off",
         "indent": ["error", 4],
