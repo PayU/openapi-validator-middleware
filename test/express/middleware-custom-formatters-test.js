@@ -21,8 +21,9 @@ describe('Simple server - custom formatters', () => {
             .expect(400)
             .end((_err, res) => {
                 expect(res.body).to.eql({
-                    'more_info': '[{"keyword":"type","dataPath":".test","schemaPath":"#/properties/test/type","params":{"type":"object"},"message":"should be object"}]',
-                    'extra_text': 'dummy-text'
+                    'errors': '[{"keyword":"type","dataPath":".test","schemaPath":"#/properties/test/type","params":{"type":"object"},"message":"should be object"}]',
+                    'extraText': 'dummy-text',
+                    'isCustom': true
                 });
                 done();
             });

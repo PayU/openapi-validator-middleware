@@ -26,10 +26,7 @@ module.exports = inputValidation.init('test/pet-store-swagger.yaml',
             res.json({ result: 'OK' });
         });
         app.use((err, req, res, next) => {
-            if (err.isCustom) {
-                res.status(400).json({ more_info: err.errors, extra_text: err.extraText });
-            }
+            res.status(400).json(err);
         });
-
         return Promise.resolve(app);
     });
