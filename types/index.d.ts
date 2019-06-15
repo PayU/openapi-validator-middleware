@@ -6,7 +6,7 @@
  * configuration options. This function should be called
  * before using `validate` middleware.
  */
-export function init(swaggerPath: string, options?: ajvValidatorOptions): Promise<void>;
+export function init(swaggerPath: string, options?: ajvValidatorOptions): void;
 
 /**
  * Middleware that validates the request against the swagger

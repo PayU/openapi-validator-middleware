@@ -4,9 +4,7 @@ const request = require('supertest');
 describe('Simple server - custom formatters', () => {
     let app;
     before(() => {
-        return require('./test-simple-server-custom-formatters').then((testServer) => {
-            app = testServer;
-        });
+        app = require('./test-simple-server-custom-formatters')();
     });
     it('should use custom formatter for thrown error', (done) => {
         request(app)
