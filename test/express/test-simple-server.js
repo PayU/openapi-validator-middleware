@@ -1,8 +1,8 @@
 'use strict';
 
 const express = require('express');
-var bodyParser = require('body-parser');
-var inputValidation = require('../../src/middleware');
+const bodyParser = require('body-parser');
+const inputValidation = require('../../src/middleware');
 
 module.exports = inputValidation.init('test/pet-store-swagger.yaml')
     .then(function () {
