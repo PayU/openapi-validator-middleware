@@ -2,6 +2,7 @@
 
 const InputValidationError = require('./inputValidationError'),
     apiSchemaBuilder = require('api-schema-builder');
+const allowedFrameworks = ['express', 'koa'];
 
 let schemas = {};
 let middlewareOptions;
@@ -9,8 +10,7 @@ let framework;
 
 function init(swaggerPath, options) {
     middlewareOptions = options || {};
-    const allowedFrameworks = ['express', 'koa'];
-    const frameworkToLoad = allowedFrameworks.find(function (frameworkName) {
+    const frameworkToLoad = allowedFrameworks.find((frameworkName) => {
         return middlewareOptions.framework === frameworkName;
     });
 
@@ -34,9 +34,16 @@ function _validateRequest(requestOptions) {
             return errors[0] && errors[1] ? Promise.reject(errors[0].concat(errors[1])) : errors[0] ? Promise.reject(errors[0]) : Promise.reject(errors[1]);
         }
     }).catch(function (errors) {
-        const error = new InputValidationError(errors,
-            { beautifyErrors: middlewareOptions.beautifyErrors,
-                firstError: middlewareOptions.firstError });
+        let error;
+
+        if (middlewareOptions.errorFormatter) {
+            error = middlewareOptions.errorFormatter(errors, middlewareOptions);
+        } else {
+            error = new InputValidationError(errors,
+                { beautifyErrors: middlewareOptions.beautifyErrors,
+                    firstError: middlewareOptions.firstError });
+        }
+
         return Promise.resolve(error);
     });
 }
@@ -61,7 +68,7 @@ function _validateParams(headers, pathParams, query, files, path, method) {
 }
 
 module.exports = {
-    init: init,
-    validate: validate,
-    InputValidationError: InputValidationError
+    init,
+    validate,
+    InputValidationError
 };

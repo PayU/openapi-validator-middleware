@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Input validation using Swagger (Open API) and ajv",
   "main": "src/middleware.js",
+  "types": "types/index.d.ts",
   "nyc": {
     "report-dir": "./coverage",
     "lines": 95,
@@ -23,7 +24,8 @@
     "all": true
   },
   "scripts": {
-    "test": "nyc node_modules/mocha/bin/_mocha --recursive ./test/*/*/*-test.js ./test/*/*-test.js ./test/*-test.js",
+    "lint:types": "dtslint types && eslint types/index.d.ts",
+    "test": "nyc node_modules/mocha/bin/_mocha --recursive ./test/*/*/*-test.js ./test/*/*-test.js ./test/*-test.js && npm run lint:types",
     "node6-test": "nyc node_modules/mocha/bin/_mocha --recursive ./test/express/*/*-test.js ./test/express/*-test.js ./test/*-test.js",
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
     "doctoc": "npm install -g doctoc && doctoc README.md"
@@ -53,11 +55,14 @@
     "api-schema-builder": "^1.1.0"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^1.9.0",
+    "@typescript-eslint/parser": "^1.9.0",
     "ajv-keywords": "^3.4.0",
     "body-parser": "^1.18.3",
     "chai": "^4.2.0",
     "clear-require": "^2.0.0",
     "coveralls": "^3.0.3",
+    "dtslint": "^0.7.8",
     "eslint": "^5.16.0",
     "eslint-config-standard": "^12.0.0",
     "eslint-plugin-chai-friendly": "^0.4.1",
@@ -78,7 +83,8 @@
     "rewire": "^4.0.1",
     "sinon": "^7.3.2",
     "sinon-chai": "^3.3.0",
-    "supertest": "^4.0.2"
+    "supertest": "^4.0.2",
+    "typescript": "3.4.5"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"

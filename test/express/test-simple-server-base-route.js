@@ -3,8 +3,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const inputValidation = require('../../src/middleware');
-
 const router = express.Router();
+
 router.route('/').get(inputValidation.validate, function (req, res, next) {
     res.json({ result: 'OK' });
 });
