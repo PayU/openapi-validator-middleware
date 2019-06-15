@@ -4,17 +4,17 @@ const Koa = require('koa');
 const Router = require('koa-router');
 const bodyParser = require('koa-bodyparser');
 const inputValidation = require('../../src/middleware');
-var range = require('ajv-keywords/keywords/range');
+const range = require('ajv-keywords/keywords/range');
 
 const definition = {
     type: 'object',
     macro: function (schema) {
         if (schema.length === 0) return true;
-        if (schema.length === 1) return {not: {required: schema}};
-        var schemas = schema.map(function (prop) {
-            return {required: [prop]};
+        if (schema.length === 1) return { not: { required: schema } };
+        const schemas = schema.map(function (prop) {
+            return { required: [prop] };
         });
-        return {not: {anyOf: schemas}};
+        return { not: { anyOf: schemas } };
     },
     metaSchema: {
         type: 'array',
@@ -40,7 +40,7 @@ app.use(async function(ctx, next) {
 app.use(bodyParser());
 app.use(router.routes());
 
-var inputValidationOptions = {
+const inputValidationOptions = {
     keywords: [range, { name: 'prohibited', definition }],
     beautifyErrors: true,
     firstError: true,
@@ -48,11 +48,12 @@ var inputValidationOptions = {
     framework: 'koa'
 };
 
-module.exports = inputValidation.init('test/custom-keywords-swagger.yaml', inputValidationOptions)
-    .then(function () {
-        router.post('/keywords', inputValidation.validate, function (ctx, next) {
-            ctx.status = 200;
-            ctx.body = { result: 'OK' };
-        });
-        return Promise.resolve(app);
+module.exports = () => {
+    inputValidation.init('test/custom-keywords-swagger.yaml', inputValidationOptions);
+
+    router.post('/keywords', inputValidation.validate, function (ctx, next) {
+        ctx.status = 200;
+        ctx.body = { result: 'OK' };
     });
+    return app;
+};

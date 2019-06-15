@@ -51,7 +51,7 @@ This middleware validates the request body, headers, path parameters and query p
 
 Init the middleware with the swagger definition.
 
-The function returns a Promise.
+The function executes synchronously and does not return anything.
 
 #### Arguments
 
@@ -93,28 +93,26 @@ formats: [
 ## Usage Example
 ### Express
 ```js
-swaggerValidator.init('test/unit-tests/input-validation/pet-store-swagger.yaml')
-    .then(function () {
-        const app = express();
-        app.use(bodyParser.json());
-        app.get('/pets', swaggerValidator.validate, function (req, res, next) {
-            return res.json({ result: 'OK' });
-        });
-        app.post('/pets', swaggerValidator.validate, function (req, res, next) {
-            return res.json({ result: 'OK' });
-        });
-        app.get('/pets/:petId', swaggerValidator.validate, function (req, res, next) {
-            return res.json({ result: 'OK' });
-        });
+swaggerValidator.init('test/unit-tests/input-validation/pet-store-swagger.yaml');
+const app = express();
+app.use(bodyParser.json());
+app.get('/pets', swaggerValidator.validate, (req, res, next) => {
+    return res.json({ result: 'OK' });
+});
+app.post('/pets', swaggerValidator.validate, (req, res, next) => {
+    return res.json({ result: 'OK' });
+});
+app.get('/pets/:petId', swaggerValidator.validate, (req, res, next) => {
+    return res.json({ result: 'OK' });
+});
 
-        app.use(function (err, req, res) {
-            if (err instanceof swaggerValidator.InputValidationError) {
-                return res.status(400).json({ more_info: JSON.stringify(err.errors) });
-            }
-        });
+app.use((err, req, res) => {
+    if (err instanceof swaggerValidator.InputValidationError) {
+        return res.status(400).json({ more_info: JSON.stringify(err.errors) });
+    }
+});
 
-        const server = app.listen(serverPort, function () {});
-    });
+const server = app.listen(serverPort, () => {});
 ```
 
 ### Koa
@@ -128,27 +126,25 @@ let app = new Koa();
 let router = new Router();
 app.use(bodyParser());
 app.use(router.routes());
-module.exports = inputValidation.init('test/pet-store-swagger.yaml', {framework: 'koa'})
-    .then(function () {
-        router.get('/pets', inputValidation.validate, async function(ctx, next) {
-            ctx.status = 200;
-            ctx.body = { result: 'OK' };
-        });
-        router.post('/pets', inputValidation.validate, async function (ctx, next) {
-            ctx.status = 200;
-            ctx.body = { result: 'OK' };
-        });
-        router.get('/pets/:petId', inputValidation.validate, async function (ctx, next) {
-            ctx.status = 200;
-            ctx.body = { result: 'OK' };
-        });
-        router.put('/pets', inputValidation.validate, async function (ctx, next) {
-            ctx.status = 200;
-            ctx.body = { result: 'OK' };
-        });
+module.exports = inputValidation.init('test/pet-store-swagger.yaml', {framework: 'koa'});
+router.get('/pets', inputValidation.validate, async (ctx, next) => {
+    ctx.status = 200;
+    ctx.body = { result: 'OK' };
+});
+router.post('/pets', inputValidation.validate, async (ctx, next) => {
+    ctx.status = 200;
+    ctx.body = { result: 'OK' };
+});
+router.get('/pets/:petId', inputValidation.validate, async (ctx, next) => {
+    ctx.status = 200;
+    ctx.body = { result: 'OK' };
+});
+router.put('/pets', inputValidation.validate, async (ctx, next) => {
+    ctx.status = 200;
+    ctx.body = { result: 'OK' };
+});
 
-        return Promise.resolve(app);
-    });
+return app;
 ```
 
 ## Important Notes

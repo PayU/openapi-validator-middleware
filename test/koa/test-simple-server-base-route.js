@@ -41,7 +41,7 @@ router1.put('/pets', inputValidation.validate, async function (ctx, next) {
     ctx.body = { result: 'OK' };
 });
 
-module.exports = inputValidation.init('test/pet-store-swagger.yaml', {framework: 'koa'})
-    .then(function () {
-        return Promise.resolve(app);
-    });
+module.exports = () => {
+    inputValidation.init('test/pet-store-swagger.yaml', { framework: 'koa' });
+    return app;
+};

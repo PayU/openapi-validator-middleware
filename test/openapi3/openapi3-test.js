@@ -23,9 +23,7 @@ describe('input-validation middleware tests', function () {
 
     describe('firstError=false', function () {
         before(function () {
-            return require('./test-server-pet')(inputValidationOptions()).then(function (testServer) {
-                app = testServer;
-            });
+            app = require('./test-server-pet')(inputValidationOptions());
         });
         it('valid pets', function (done) {
             request(app)
@@ -316,9 +314,7 @@ describe('input-validation middleware tests', function () {
         before(function () {
             const options = inputValidationOptions();
             options.firstError = true;
-            return require('./test-server-pet')(options).then(function (testServer) {
-                app = testServer;
-            });
+            app = require('./test-server-pet')(options);
         });
         it('when discriminator type is mapped_dog and model small_dog and missing root field name and specific dog field', function (done) {
             request(app)

@@ -1,6 +1,6 @@
 'use strict';
 
-var chai = require('chai'),
+const chai = require('chai'),
     expect = chai.expect,
     chaiSinon = require('sinon-chai'),
     request = require('supertest');
@@ -8,30 +8,25 @@ chai.use(chaiSinon);
 
 describe('input-validation middleware tests - Express', function () {
     describe('init function tests', function () {
-        it('should reject the promise in case the file doesn\'t exists', function () {
+        it('should throw an error in case the file doesn\'t exists', function (done) {
             let middleware = require('../../src/middleware');
-
-            middleware.init('', {
-                ajvConfigBody: true,
-                firstError: 'dsadsa'
-            });
-            return middleware.init('test/pet-store-swagger1.yaml')
-                .catch(function (err) {
-                    expect(err).to.exist;
-                });
+            try {
+                middleware.init('test/pet-store-swagger1.yaml');
+            } catch (err) {
+                expect(err).to.exist;
+                done();
+            }
         });
         it('should resolve without formats', function () {
             let rewire = require('rewire');
             let middleware = rewire('../../src/middleware');
-            return middleware.init('test/pet-store-swagger.yaml');
+            middleware.init('test/pet-store-swagger.yaml');
         });
     });
     describe('Simple server - no options', function () {
-        var app;
+        let app;
         before(function () {
-            return require('./test-simple-server').then(function (testServer) {
-                app = testServer;
-            });
+            app = require('./test-simple-server')();
         });
         it('valid request - should pass validation', function (done) {
             request(app)
@@ -378,11 +373,9 @@ describe('input-validation middleware tests - Express', function () {
         });
     });
     describe('Simple server - type coercion enabled', function () {
-        var app;
+        let app;
         before(function () {
-            return require('./test-simple-server-with-coercion').then(function (testServer) {
-                app = testServer;
-            });
+            app = require('./test-simple-server-with-coercion')();
         });
         it('request with wrong parameter type - should pass validation due to coercion', function (done) {
             request(app)
@@ -545,11 +538,9 @@ describe('input-validation middleware tests - Express', function () {
         });
     });
     describe('Simple server - with base path', function () {
-        var app;
+        let app;
         before(function () {
-            return require('./test-simple-server-with-base-path').then(function (testServer) {
-                app = testServer;
-            });
+            app = require('./test-simple-server-with-base-path')();
         });
         it('valid request - should pass validation', function (done) {
             request(app)
@@ -939,11 +930,9 @@ describe('input-validation middleware tests - Express', function () {
         });
     });
     describe('Simple server using routes', function () {
-        var app;
+        let app;
         before(function () {
-            return require('./test-simple-server-base-route').then(function (testServer) {
-                app = testServer;
-            });
+            app = require('./test-simple-server-base-route')();
         });
         it('valid request - should pass validation', function (done) {
             request(app)
@@ -1290,11 +1279,9 @@ describe('input-validation middleware tests - Express', function () {
         });
     });
     describe('Server with options - beautify and one error', function () {
-        var app;
+        let app;
         before(function () {
-            return require('./test-server-with-options').then(function (testServer) {
-                app = testServer;
-            });
+            app = require('./test-server-with-options')();
         });
         it('valid request - should pass validation', function (done) {
             request(app)
@@ -1685,11 +1672,9 @@ describe('input-validation middleware tests - Express', function () {
         });
     });
     describe('Server with options - Only beautify errors', function () {
-        var app;
+        let app;
         before(function () {
-            return require('./test-server-with-options-more-than-1-error').then(function (testServer) {
-                app = testServer;
-            });
+            app = require('./test-server-with-options-more-than-1-error')();
         });
         it('valid request - should pass validation', function (done) {
             request(app)
@@ -2039,11 +2024,9 @@ describe('input-validation middleware tests - Express', function () {
         });
     });
     describe('Inheritance', function () {
-        var app;
+        let app;
         before(function () {
-            return require('./test-server-inheritance').then(function (testServer) {
-                app = testServer;
-            });
+            app = require('./test-server-inheritance')();
         });
         it('should pass', function (done) {
             request(app)
@@ -2207,11 +2190,9 @@ describe('input-validation middleware tests - Express', function () {
         });
     });
     describe('FormData', function () {
-        var app;
+        let app;
         before(function () {
-            return require('./test-server-formdata').then(function (testServer) {
-                app = testServer;
-            });
+            app = require('./test-server-formdata')();
         });
         it('only required files exists should pass', function (done) {
             request(app)
@@ -2310,11 +2291,9 @@ describe('input-validation middleware tests - Express', function () {
         });
     });
     describe('Keywords', function () {
-        var app;
+        let app;
         before(function () {
-            return require('./test-server-keywords').then(function (testServer) {
-                app = testServer;
-            });
+            app = require('./test-server-keywords')();
         });
         it('should pass the validation by the range keyword', function (done) {
             request(app)

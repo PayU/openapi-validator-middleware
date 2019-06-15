@@ -1,26 +1,24 @@
 'use strict';
 
-var InputValidationError = require('./inputValidationError'),
+const InputValidationError = require('./inputValidationError'),
     apiSchemaBuilder = require('api-schema-builder');
 
-var schemas = {};
-var middlewareOptions;
-var framework;
+let schemas = {};
+let middlewareOptions;
+let framework;
 
 function init(swaggerPath, options) {
     middlewareOptions = options || {};
-    var allowedFrameworks = ['express', 'koa'];
-    var frameworkToLoad = allowedFrameworks.find(function (frameworkName) {
+    const allowedFrameworks = ['express', 'koa'];
+    const frameworkToLoad = allowedFrameworks.find(function (frameworkName) {
         return middlewareOptions.framework === frameworkName;
     });
 
     framework = frameworkToLoad ? require(`./frameworks/${frameworkToLoad}`) : require('./frameworks/express');
 
     // build schema for requests only
-    let schemaBuilderOptions = Object.assign({}, options, {buildRequests: true, buildResponses: false});
-    return apiSchemaBuilder.buildSchema(swaggerPath, schemaBuilderOptions).then((receivedSchemas) => {
-        schemas = receivedSchemas;
-    });
+    let schemaBuilderOptions = Object.assign({}, options, { buildRequests: true, buildResponses: false });
+    schemas = apiSchemaBuilder.buildSchemaSync(swaggerPath, schemaBuilderOptions);
 }
 
 function validate(...args) {

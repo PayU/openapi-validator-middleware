@@ -20,24 +20,25 @@ app.use(async function(ctx, next) {
 app.use(bodyParser());
 app.use(router.routes());
 
-module.exports = inputValidation.init('test/pet-store-swagger.yaml', {framework: 'koa'})
-    .then(function () {
-        router.get('/pets', inputValidation.validate, async function(ctx, next) {
-            ctx.status = 200;
-            ctx.body = { result: 'OK' };
-        });
-        router.post('/pets', inputValidation.validate, async function (ctx, next) {
-            ctx.status = 200;
-            ctx.body = { result: 'OK' };
-        });
-        router.get('/pets/:petId', inputValidation.validate, async function (ctx, next) {
-            ctx.status = 200;
-            ctx.body = { result: 'OK' };
-        });
-        router.put('/pets', inputValidation.validate, async function (ctx, next) {
-            ctx.status = 200;
-            ctx.body = { result: 'OK' };
-        });
+module.exports = () => {
+    inputValidation.init('test/pet-store-swagger.yaml', { framework: 'koa' });
 
-        return Promise.resolve(app);
+    router.get('/pets', inputValidation.validate, async function(ctx, next) {
+        ctx.status = 200;
+        ctx.body = { result: 'OK' };
     });
+    router.post('/pets', inputValidation.validate, async function (ctx, next) {
+        ctx.status = 200;
+        ctx.body = { result: 'OK' };
+    });
+    router.get('/pets/:petId', inputValidation.validate, async function (ctx, next) {
+        ctx.status = 200;
+        ctx.body = { result: 'OK' };
+    });
+    router.put('/pets', inputValidation.validate, async function (ctx, next) {
+        ctx.status = 200;
+        ctx.body = { result: 'OK' };
+    });
+
+    return app;
+};
