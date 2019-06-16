@@ -2,7 +2,7 @@
 
 var chai = require('chai'),
     expect = chai.expect,
-    chaiSinon = require('chai-sinon'),
+    chaiSinon = require('sinon-chai'),
     request = require('supertest');
 chai.use(chaiSinon);
 

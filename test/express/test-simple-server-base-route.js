@@ -1,10 +1,10 @@
 'use strict';
 
-var express = require('express');
-var bodyParser = require('body-parser');
-var inputValidation = require('../../src/middleware');
+const express = require('express');
+const bodyParser = require('body-parser');
+const inputValidation = require('../../src/middleware');
+const router = express.Router();
 
-var router = express.Router();
 router.route('/').get(inputValidation.validate, function (req, res, next) {
     res.json({ result: 'OK' });
 });
