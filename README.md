@@ -11,58 +11,72 @@
 [![Known Vulnerabilities][snyk-image]][snyk-url]
 [![Apache 2.0 License][license-image]][license-url]
 
-This package is used to perform input validation to express app using a [Swagger (Open API)](https://swagger.io/specification/) definition and [ajv](https://www.npmjs.com/package/ajv)
+This package provides data validation within an Express or Koa app according to a [Swagger/OpenAPI definition](https://swagger.io/specification/). It uses [Ajv](https://www.npmjs.com/package/ajv) under the hood for validation.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  <!-- *generated with [DocToc](https://github.com/thlorenz/doctoc)* -->
 
-- [express-ajv-swagger-validation](#express-ajv-swagger-validation)
-  - [Install](#install)
-  - [API](#api)
-    - [How to use](#how-to-use)
-    - [express-ajv-swagger-validation.validate](#express-ajv-swagger-validationvalidate)
-    - [express_node_metrics.metrics.init(PathToSwaggerFile, options)](#express_node_metricsmetricsinitpathtoswaggerfile-options)
-      - [Arguments](#arguments)
-        - [Options](#options)
-  - [Examples](#examples)
-  - [Running Tests](#running-tests)
+- [Installation](#installation)
+- [API](#api)
+  - [express-ajv-swagger-validation.validate](#express-ajv-swagger-validationvalidate)
+  - [express-ajv-swagger-validation.init(pathToSwaggerFile, options)](#express-ajv-swagger-validationinitpathtoswaggerfile-options)
+    - [Options](#options)
+- [Usage Example](#usage-example)
+  - [Express](#express)
+  - [Koa](#koa)
+- [Important Notes](#important-notes)
+  - [Schema Objects](#schema-objects)
+  - [Multipart/form-data (files)](#multipartform-data-files)
+  - [Koa support](#koa-support)
+  - [Koa packages](#koa-packages)
+- [Known Issues with OpenAPI 3](#known-issues-with-openapi-3)
+- [Running Tests](#running-tests)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-## Install
+## Installation
+
+Install using the node package registry:
+
 ```bash
 npm install --save express-ajv-swagger-validation
 ```
 
-## API
-
-### How to use
+Then import the module in your code:
 
 ```js
-const swaggerValidator = require('express-ajv-swagger-validation');
+const swaggerValidation = require('express-ajv-swagger-validation');
 ```
+
+## API
 
 ### express-ajv-swagger-validation.validate
 
-This middleware validates the request body, headers, path parameters and query parameters according to the path definition in the swagger file. Please make sure to use this middleware inside a route definition in order to have `req.route.path` assign to the most accurate express route.
+This middleware function validates the request body, headers, path parameters and query parameters according to the _paths_ definition of the swagger file. Make sure to use this middleware inside a route definition in order to have `req.route.path` assigned to the most accurate express route.
 
-### express-ajv-swagger-validation.init(PathToSwaggerFile, options)
+### express-ajv-swagger-validation.init(pathToSwaggerFile, options)
 
-Init the middleware with the swagger definition.
-
+Initialize the middleware using a swagger definition.
 The function executes synchronously and does not return anything.
 
-#### Arguments
+- `pathToSwaggerFile`: Path to the swagger definition.
+- `options`: Additional options for the middleware (see below).
+- **Return Value:** Promise
 
-* `PathToSwaggerFile` - Path to the swagger definition
-* `options` - Additional options for the middleware
-
-##### Options
+#### Options
 
 Options currently supported:
 - `framework` - Defines in which framework the middleware is working ('koa' or 'express'). As default, set to 'express'.
 - `formats` - Array of formats that can be added to `ajv` configuration, each element in the array should include `name` and `pattern`.
+    ```js
+    formats: [
+        { name: 'double', pattern: /\d+\.(\d+)+/ },
+        { name: 'int64', pattern: /^\d{1,19}$/ },
+        { name: 'int32', pattern: /^\d{1,10}$/ }
+    ]
+    ```
+
 - `keywords` - Array of keywords that can be added to `ajv` configuration, each element in the array can be either an object or a function. 
 If the element is an object, it must include `name` and `definition`. If the element is a function, it should accept `ajv` as its first argument and inside the function you need to call `ajv.addKeyword` to add your custom keyword 
 - `beautifyErrors`- Boolean that indicates if to beautify the errors, in this case it will create a string from the Ajv error.
@@ -73,7 +87,7 @@ If the element is an object, it must include `name` and `definition`. If the ele
         - `body/test should have required property 'field1'` - nested field
         - `body should have required property 'name'` - Missing field in body
 
-    You can see more examples in [the tests](./test)
+    You can see more examples in the [tests](./test).
 
 - `firstError` - Boolean that indicates if to return only the first error.
 - `makeOptionalAttributesNullable` - Boolean that forces preprocessing of Swagger schema to include 'null' as possible type for all non-required properties. Main use-case for this is to ensure correct handling of null values when Ajv type coercion is enabled
@@ -82,14 +96,6 @@ If the element is an object, it must include `name` and `definition`. If the ele
 - `contentTypeValidation` - Boolean that indicates if to perform content type validation in case `consume` field is specified and the request body is not empty.
 - `expectFormFieldsInBody` - Boolean that indicates whether form fields of non-file type that are specified in the schema should be validated against request body (e. g. Multer is copying text form fields to body)
 - `errorFormatter` - optional custom function that will be invoked to create a validation error that will be thrown if Ajv validation fails. Function should accept two parameters: `(errors, middlewareOptions)` and return an error that will be thrown.
-
-```js
-formats: [
-    { name: 'double', pattern: /\d+\.(\d+)+/ },
-    { name: 'int64', pattern: /^\d{1,19}$/ },
-    { name: 'int32', pattern: /^\d{1,10}$/ }
-]
-```
 
 ## Usage Example
 ### Express
@@ -150,18 +156,30 @@ return app;
 
 ## Important Notes
 
-- Objects - it is important to set any objects with the property `type: object` inside your swagger file, although it isn't a must in the Swagger (OpenAPI) spec in order to validate it accurately with [ajv](https://www.npmjs.com/package/ajv) it must be marked as `object`
-- multipart/form-data (files) supports is based on [`express/multer`](https://github.com/expressjs/multer)
-- koa support - When using this package as middleware for koa, the validations errors are being thrown.
-- koa packages - This package supports koa server that uses [`koa-router`](https://www.npmjs.com/package/koa-router), [`koa-bodyparser`](https://www.npmjs.com/package/koa-bodyparser) and [`koa-multer`](https://www.npmjs.com/package/koa-multer)
+### Schema Objects
 
-## Open api 3 - known issues
-- supporting inheritance with discriminator , only if the ancestor object is the discriminator.
-- The discriminator supports in the inheritance chain stop when getting to a child with no discriminator (a leaf in the inheritance tree), meaning a leaf can't have a field which starts a new inheritance tree.
-  so child with no discriminator cant point to other child with discriminator,
+It is important to set the `type` property of any [Schema Objects](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#schema-object) explicitly to `object`. Although it isn't required in the OpenAPI specification, it is necessary in order for [Ajv](https://www.npmjs.com/package/ajv) to work correctly.
+
+### Multipart/form-data (files) 
+
+Multipart/form-data (files) support is based on [`express/multer`](https://github.com/expressjs/multer).
+
+### Koa support
+
+When using this package as middleware for koa, the validations errors are being thrown.
+
+### Koa packages
+
+This package supports Koa servers that use [`koa-router`](https://www.npmjs.com/package/koa-router), [`koa-bodyparser`](https://www.npmjs.com/package/koa-bodyparser) and [`koa-multer`](https://www.npmjs.com/package/koa-multer).
+
+## Known Issues with OpenAPI 3 
+
+- Inheritance with a discriminator is supported only if the ancestor object is the discriminator.
+- The discriminator support in the inheritance chain stops when getting to a child without a discriminator (a leaf in the inheritance tree), meaning a child without a discriminator cannot point to another child with a discriminator.
 
 ## Running Tests
-Using mocha, istanbul and mochawesome
+
+The tests use mocha, istanbul and mochawesome. Run them using the node test script:
 
 ```bash
 npm test
