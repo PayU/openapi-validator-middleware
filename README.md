@@ -62,7 +62,6 @@ The function executes synchronously and does not return anything.
 
 - `pathToSwaggerFile`: Path to the swagger definition.
 - `options`: Additional options for the middleware (see below).
-- **Return Value:** Promise
 
 #### Options
 
