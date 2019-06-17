@@ -4,6 +4,10 @@
   "description": "Input validation using Swagger (Open API) and ajv",
   "main": "src/middleware.js",
   "types": "types/index.d.ts",
+  "files": [
+    "src",
+    "types/index.d.ts"
+  ],
   "nyc": {
     "report-dir": "./coverage",
     "lines": 95,
