@@ -84,6 +84,72 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/error_model'
+    put:
+      summary: update pet
+      security:
+        - public-key: []
+      description: >-
+      tags:
+        - pets
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/pet'
+      parameters:
+        - name: petId
+          in: path
+          required: true
+          description: The id of the pet to retrieve
+          schema:
+            type: string
+      operationId: updatePet
+      responses:
+        '200':
+          description: pet
+          headers:
+            x-zooz-request-id:
+              description: request id
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/pet'
+        '400':
+          description: Bad request
+          headers:
+            x-zooz-request-id:
+              description: request id
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_model'
+        '401':
+          description: Unauthorize
+          headers:
+            x-zooz-request-id:
+              description: request id
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_model'
+        '500':
+          description: Internal error
+          headers:
+            x-zooz-request-id:
+              description: request id
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_model'
 components:
   parameters:
     public-key:

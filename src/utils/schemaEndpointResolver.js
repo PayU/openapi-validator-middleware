@@ -1,4 +1,13 @@
-function getMethodSchema(schemas, path, method) {
+const memoize = require('memoizee');
+
+// This logic is wrapped into class to have isolated memoization contexts
+class SchemaEndpointResolver {
+    constructor() {
+        this.getMethodSchema = memoize(getMethodSchemaInternal);
+    }
+}
+
+function getMethodSchemaInternal(schemas, path, method) {
     const methodLowerCase = method.toLowerCase();
     const routePath = pathMatcher(schemas, path);
     const route = schemas[routePath];
@@ -28,6 +37,4 @@ function pathMatcher(routes, path) {
         });
 }
 
-module.exports = {
-    getMethodSchema
-};
+module.exports = SchemaEndpointResolver;

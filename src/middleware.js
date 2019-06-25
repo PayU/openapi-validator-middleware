@@ -1,6 +1,6 @@
 'use strict';
 
-const schemaEndpointResolver = require('./utils/schemaEndpointResolver');
+const SchemaEndpointResolver = require('./utils/schemaEndpointResolver');
 
 const InputValidationError = require('./inputValidationError'),
     apiSchemaBuilder = require('api-schema-builder');
@@ -9,6 +9,7 @@ const allowedFrameworks = ['express', 'koa'];
 let schemas = {};
 let middlewareOptions;
 let framework;
+let schemaEndpointResolver;
 
 function init(swaggerPath, options) {
     middlewareOptions = options || {};
@@ -17,9 +18,10 @@ function init(swaggerPath, options) {
     });
 
     framework = frameworkToLoad ? require(`./frameworks/${frameworkToLoad}`) : require('./frameworks/express');
+    schemaEndpointResolver = new SchemaEndpointResolver();
 
     // build schema for requests only
-    let schemaBuilderOptions = Object.assign({}, options, {buildRequests: true, buildResponses: false});
+    let schemaBuilderOptions = Object.assign({}, options, { buildRequests: true, buildResponses: false });
     return apiSchemaBuilder.buildSchema(swaggerPath, schemaBuilderOptions).then((receivedSchemas) => {
         schemas = receivedSchemas;
     });
