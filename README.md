@@ -92,6 +92,7 @@ If the element is an object, it must include `name` and `definition`. If the ele
 - `contentTypeValidation` - Boolean that indicates if to perform content type validation in case `consume` field is specified and the request body is not empty.
 - `expectFormFieldsInBody` - Boolean that indicates whether form fields of non-file type that are specified in the schema should be validated against request body (e. g. Multer is copying text form fields to body)
 - `errorFormatter` - optional custom function that will be invoked to create a validation error that will be thrown if Ajv validation fails. Function should accept two parameters: `(errors, middlewareOptions)` and return an error that will be thrown.
+- `endpointPath` - optional String that would override route-based path resolution for endpoint being validated with this explicitly provided value. Might be helpful in contexts where routing functionality is not available, e. g. Cloud Functions.
 
 ## Usage Example
 ### Express

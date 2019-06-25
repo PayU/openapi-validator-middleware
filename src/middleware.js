@@ -1,6 +1,7 @@
 'use strict';
 
-const SchemaEndpointResolver = require('./utils/schemaEndpointResolver');
+const SchemaEndpointResolver = require('./utils/SchemaEndpointResolver');
+const FixedSchemaEndpointResolver = require('./utils/FixedSchemaEndpointResolver');
 
 const InputValidationError = require('./inputValidationError'),
     apiSchemaBuilder = require('api-schema-builder');
@@ -18,7 +19,7 @@ function init(swaggerPath, options) {
     });
 
     framework = frameworkToLoad ? require(`./frameworks/${frameworkToLoad}`) : require('./frameworks/express');
-    schemaEndpointResolver = new SchemaEndpointResolver();
+    schemaEndpointResolver = middlewareOptions.endpointPath ? new FixedSchemaEndpointResolver(middlewareOptions.endpointPath) : new SchemaEndpointResolver();
 
     // build schema for requests only
     let schemaBuilderOptions = Object.assign({}, options, { buildRequests: true, buildResponses: false });
