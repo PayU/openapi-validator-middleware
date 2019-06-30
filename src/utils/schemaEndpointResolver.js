@@ -12,7 +12,7 @@ function getMethodSchemaInternal(schemas, path, method) {
     const routePath = pathMatcher(schemas, path);
     const route = schemas[routePath];
 
-    if (route && route[methodLowerCase] && route[methodLowerCase]) {
+    if (route && route[methodLowerCase]) {
         return route[methodLowerCase];
     }
 }
