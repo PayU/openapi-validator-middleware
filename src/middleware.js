@@ -1,5 +1,7 @@
 'use strict';
 
+const SchemaEndpointResolver = require('./utils/schemaEndpointResolver');
+
 const InputValidationError = require('./inputValidationError'),
     apiSchemaBuilder = require('api-schema-builder');
 const allowedFrameworks = ['express', 'koa'];
@@ -7,6 +9,7 @@ const allowedFrameworks = ['express', 'koa'];
 let schemas = {};
 let middlewareOptions;
 let framework;
+let schemaEndpointResolver;
 
 function init(swaggerPath, options) {
     middlewareOptions = options || {};
@@ -15,6 +18,7 @@ function init(swaggerPath, options) {
     });
 
     framework = frameworkToLoad ? require(`./frameworks/${frameworkToLoad}`) : require('./frameworks/express');
+    schemaEndpointResolver = new SchemaEndpointResolver();
 
     // build schema for requests only
     let schemaBuilderOptions = Object.assign({}, options, { buildRequests: true, buildResponses: false });
@@ -50,8 +54,9 @@ function _validateRequest(requestOptions) {
 
 function _validateBody(body, path, method) {
     return new Promise(function (resolve, reject) {
-        if (schemas[path] && schemas[path][method] && schemas[path][method].body && !schemas[path][method].body.validate(body)) {
-            return reject(schemas[path][method].body.errors);
+        const methodSchema = schemaEndpointResolver.getMethodSchema(schemas, path, method);
+        if (methodSchema && methodSchema.body && !methodSchema.body.validate(body)) {
+            return reject(methodSchema.body.errors);
         }
         return resolve();
     });
@@ -59,8 +64,9 @@ function _validateBody(body, path, method) {
 
 function _validateParams(headers, pathParams, query, files, path, method) {
     return new Promise(function (resolve, reject) {
-        if (schemas[path] && schemas[path][method] && schemas[path][method].parameters && !schemas[path][method].parameters.validate({ query: query, headers: headers, path: pathParams, files: files })) {
-            return reject(schemas[path][method].parameters.errors);
+        const methodSchema = schemaEndpointResolver.getMethodSchema(schemas, path, method);
+        if (methodSchema && methodSchema.parameters && !methodSchema.parameters.validate({ query: query, headers: headers, path: pathParams, files: files })) {
+            return reject(methodSchema.parameters.errors);
         }
 
         return resolve();
