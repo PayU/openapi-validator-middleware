@@ -15,9 +15,17 @@ export function init(swaggerPath: string, options?: ajvValidatorOptions): Promis
 export function validate(req: object, res: object, next: Function): void;
 
 export class InputValidationError extends Error {
-    errors: Array<string>;
+    errors: Array<ErrorDetails | string>;
 
-    constructor(errors: Array<string>, path?: string, method?: string, options?: inputValidationOptions)
+    constructor(errors: Array<ErrorDetails>, path?: string, method?: string, options?: inputValidationOptions)
+}
+
+export interface ErrorDetails {
+    dataPath: string;
+    keyword: string;
+    message: string;
+    params: Record<string, any>;
+    schemaPath: string;
 }
 
 export enum frameworks {
