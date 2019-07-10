@@ -60,7 +60,7 @@
   "dependencies": {
     "api-schema-builder": "^1.1.1",
     "memoizee": "^0.4.14",
-    "snyk": "^1.192.4"
+    "snyk": "^1.189.0"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^1.11.0",
