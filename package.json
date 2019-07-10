@@ -32,9 +32,7 @@
     "test": "nyc node_modules/mocha/bin/_mocha --recursive ./test/*/*/*-test.js ./test/*/*-test.js ./test/*-test.js && npm run lint:types",
     "node6-test": "nyc node_modules/mocha/bin/_mocha --recursive ./test/express/*/*-test.js ./test/express/*-test.js ./test/*-test.js",
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
-    "doctoc": "npm install -g doctoc && doctoc README.md",
-    "snyk-protect": "snyk protect",
-    "prepublish": "npm run snyk-protect"
+    "doctoc": "npm install -g doctoc && doctoc README.md"
   },
   "repository": {
     "type": "git",
@@ -59,8 +57,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "api-schema-builder": "^1.1.1",
-    "memoizee": "^0.4.14",
-    "snyk": "^1.189.0"
+    "memoizee": "^0.4.14"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^1.11.0",
@@ -92,10 +89,9 @@
     "sinon": "^7.3.2",
     "sinon-chai": "^3.3.0",
     "supertest": "^4.0.2",
-    "typescript": "3.5.2"
+    "typescript": "3.5.3"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
-  },
-  "snyk": true
+  }
 }
