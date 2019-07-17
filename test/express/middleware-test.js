@@ -8,14 +8,11 @@ chai.use(chaiSinon);
 
 describe('input-validation middleware tests - Express', function () {
     describe('init function tests', function () {
-        it('should throw an error in case the file doesn\'t exists', function (done) {
+        it('should throw an error in case the file doesn\'t exists', function () {
             let middleware = require('../../src/middleware');
-            try {
-                middleware.init('test/pet-store-swagger1.yaml');
-            } catch (err) {
-                expect(err).to.exist;
-                done();
-            }
+            expect(() => {
+                middleware.init('test/pet-store-swagger1.yaml')
+            }).to.throw
         });
         it('should resolve without formats', function () {
             let rewire = require('rewire');
