@@ -22,9 +22,7 @@ function init(swaggerPath, options) {
 
     // build schema for requests only
     let schemaBuilderOptions = Object.assign({}, options, { buildRequests: true, buildResponses: false });
-    return apiSchemaBuilder.buildSchema(swaggerPath, schemaBuilderOptions).then((receivedSchemas) => {
-        schemas = receivedSchemas;
-    });
+    schemas = apiSchemaBuilder.buildSchemaSync(swaggerPath, schemaBuilderOptions);
 }
 
 function validate(...args) {

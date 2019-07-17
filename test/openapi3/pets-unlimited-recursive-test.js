@@ -18,11 +18,11 @@ let inputValidationOptions = function () {
 };
 describe('unlimited recursive swagger definitions', function () {
     it('should throw error on init', function () {
-        return require('./test-server-pet-recursive')(inputValidationOptions())
-            .then(function () {
-                throw new Error('should not get here');
-            }).catch(function (err) {
-                expect(err.message).eql('swagger schema exceed maximum supported depth of 20 for swagger definitions inheritance');
-            });
+        try {
+            require('./test-server-pet-recursive')(inputValidationOptions());
+            throw new Error('should not get here');
+        } catch (err) {
+            expect(err.message).eql('swagger schema exceed maximum supported depth of 20 for swagger definitions inheritance');
+        }
     });
 });

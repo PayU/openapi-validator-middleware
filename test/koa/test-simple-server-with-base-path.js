@@ -22,29 +22,30 @@ app.use(async function(ctx, next) {
 app.use(bodyParser());
 app.use(router.routes());
 
-module.exports = inputValidation.init('test/pet-store-swagger-with-base-path.yaml', {framework: 'koa', contentTypeValidation: true})
-    .then(function () {
-        router.get('/pets', inputValidation.validate, async function(ctx, next) {
-            ctx.status = 200;
-            ctx.body = { result: 'OK' };
-        });
+module.exports = () => {
+    inputValidation.init('test/pet-store-swagger-with-base-path.yaml', { framework: 'koa', contentTypeValidation: true });
 
-        router.get('/capital', inputValidation.validate, function (ctx, next) {
-            ctx.status = 200;
-            ctx.body = { result: 'OK' };
-        });
-        router.post('/pets', inputValidation.validate, async function (ctx, next) {
-            ctx.status = 200;
-            ctx.body = { result: 'OK' };
-        });
-        router.get('/pets/:petId', inputValidation.validate, async function (ctx, next) {
-            ctx.status = 200;
-            ctx.body = { result: 'OK' };
-        });
-        router.put('/pets', inputValidation.validate, async function (ctx, next) {
-            ctx.status = 200;
-            ctx.body = { result: 'OK' };
-        });
-
-        return Promise.resolve(app);
+    router.get('/pets', inputValidation.validate, async function(ctx, next) {
+        ctx.status = 200;
+        ctx.body = { result: 'OK' };
     });
+
+    router.get('/capital', inputValidation.validate, function (ctx, next) {
+        ctx.status = 200;
+        ctx.body = { result: 'OK' };
+    });
+    router.post('/pets', inputValidation.validate, async function (ctx, next) {
+        ctx.status = 200;
+        ctx.body = { result: 'OK' };
+    });
+    router.get('/pets/:petId', inputValidation.validate, async function (ctx, next) {
+        ctx.status = 200;
+        ctx.body = { result: 'OK' };
+    });
+    router.put('/pets', inputValidation.validate, async function (ctx, next) {
+        ctx.status = 200;
+        ctx.body = { result: 'OK' };
+    });
+
+    return app;
+};

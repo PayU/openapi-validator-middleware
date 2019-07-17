@@ -36,20 +36,20 @@ var inputValidationOptions = {
     framework: 'koa'
 };
 
-module.exports = inputValidation.init('test/form-data-swagger.yaml', inputValidationOptions)
-    .then(function () {
-        router.post('/pets/import', upload.any(), inputValidation.validate, function (ctx, next) {
-            ctx.status = 200;
-            ctx.body = { result: 'OK' };
-        });
-        router.post('/kennels/import', upload.any(), inputValidation.validate, function (ctx, next) {
-            ctx.status = 200;
-            ctx.body = { result: 'OK' };
-        });
-        router.post('/login', upload.any(), inputValidation.validate, function (ctx, next) {
-            ctx.status = 200;
-            ctx.body = { result: 'OK' };
-        });
-
-        return Promise.resolve(app);
+module.exports = () => {
+    inputValidation.init('test/form-data-swagger.yaml', inputValidationOptions);
+    router.post('/pets/import', upload.any(), inputValidation.validate, function (ctx, next) {
+        ctx.status = 200;
+        ctx.body = { result: 'OK' };
     });
+    router.post('/kennels/import', upload.any(), inputValidation.validate, function (ctx, next) {
+        ctx.status = 200;
+        ctx.body = { result: 'OK' };
+    });
+    router.post('/login', upload.any(), inputValidation.validate, function (ctx, next) {
+        ctx.status = 200;
+        ctx.body = { result: 'OK' };
+    });
+
+    return app;
+};

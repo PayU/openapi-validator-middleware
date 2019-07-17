@@ -17,7 +17,7 @@ app.use(async function(ctx, next) {
         }
     }
 });
-app.use(bodyParser({enableTypes: ['text', 'json']}));
+app.use(bodyParser({ enableTypes: ['text', 'json'] }));
 app.use(router.routes());
 
 let inputValidationOptions = {
@@ -32,32 +32,32 @@ let inputValidationOptions = {
     framework: 'koa'
 };
 
-module.exports = inputValidation.init('test/pet-store-swagger.yaml', inputValidationOptions)
-    .then(function () {
-        router.get('/pets', inputValidation.validate, async function(ctx, next) {
-            ctx.status = 200;
-            ctx.body = { result: 'OK' };
-        });
-        router.post('/pets', inputValidation.validate, async function (ctx, next) {
-            ctx.status = 200;
-            ctx.body = { result: 'OK' };
-        });
-        router.get('/pets/:petId', inputValidation.validate, async function (ctx, next) {
-            ctx.status = 200;
-            ctx.body = { result: 'OK' };
-        });
-        router.put('/pets/:petId', inputValidation.validate, function (ctx, next) {
-            ctx.status = 200;
-            ctx.body = { result: 'OK' };
-        });
-        router.put('/pets', inputValidation.validate, async function (ctx, next) {
-            ctx.status = 200;
-            ctx.body = { result: 'OK' };
-        });
-        router.put('/text', inputValidation.validate, function (ctx, next) {
-            ctx.status = 200;
-            ctx.body = { result: 'OK' };
-        });
-
-        return Promise.resolve(app);
+module.exports = () => {
+    inputValidation.init('test/pet-store-swagger.yaml', inputValidationOptions);
+    router.get('/pets', inputValidation.validate, async function(ctx, next) {
+        ctx.status = 200;
+        ctx.body = { result: 'OK' };
     });
+    router.post('/pets', inputValidation.validate, async function (ctx, next) {
+        ctx.status = 200;
+        ctx.body = { result: 'OK' };
+    });
+    router.get('/pets/:petId', inputValidation.validate, async function (ctx, next) {
+        ctx.status = 200;
+        ctx.body = { result: 'OK' };
+    });
+    router.put('/pets/:petId', inputValidation.validate, function (ctx, next) {
+        ctx.status = 200;
+        ctx.body = { result: 'OK' };
+    });
+    router.put('/pets', inputValidation.validate, async function (ctx, next) {
+        ctx.status = 200;
+        ctx.body = { result: 'OK' };
+    });
+    router.put('/text', inputValidation.validate, function (ctx, next) {
+        ctx.status = 200;
+        ctx.body = { result: 'OK' };
+    });
+
+    return app;
+};

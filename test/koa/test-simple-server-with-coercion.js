@@ -20,32 +20,33 @@ app.use(async function(ctx, next) {
 app.use(bodyParser());
 app.use(router.routes());
 
-module.exports = inputValidation.init('test/pet-store-swagger.yaml', {
-    framework: 'koa',
-    ajvConfigBody: {
-        coerceTypes: true },
-    makeOptionalAttributesNullable: true})
-    .then(function () {
-        router.get('/pets', inputValidation.validate, async function(ctx, next) {
-            ctx.status = 200;
-            ctx.body = { result: 'OK' };
-        });
-        router.post('/pets', inputValidation.validate, async function (ctx, next) {
-            ctx.status = 200;
-            ctx.body = { result: 'OK', receivedParams: ctx.request.body };
-        });
-        router.get('/pets/:petId', inputValidation.validate, async function (ctx, next) {
-            ctx.status = 200;
-            ctx.body = { result: 'OK' };
-        });
-        router.put('/pets', inputValidation.validate, async function (ctx, next) {
-            ctx.status = 200;
-            ctx.body = { result: 'OK', receivedParams: ctx.request.body };
-        });
-        router.patch('/pets', inputValidation.validate, async function (ctx, next) {
-            ctx.status = 200;
-            ctx.body = { result: 'OK', receivedParams: ctx.request.body };
-        });
+module.exports = () => {
+    inputValidation.init('test/pet-store-swagger.yaml', {
+        framework: 'koa',
+        ajvConfigBody: {
+            coerceTypes: true },
+        makeOptionalAttributesNullable: true });
 
-        return Promise.resolve(app);
+    router.get('/pets', inputValidation.validate, async function(ctx, next) {
+        ctx.status = 200;
+        ctx.body = { result: 'OK' };
     });
+    router.post('/pets', inputValidation.validate, async function (ctx, next) {
+        ctx.status = 200;
+        ctx.body = { result: 'OK', receivedParams: ctx.request.body };
+    });
+    router.get('/pets/:petId', inputValidation.validate, async function (ctx, next) {
+        ctx.status = 200;
+        ctx.body = { result: 'OK' };
+    });
+    router.put('/pets', inputValidation.validate, async function (ctx, next) {
+        ctx.status = 200;
+        ctx.body = { result: 'OK', receivedParams: ctx.request.body };
+    });
+    router.patch('/pets', inputValidation.validate, async function (ctx, next) {
+        ctx.status = 200;
+        ctx.body = { result: 'OK', receivedParams: ctx.request.body };
+    });
+
+    return app;
+};
