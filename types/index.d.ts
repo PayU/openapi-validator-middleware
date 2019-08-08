@@ -1,3 +1,5 @@
+import { Context } from 'koa';
+
 // TypeScript Version: 3.2
 
 /**
@@ -12,7 +14,8 @@ export function init(swaggerPath: string, options?: ajvValidatorOptions): void;
  * Middleware that validates the request against the swagger
  * file, according to the request method and route
  */
-export function validate(req: object, res: object, next: Function): void;
+export function validate(req: Request, res: object, next: Function): void; // express
+export function validate(ctx: Context, next: Function): void; // koa
 
 export class InputValidationError extends Error {
     errors: Array<ErrorDetails | string>;
