@@ -12,7 +12,9 @@ export function init(swaggerPath: string, options?: ajvValidatorOptions): void;
  * Middleware that validates the request against the swagger
  * file, according to the request method and route
  */
-export function validate(req: object, res: object, next: Function): void;
+declare function validate(ctx: any, next: Function): void; // koa
+declare function validate(req: any, res: any, next: Function): void; // express
+export { validate };
 
 export class InputValidationError extends Error {
     errors: Array<ErrorDetails | string>;
