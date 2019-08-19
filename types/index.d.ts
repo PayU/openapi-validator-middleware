@@ -35,7 +35,7 @@ export enum frameworks {
 
 export interface format {
     name: string;
-    pattern: string;
+    pattern: RegExp | string;
 }
 
 export interface ajvValidatorOptions {
