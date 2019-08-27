@@ -324,7 +324,7 @@ describe('input-validation middleware tests', function () {
                         expect(res.body).to.eql({
                             'more_info': JSON.stringify(
                                 [
-                                    "body should NOT have additional properties 'additional1]'",
+                                    "body should NOT have additional properties 'additional1'",
                                     "body should NOT have additional properties 'additional2'"])
                         });
                         done();
