@@ -1,6 +1,6 @@
 {
   "name": "express-ajv-swagger-validation",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Input validation using Swagger (Open API) and ajv",
   "main": "src/middleware.js",
   "types": "types/index.d.ts",
