@@ -34,7 +34,7 @@ const buildMessage = function(error){
     }
 
     if (error.keyword === 'additionalProperties') {
-        return `${error.message} [${error.params.additionalProperty.toString()}]`;
+        return `${error.message} '${error.params.additionalProperty.toString()}'`;
     }
 
     if (error.validation) {
