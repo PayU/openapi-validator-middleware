@@ -140,6 +140,77 @@ paths:
               $ref: '#/components/schemas/pet'
         description: Create pet
         required: true
+  /dog/{id}:
+    put:
+      summary: Create a Pet
+      security:
+        - public-key: []
+      description: >-
+      tags:
+        - pets
+      operationId: update-a-pet
+      parameters:
+        - $ref: '#/components/parameters/public-key'
+        - name: id
+          in: path
+          description: >
+            The identifier of the pet
+          required: true
+          example: 1
+          schema:
+            type: string
+      responses:
+        '200':
+          description: pet updated
+          headers:
+            x-zooz-request-id:
+              description: request id
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/small_dog'
+        '400':
+          description: Bad request
+          headers:
+            x-zooz-request-id:
+              description: request id
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_model'
+        '401':
+          description: Unauthorize
+          headers:
+            x-zooz-request-id:
+              description: request id
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_model'
+        '500':
+          description: Internal error
+          headers:
+            x-zooz-request-id:
+              description: request id
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error_model'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/medium_dog'
+        description: Update pet
+        
   /pet-discriminator:
     post:
       summary: Create a pet
@@ -513,3 +584,15 @@ components:
       properties:
         min_length:
           type: string
+    medium_dog:
+      type: object
+      required:
+        - min_length
+        - max_length
+      additionalProperties: false
+      properties:
+        max_length:
+          type: string
+        min_length:
+          type: string
+

@@ -33,6 +33,10 @@ const buildMessage = function(error){
         return `${error.message} [${error.params.allowedValues.toString()}]`;
     }
 
+    if (error.keyword === 'additionalProperties') {
+        return `${error.message} '${error.params.additionalProperty.toString()}'`;
+    }
+
     if (error.validation) {
         return error.errors.message;
     }
