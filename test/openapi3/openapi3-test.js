@@ -306,6 +306,29 @@ describe('input-validation middleware tests', function () {
                     });
             });
         });
+        describe('additionalProperties flag false', function () {
+            it('invalid update when body contains properties which are not in schema', function (done) {
+                request(app)
+                    .put('/dog/1')
+                    .set('public-key', '1.0')
+                    .send({
+                        max_length: '10',
+                        min_length: '5',
+                        additional1: '1',
+                        additional2: '2'
+                    })
+                    .expect(400, function (err, res) {
+                        if (err) {
+                            throw err;
+                        }
+                        expect(res.body).to.eql({
+                            'more_info': JSON.stringify(
+                                ['body should NOT have additional properties [additional1]', 'body should NOT have additional properties [additional2]'])
+                        });
+                        done();
+                    });
+            });
+        });
         describe.skip('discriminator pet type is not on the root, only on child', function () {
             // does not support wright now.
         });
@@ -333,6 +356,29 @@ describe('input-validation middleware tests', function () {
                     });
                     done();
                 });
+        });
+        describe('additionalProperties flag false', function () {
+            it('invalid update when body contains properties which are not in schema', function (done) {
+                request(app)
+                    .put('/dog/1')
+                    .set('public-key', '1.0')
+                    .send({
+                        max_length: '10',
+                        min_length: '5',
+                        additional1: '1',
+                        additional2: '2'
+                    })
+                    .expect(400, function (err, res) {
+                        if (err) {
+                            throw err;
+                        }
+                        expect(res.body).to.eql({
+                            'more_info': JSON.stringify(
+                                'body should NOT have additional properties [additional1]')
+                        });
+                        done();
+                    });
+            });
         });
     });
 });

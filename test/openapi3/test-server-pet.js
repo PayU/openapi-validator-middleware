@@ -25,6 +25,9 @@ module.exports = function (options) {
     app.post('/pet', inputValidation.validate, function (req, res, next) {
         res.json({ result: 'OK' });
     });
+    app.put('/dog/:id', inputValidation.validate, function (req, res, next) {
+        res.json({ result: 'OK' });
+    });
     app.post('/pet-discriminator', inputValidation.validate, function (req, res, next) {
         res.json({ result: 'OK' });
     });
