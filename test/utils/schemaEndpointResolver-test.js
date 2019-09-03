@@ -2,14 +2,14 @@ const chai = require('chai'),
     expect = chai.expect;
 const apiSchemaBuilder = require('api-schema-builder');
 const SchemaEndpointResolver = require('../../src/utils/schemaEndpointResolver');
-const swaggerPath = 'test/openapi3/pets-parametrized.yaml';
+const documentPath = 'test/openapi3/pets-parametrized.yaml';
 
 describe('schemaEndpointResolver', () => {
     let schemas;
     let schemaEndpointResolver;
     before(() => {
         let schemaBuilderOptions = {buildRequests: true, buildResponses: true};
-        return apiSchemaBuilder.buildSchema(swaggerPath, schemaBuilderOptions).then((receivedSchemas) => {
+        return apiSchemaBuilder.buildSchema(documentPath, schemaBuilderOptions).then((receivedSchemas) => {
             schemas = receivedSchemas;
         });
     });

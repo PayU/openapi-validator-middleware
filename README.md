@@ -1,6 +1,6 @@
-# express-ajv-swagger-validation
+# node-openapi-validation
 
-[![Join the chat at https://gitter.im/Zooz/express-ajv-swagger-validation](https://badges.gitter.im/Zooz/express-ajv-swagger-validation.svg)](https://gitter.im/Zooz/express-ajv-swagger-validation?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://gitter.im/Zooz/node-openapi-validation](https://badges.gitter.im/Zooz/node-openapi-validation.svg)](https://gitter.im/Zooz/node-openapi-validation?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![NPM Version][npm-image]][npm-url]
 [![NPM Downloads][downloads-image]][downloads-url]
 [![Build Status][travis-image]][travis-url]
@@ -8,7 +8,7 @@
 [![Known Vulnerabilities][snyk-image]][snyk-url]
 [![Apache 2.0 License][license-image]][license-url]
 
-This package provides data validation within an Express or Koa app according to a [Swagger/OpenAPI definition](https://swagger.io/specification/). It uses [Ajv](https://www.npmjs.com/package/ajv) under the hood for validation.
+This package provides data validation within an Express or Koa app according to an [OpenAPI description](https://swagger.io/specification/). It uses [Ajv](https://www.npmjs.com/package/ajv) under the hood for validation.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -16,8 +16,8 @@ This package provides data validation within an Express or Koa app according to 
 
 - [Installation](#installation)
 - [API](#api)
-  - [express-ajv-swagger-validation.validate](#express-ajv-swagger-validationvalidate)
-  - [express-ajv-swagger-validation.init(pathToSwaggerFile, options)](#express-ajv-swagger-validationinitpathtoswaggerfile-options)
+  - [node-openapi-validation.validate](#node-openapi-validationvalidate)
+  - [node-openapi-validation.init(documentPath, options)](#node-openapi-validationinitdocumentpath-options)
     - [Options](#options)
 - [Usage Example](#usage-example)
   - [Express](#express)
@@ -37,27 +37,27 @@ This package provides data validation within an Express or Koa app according to 
 Install using the node package registry:
 
 ```bash
-npm install --save express-ajv-swagger-validation
+npm install --save node-openapi-validation
 ```
 
 Then import the module in your code:
 
 ```js
-const swaggerValidation = require('express-ajv-swagger-validation');
+const swaggerValidation = require('node-openapi-validation');
 ```
 
 ## API
 
-### express-ajv-swagger-validation.validate
+### node-openapi-validation.validate
 
-This middleware function validates the request body, headers, path parameters and query parameters according to the _paths_ definition of the swagger file. Make sure to use this middleware inside a route definition in order to have `req.route.path` assigned to the most accurate express route.
+This middleware function validates the request body, headers, path parameters and query parameters according to the _paths_ definition of the description document. Make sure to use this middleware inside a route definition in order to have `req.route.path` assigned to the most accurate express route.
 
-### express-ajv-swagger-validation.init(pathToSwaggerFile, options)
+### node-openapi-validation.init(pathToDocument, options)
 
-Initialize the middleware using a swagger definition.
+Initialize the middleware using a OpenAPI description document.
 The function executes synchronously and does not return anything.
 
-- `pathToSwaggerFile`: Path to the swagger definition.
+- `pathToDocument`: Path to the API description document.
 - `options`: Additional options for the middleware (see below).
 
 #### Options
@@ -181,15 +181,15 @@ The tests use mocha, istanbul and mochawesome. Run them using the node test scri
 npm test
 ```
 
-[npm-image]: https://img.shields.io/npm/v/express-ajv-swagger-validation.svg?style=flat
-[npm-url]: https://npmjs.org/package/express-ajv-swagger-validation
-[travis-image]: https://travis-ci.org/Zooz/express-ajv-swagger-validation.svg?branch=master
-[travis-url]: https://travis-ci.org/Zooz/express-ajv-swagger-validation
-[coveralls-image]: https://coveralls.io/repos/github/Zooz/express-ajv-swagger-validation/badge.svg?branch=master
-[coveralls-url]: https://coveralls.io/github/Zooz/express-ajv-swagger-validation?branch=master
-[downloads-image]: http://img.shields.io/npm/dm/express-ajv-swagger-validation.svg?style=flat
-[downloads-url]: https://img.shields.io/npm/dm/express-ajv-swagger-validation.svg
+[npm-image]: https://img.shields.io/npm/v/node-openapi-validation.svg?style=flat
+[npm-url]: https://npmjs.org/package/node-openapi-validation
+[travis-image]: https://travis-ci.org/Zooz/node-openapi-validation.svg?branch=master
+[travis-url]: https://travis-ci.org/Zooz/node-openapi-validation
+[coveralls-image]: https://coveralls.io/repos/github/Zooz/node-openapi-validation/badge.svg?branch=master
+[coveralls-url]: https://coveralls.io/github/Zooz/node-openapi-validation?branch=master
+[downloads-image]: http://img.shields.io/npm/dm/node-openapi-validation.svg?style=flat
+[downloads-url]: https://img.shields.io/npm/dm/node-openapi-validation.svg
 [license-image]: https://img.shields.io/badge/license-Apache_2.0-green.svg?style=flat
 [license-url]: LICENSE
-[snyk-image]: https://snyk.io/test/npm/express-ajv-swagger-validation/badge.svg
-[snyk-url]: https://snyk.io/test/npm/express-ajv-swagger-validation
+[snyk-image]: https://snyk.io/test/npm/node-openapi-validation/badge.svg
+[snyk-url]: https://snyk.io/test/npm/node-openapi-validation

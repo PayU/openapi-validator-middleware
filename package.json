@@ -1,7 +1,7 @@
 {
-  "name": "express-ajv-swagger-validation",
-  "version": "1.0.7",
-  "description": "Input validation using Swagger (Open API) and ajv",
+  "name": "node-openapi-validation",
+  "version": "2.0.",
+  "description": "OpenAPI-based HTTP request validation as Express/Koa Middleware",
   "main": "src/middleware.js",
   "types": "types/index.d.ts",
   "files": [
@@ -36,7 +36,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/Zooz/express-ajv-swagger-validation.git"
+    "url": "git://github.com/Zooz/node-openapi-validation.git"
   },
   "keywords": [
     "ajv",
@@ -45,14 +45,15 @@
     "OpenAPI",
     "open api",
     "input validation",
+    "request validation",
     "validation",
     "validator",
     "koa"
   ],
   "bugs": {
-    "url": "https://github.com/Zooz/express-ajv-swagger-validation"
+    "url": "https://github.com/Zooz/node-openapi-validation/issues"
   },
-  "homepage": "https://github.com/Zooz/express-ajv-swagger-validation",
+  "homepage": "https://github.com/Zooz/node-openapi-validation",
   "author": "Idan Tovi",
   "license": "Apache-2.0",
   "dependencies": {

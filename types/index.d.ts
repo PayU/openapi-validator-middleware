@@ -2,15 +2,15 @@
 
 /**
  * Initialize the input validation middleware by
- * providing it with the swagger file path and
+ * providing it with the OpenAPI description document and
  * configuration options. This function should be called
  * before using `validate` middleware.
  */
-export function init(swaggerPath: string, options?: ajvValidatorOptions): void;
+export function init(documentPath: string, options?: ajvValidatorOptions): void;
 
 /**
- * Middleware that validates the request against the swagger
- * file, according to the request method and route
+ * Middleware that validates the request against the document,
+ * according to the request method and route
  */
 declare function validate(ctx: any, next: Function): void; // koa
 declare function validate(req: any, res: any, next: Function): void; // express

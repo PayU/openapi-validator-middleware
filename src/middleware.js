@@ -11,7 +11,7 @@ let middlewareOptions;
 let framework;
 let schemaEndpointResolver;
 
-function init(swaggerPath, options) {
+function init(documentPath, options) {
     middlewareOptions = options || {};
     const frameworkToLoad = allowedFrameworks.find((frameworkName) => {
         return middlewareOptions.framework === frameworkName;
@@ -22,7 +22,7 @@ function init(swaggerPath, options) {
 
     // build schema for requests only
     let schemaBuilderOptions = Object.assign({}, options, { buildRequests: true, buildResponses: false });
-    schemas = apiSchemaBuilder.buildSchemaSync(swaggerPath, schemaBuilderOptions);
+    schemas = apiSchemaBuilder.buildSchemaSync(documentPath, schemaBuilderOptions);
 }
 
 function validate(...args) {
