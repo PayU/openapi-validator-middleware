@@ -8,7 +8,7 @@
 [![Known Vulnerabilities][snyk-image]][snyk-url]
 [![Apache 2.0 License][license-image]][license-url]
 
-This package provides data validation within an Express or Koa app according to an [OpenAPI description](https://swagger.io/specification/). It uses [Ajv](https://www.npmjs.com/package/ajv) under the hood for validation.
+This package provides data validation within an Express or Koa app according to [OpenAPI](http://spec.openapis.org/oas/v3.0.2). It uses [Ajv](https://www.npmjs.com/package/ajv) under the hood for validation.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
