@@ -19,7 +19,7 @@ export { validate };
 export class InputValidationError extends Error {
     errors: Array<ErrorDetails | string>;
 
-    constructor(errors: Array<ErrorDetails>, path?: string, method?: string, options?: inputValidationOptions)
+    constructor(errors: Array<ErrorDetails>, options?: inputValidationOptions)
 }
 
 export interface ErrorDetails {
