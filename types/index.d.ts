@@ -7,15 +7,15 @@
  * before using `validate` middleware.
  */
 declare function init(schemaPath: string, options?: ajvValidatorOptions): void;
-declare function init(jsonSchema: object, options?: ajvValidatorOptions): void;
+declare function init(jsonSchema: Object, options?: ajvValidatorOptions): void;
 export { init };
 
 /**
  * Middleware that validates the request against the swagger
  * file, according to the request method and route
  */
-declare function validate(ctx: any, next: Function): void; // koa
-declare function validate(req: any, res: any, next: Function): void; // express
+declare function validate(ctx: Object, next: Function): void; // koa
+declare function validate(req: Object, res: Object, next: Function): void; // express
 export { validate };
 
 export class InputValidationError extends Error {
