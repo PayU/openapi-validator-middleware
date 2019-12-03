@@ -32,7 +32,7 @@ function validate(...args) {
 function _validateRequest(requestOptions) {
     return Promise.all([
         _validateParams(requestOptions.headers, requestOptions.params, requestOptions.query, requestOptions.files, requestOptions.path, requestOptions.method.toLowerCase()).catch(e => e),
-        _validateBody(requestOptions.body, requestOptions.path, requestOptions.method.toLowerCase()).catch(e => e)
+        _validateBody(requestOptions.body, requestOptions.path, requestOptions.method.toLowerCase(), requestOptions.headers['content-type']).catch(e => e)
     ]).then(function (errors) {
         if (errors[0] || errors[1]) {
             return errors[0] && errors[1] ? Promise.reject(errors[0].concat(errors[1])) : errors[0] ? Promise.reject(errors[0]) : Promise.reject(errors[1]);
@@ -52,11 +52,11 @@ function _validateRequest(requestOptions) {
     });
 }
 
-function _validateBody(body, path, method) {
+function _validateBody(body, path, method, contentType) {
     return new Promise(function (resolve, reject) {
         const methodSchema = schemaEndpointResolver.getMethodSchema(schemas, path, method);
-        if (methodSchema && methodSchema.body && !methodSchema.body.validate(body)) {
-            return reject(methodSchema.body.errors);
+        if (methodSchema && methodSchema.body && !(methodSchema.body[contentType] ? methodSchema.body[contentType].validate(body) : methodSchema.body.validate(body))) {
+            return reject(methodSchema.body[contentType] ? methodSchema.body[contentType].errors : methodSchema.body.errors);
         }
         return resolve();
     });

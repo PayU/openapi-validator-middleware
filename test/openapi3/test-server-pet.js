@@ -18,6 +18,7 @@ module.exports = function (options) {
     inputValidation.init(`${__dirname}/pets.yaml`, options || inputValidationOptions);
     const app = express();
     app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded());
 
     app.get('/pets', inputValidation.validate, function (req, res, next) {
         res.json({ result: 'OK' });
