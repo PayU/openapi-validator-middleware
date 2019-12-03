@@ -54,9 +54,13 @@ function _validateRequest(requestOptions) {
 
 function _validateBody(body, path, method, contentType) {
     return new Promise(function (resolve, reject) {
-        const methodSchema = schemaEndpointResolver.getMethodSchema(schemas, path, method);
-        if (methodSchema && methodSchema.body && !(methodSchema.body[contentType] ? methodSchema.body[contentType].validate(body) : methodSchema.body.validate(body))) {
-            return reject(methodSchema.body[contentType] ? methodSchema.body[contentType].errors : methodSchema.body.errors);
+        const methodSchema = schemaEndpointResolver.getMethodSchema(schemas, path, method) || {};
+
+        if (methodSchema.body) {
+            const validator = methodSchema.body[contentType] || methodSchema.body;
+            if (!validator.validate(body)) {
+                return reject(validator.errors);
+            }
         }
         return resolve();
     });
