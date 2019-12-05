@@ -39,6 +39,33 @@ describe('input-validation middleware tests - Express', function () {
                     done();
                 });
         });
+        it('valid request - should validate using correct schema - path exact match', function (done) {
+            request(app)
+                .get('/pets/search')
+                .set('api-version', '1.0')
+                .set('request-id', '123456')
+                .query({ terms: 'foobar' })
+                .expect(200, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.result).to.equal('OK');
+                    done();
+                });
+        });
+        it('valid request - should validate using correct schema - path partial match', function (done) {
+            request(app)
+                .get('/pets/123')
+                .set('api-version', '1.0')
+                .set('request-id', '123456')
+                .expect(200, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.result).to.equal('OK');
+                    done();
+                });
+        });
         it('missing header - should fail', function (done) {
             request(app)
                 .get('/pets')
