@@ -68,6 +68,40 @@ describe('input-validation middleware tests', function () {
                     done();
                 });
         });
+        it('validate depending on content-type -- valid dog', function (done) {
+            request(app)
+                .post('/pet')
+                .set('public-key', '1.0')
+                .set('content-type', 'application/x-www-form-urlencoded')
+                .send({
+                    bark: 'foo'
+                })
+                .expect(200, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.result).to.equal('OK');
+                    done();
+                });
+        });
+        it('validate depending on content-type -- invalid dog', function (done) {
+            request(app)
+                .post('/pet')
+                .set('public-key', '1.0')
+                .set('content-type', 'application/x-www-form-urlencoded')
+                .send({
+                    bark: 'not foo'
+                })
+                .expect(400, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body).to.deep.equal({
+                        'more_info': '["body/bark should be equal to one of the allowed values [foo,bar]","body should have required property \'fur\'","body should match exactly one schema in oneOf"]'
+                    });
+                    done();
+                });
+        });
         it('valid cat', function (done) {
             request(app)
                 .post('/pet')
