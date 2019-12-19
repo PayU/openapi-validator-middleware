@@ -17,7 +17,7 @@ function getMethodSchemaInternal(schemas, path, method) {
     }
 }
 
-function pathMatcher(routes, path) {
+function _pathMatcherInternal(routes, path, exactMatch) {
     return Object
         .keys(routes)
         .find((route) => {
@@ -29,12 +29,18 @@ function pathMatcher(routes, path) {
             return routeArr.every((seg, idx) => {
                 if (seg === pathArr[idx]) return true;
 
-                // if current path segment is param
-                if (seg.startsWith(':') && pathArr[idx]) return true;
+                if (!exactMatch) {
+                    // if current path segment is param
+                    if (seg.startsWith(':') && pathArr[idx]) return true;
+                }
 
                 return false;
             });
         });
+}
+
+function pathMatcher(routes, path) {
+    return _pathMatcherInternal(routes, path, true) || _pathMatcherInternal(routes, path, false);
 }
 
 module.exports = SchemaEndpointResolver;

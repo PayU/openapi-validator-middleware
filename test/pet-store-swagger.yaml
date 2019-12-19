@@ -226,6 +226,29 @@ paths:
           description: unexpected error
           schema:
             $ref: '#/definitions/Error'
+  /pets/search:
+    get:
+      summary: Search for a pet
+      operationId: searchPets
+      tags:
+        - pets
+      parameters:
+        - $ref: '#/parameters/ApiVersion'
+        - $ref: '#/parameters/ApiRequestId'
+        - name: terms
+          in: query
+          required: true
+          description: The search term to match pets
+          type: string
+      responses:
+        "200":
+          description: Expected response to a valid request
+          schema:
+            $ref: '#/definitions/Pets'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
   /heartbeat:
     get:
       summary: Info for current system status

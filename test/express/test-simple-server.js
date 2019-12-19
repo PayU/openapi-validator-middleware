@@ -15,6 +15,9 @@ module.exports = () => {
     app.post('/pets', inputValidation.validate, function (req, res, next) {
         res.json({ result: 'OK' });
     });
+    app.get('/pets/search', inputValidation.validate, function(req, res, next) {
+        res.json({ result: 'OK' });
+    });
     app.get('/pets/:petId', inputValidation.validate, function (req, res, next) {
         res.json({ result: 'OK' });
     });
