@@ -138,6 +138,9 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/pet'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/pet2'
         description: Create pet
         required: true
   /dog/{id}:
@@ -493,6 +496,12 @@ components:
       oneOf:
         - $ref: '#/components/schemas/dog_object'
         - $ref: '#/components/schemas/cat_object'
+    pet2:
+      description: pet
+      type: object
+      oneOf:
+        - $ref: '#/components/schemas/dog_object2'
+        - $ref: '#/components/schemas/cat_object'
     pets:
       type: array
       items:
@@ -549,6 +558,16 @@ components:
       properties:
         bark:
           type: string
+    dog_object2:
+      type: object
+      required:
+        - bark
+      properties:
+        bark:
+          type: string
+          enum:
+            - foo
+            - bar
     dog_multiple:
       type: object
       required:
