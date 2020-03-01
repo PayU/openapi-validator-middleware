@@ -29,11 +29,16 @@ function validate(...args) {
     return framework.validate(_validateRequest, ...args);
 }
 
+function _getContentType(headers) {
+    // This is to filter out things like charset
+    const contentType = headers['content-type'];
+    return contentType && contentType.split(';')[0].trim(); 
+}
+
 function _validateRequest(requestOptions) {
-    const requestContentType = requestOptions.headers['content-type'] && requestOptions.headers['content-type'].split(';')[0].trim(); // This is to filter out things like charset
     return Promise.all([
         _validateParams(requestOptions.headers, requestOptions.params, requestOptions.query, requestOptions.files, requestOptions.path, requestOptions.method.toLowerCase()).catch(e => e),
-        _validateBody(requestOptions.body, requestOptions.path, requestOptions.method.toLowerCase(), requestContentType).catch(e => e)
+        _validateBody(requestOptions.body, requestOptions.path, requestOptions.method.toLowerCase(), _getContentType(requestOptions.headers)).catch(e => e)
     ]).then(function (errors) {
         if (errors[0] || errors[1]) {
             return errors[0] && errors[1] ? Promise.reject(errors[0].concat(errors[1])) : errors[0] ? Promise.reject(errors[0]) : Promise.reject(errors[1]);
