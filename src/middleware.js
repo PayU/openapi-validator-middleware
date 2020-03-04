@@ -4,7 +4,7 @@ const SchemaEndpointResolver = require('./utils/schemaEndpointResolver');
 
 const InputValidationError = require('./inputValidationError'),
     apiSchemaBuilder = require('api-schema-builder');
-const allowedFrameworks = ['express', 'koa'];
+const allowedFrameworks = ['express', 'koa', 'moleculer'];
 
 let schemas = {};
 let middlewareOptions;

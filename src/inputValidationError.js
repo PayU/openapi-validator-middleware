@@ -8,14 +8,12 @@
  */
 class InputValidationError extends Error {
     constructor(errors, options = {}) {
-        super('Input validation error');
-
         if (options.beautifyErrors && options.firstError) {
-            this.errors = parseAjvError(errors[0]);
+            super(parseAjvError(errors[0]));
         } else if (options.beautifyErrors) {
-            this.errors = parseAjvErrors(errors);
+            super(parseAjvError(errors));
         } else {
-            this.errors = errors;
+            super(errors);
         }
     }
 }

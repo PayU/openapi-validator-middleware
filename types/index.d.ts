@@ -32,9 +32,10 @@ export interface ErrorDetails {
     schemaPath: string;
 }
 
-export enum frameworks {
+export const enum frameworks {
     koa,
-    express
+    express,
+    moleculer
 }
 
 export interface format {
