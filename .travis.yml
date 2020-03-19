@@ -10,7 +10,7 @@ jobs:
   include:
     - language: node_js
       node_js: 6
-      script: "node6-test"
+      script: "npm run node6-test"
     - language: node_js
       node_js: node
       script: "npm test"
