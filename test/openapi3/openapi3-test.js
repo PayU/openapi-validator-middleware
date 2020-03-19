@@ -102,6 +102,22 @@ describe('input-validation middleware tests', function () {
                     done();
                 });
         });
+        it('resolves content type for content-type with charset', function (done) {
+            request(app)
+                .post('/pet')
+                .set('public-key', '1.0')
+                .set('content-type', 'application/x-www-form-urlencoded; charset=utf-8')
+                .send({
+                    bark: 'foo'
+                })
+                .expect(200, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.result).to.equal('OK');
+                    done();
+                });
+        });
         it('valid cat', function (done) {
             request(app)
                 .post('/pet')
