@@ -29,7 +29,8 @@
   },
   "scripts": {
     "lint:types": "dtslint types && eslint types/index.d.ts",
-    "test": "nyc mocha test/**/*-test.js && npm run lint:types",
+    "test": "mocha test/**/*-test.js && npm run lint:types",
+    "test:coverage": "nyc mocha test/**/*-test.js && npm run lint:types",
     "node6-test": "nyc mocha --exclude test/koa/**/*-test.js test/**/*-test.js",
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
     "doctoc": "npm install -g doctoc && doctoc README.md"
