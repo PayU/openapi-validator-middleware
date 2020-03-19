@@ -1,18 +1,17 @@
 language: node_js
 node_js:
-  - "6"
   - "8"
   - "10"
-  - "node"
-script: >
-  node_version=$(node -v);
-  if  [ ${node_version:1:1} -ne 6 ]; then
-     npm test
-  else
-     npm run node6-test
-  fi
-after_success: >
-  node_version=$(node -v);
-  if  [ ${node_version:1:1} -ne 6 ]; then
-     npm run coveralls
-  fi
+  - "12"
+
+script: "npm test"
+
+jobs:
+  include:
+    - language: node_js
+      node_js: 6
+      script: "node6-test"
+    - language: node_js
+      node_js: node
+      script: "npm run test:coverage"
+      after_success: "npm run coveralls"
