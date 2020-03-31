@@ -96,21 +96,21 @@ If the element is an object, it must include `name` and `definition`. If the ele
 ## Usage Example
 ### Express
 ```js
-swaggerValidator.init('test/unit-tests/input-validation/pet-store-swagger.yaml');
+swaggerValidation.init('test/unit-tests/input-validation/pet-store-swagger.yaml');
 const app = express();
 app.use(bodyParser.json());
-app.get('/pets', swaggerValidator.validate, (req, res, next) => {
+app.get('/pets', swaggerValidation.validate, (req, res, next) => {
     return res.json({ result: 'OK' });
 });
-app.post('/pets', swaggerValidator.validate, (req, res, next) => {
+app.post('/pets', swaggerValidation.validate, (req, res, next) => {
     return res.json({ result: 'OK' });
 });
-app.get('/pets/:petId', swaggerValidator.validate, (req, res, next) => {
+app.get('/pets/:petId', swaggerValidation.validate, (req, res, next) => {
     return res.json({ result: 'OK' });
 });
 
 app.use((err, req, res) => {
-    if (err instanceof swaggerValidator.InputValidationError) {
+    if (err instanceof swaggerValidation.InputValidationError) {
         return res.status(400).json({ more_info: JSON.stringify(err.errors) });
     }
 });
