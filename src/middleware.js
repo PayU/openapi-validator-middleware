@@ -4,7 +4,7 @@ const SchemaEndpointResolver = require('./utils/schemaEndpointResolver');
 
 const InputValidationError = require('./inputValidationError'),
     apiSchemaBuilder = require('api-schema-builder');
-const allowedFrameworks = ['express', 'koa'];
+const allowedFrameworks = ['express', 'koa', 'fastify'];
 
 let schemas = {};
 let middlewareOptions;
@@ -21,7 +21,7 @@ function init(swaggerPath, options) {
     schemaEndpointResolver = new SchemaEndpointResolver();
 
     // build schema for requests only
-    let schemaBuilderOptions = Object.assign({}, options, { buildRequests: true, buildResponses: false });
+    const schemaBuilderOptions = Object.assign({}, options, { buildRequests: true, buildResponses: false });
     schemas = apiSchemaBuilder.buildSchemaSync(swaggerPath, schemaBuilderOptions);
 }
 
@@ -29,10 +29,18 @@ function validate(...args) {
     return framework.validate(_validateRequest, ...args);
 }
 
+function getFrameworkPlugins(){
+    if (!framework) {
+        throw new Error('Please call init() before retrieving plugins');
+    }
+
+    return framework.getPlugins ? framework.getPlugins(_validateRequest) : {};
+}
+
 function _getContentType(headers) {
     // This is to filter out things like charset
     const contentType = headers['content-type'];
-    return contentType && contentType.split(';')[0].trim(); 
+    return contentType && contentType.split(';')[0].trim();
 }
 
 function _validateRequest(requestOptions) {
@@ -50,8 +58,10 @@ function _validateRequest(requestOptions) {
             error = middlewareOptions.errorFormatter(errors, middlewareOptions);
         } else {
             error = new InputValidationError(errors,
-                { beautifyErrors: middlewareOptions.beautifyErrors,
-                    firstError: middlewareOptions.firstError });
+                {
+                    beautifyErrors: middlewareOptions.beautifyErrors,
+                    firstError: middlewareOptions.firstError
+                });
         }
 
         return Promise.resolve(error);
@@ -86,5 +96,6 @@ function _validateParams(headers, pathParams, query, files, path, method) {
 module.exports = {
     init,
     validate,
+    getFrameworkPlugins,
     InputValidationError
 };

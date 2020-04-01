@@ -11,6 +11,13 @@ declare function init(jsonSchema: Object, options?: ajvValidatorOptions): void;
 export { init };
 
 /**
+ * Returns an object, containing all plugins exposed for this particular framework.
+ * This function should be called after calling init() function.
+ */
+declare function getFrameworkPlugins(): Record<string, any>;
+export { getFrameworkPlugins };
+
+/**
  * Middleware that validates the request against the swagger
  * file, according to the request method and route
  */
@@ -34,7 +41,8 @@ export interface ErrorDetails {
 
 export enum frameworks {
     koa,
-    express
+    express,
+    fastify
 }
 
 export interface format {

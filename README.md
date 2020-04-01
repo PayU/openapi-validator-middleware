@@ -8,7 +8,7 @@
 [![Known Vulnerabilities][snyk-image]][snyk-url]
 [![Apache 2.0 License][license-image]][license-url]
 
-This package provides data validation within an Express or Koa app according to a [Swagger/OpenAPI definition](https://swagger.io/specification/). It uses [Ajv](https://www.npmjs.com/package/ajv) under the hood for validation.
+This package provides data validation within an Express, Koa or Fastify app according to a [Swagger/OpenAPI definition](https://swagger.io/specification/). It uses [Ajv](https://www.npmjs.com/package/ajv) under the hood for validation.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -60,10 +60,15 @@ The function executes synchronously and does not return anything.
 - `pathToSwaggerFile`: Path to the swagger definition.
 - `options`: Additional options for the middleware (see below).
 
+### express-ajv-swagger-validation.getFrameworkPlugins()
+
+Returns an object, containing all plugins exposed for this particular framework, initialized with `express-ajv-swagger-validation` configuration.
+Should only be run after `express-ajv-swagger-validation.init()` was already called.
+
 #### Options
 
 Options currently supported:
-- `framework` - Defines in which framework the middleware is working ('koa' or 'express'). As default, set to 'express'.
+- `framework` - Defines in which framework the middleware is working ('fastify', 'koa' or 'express'). As default, set to 'express'.
 - `formats` - Array of formats that can be added to `ajv` configuration, each element in the array should include `name` and `pattern`.
     ```js
     formats: [
@@ -150,6 +155,38 @@ router.put('/pets', inputValidation.validate, async (ctx, next) => {
 return app;
 ```
 
+### Fastify
+```js
+'use strict';
+const fastify = require('fastify');
+const inputValidation = require('../../src/middleware');
+
+async function getApp() {
+    inputValidation.init('test/pet-store-swagger.yaml', { 
+        framework: 'fastify'
+    });
+    const fastifyValidationPlugins = inputValidation.getFrameworkPlugins();
+    const app = fastify({ logger: true });
+
+    app.register(fastifyValidationPlugins.fastifyValidationPlugin);
+    app.setErrorHandler(async (err, req, reply) => {
+        if (err instanceof inputValidation.InputValidationError) {
+             return reply.status(400).send({ more_info: JSON.stringify(err.errors) });
+        }
+
+        reply.status(500);
+        reply.send();
+    });
+
+    app.get('/pets', (req, reply) => {
+        reply.status(204).send();
+    });
+
+    await app.ready();
+    return app;
+}
+```
+
 ## Important Notes
 
 ### Schema Objects
@@ -159,6 +196,10 @@ It is important to set the `type` property of any [Schema Objects](https://githu
 ### Multipart/form-data (files) 
 
 Multipart/form-data (files) support is based on [`express/multer`](https://github.com/expressjs/multer).
+
+### Fastify support
+
+When using this package as middleware for fastify, the validations errors are being thrown.
 
 ### Koa support
 
