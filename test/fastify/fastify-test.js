@@ -39,6 +39,11 @@ describe('fastify plugin', () => {
         return app.close();
     });
 
+    it('Getting plugins multiple times works correctly', () => {
+        const plugins = inputValidation.getFrameworkPlugins();
+        expect(Object.keys(plugins)).to.eql(['fastifyValidationPlugin']);
+    });
+
     it('Accepts simple GET', async () => {
         const response = await app.inject()
             .headers({
@@ -52,11 +57,23 @@ describe('fastify plugin', () => {
         expect(response.body).to.eql('');
     });
 
-    it('Returns an error on invalid GET request', async () => {
+    it('Returns an error on invalid GET request with multiple errors', async () => {
         const response = await app.inject().get('/pets');
         expect(response.statusCode).to.equal(400);
         expect(response.json()).to.eql({
             more_info: "[{\"keyword\":\"required\",\"dataPath\":\".headers\",\"schemaPath\":\"#/properties/headers/required\",\"params\":{\"missingProperty\":\"api-version\"},\"message\":\"should have required property 'api-version'\"},{\"keyword\":\"required\",\"dataPath\":\".query\",\"schemaPath\":\"#/properties/query/required\",\"params\":{\"missingProperty\":\"page\"},\"message\":\"should have required property 'page'\"}]"
+        });
+    });
+
+    it('Returns an error on invalid GET request with single error', async () => {
+        const response = await app.inject()
+            .headers({
+                'api-version': '1.0'
+            })
+            .get('/pets');
+        expect(response.statusCode).to.equal(400);
+        expect(response.json()).to.eql({
+            more_info: "[{\"keyword\":\"required\",\"dataPath\":\".query\",\"schemaPath\":\"#/properties/query/required\",\"params\":{\"missingProperty\":\"page\"},\"message\":\"should have required property 'page'\"}]"
         });
     });
 });

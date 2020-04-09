@@ -1,3 +1,5 @@
+let fastifyValidationPlugin;
+
 function validate(validateRequest) {
     return (request, reply) => {
         const requestOptions = _getParameters(request);
@@ -23,7 +25,7 @@ function _getParameters(req) {
     return requestOptions;
 }
 
-function fastifyValidationPlugin(validateRequestFn) {
+function _fastifyValidationPlugin(validateRequestFn) {
     const fp = require('fastify-plugin');
 
     return fp(function (fastify, options, next) {
@@ -33,8 +35,12 @@ function fastifyValidationPlugin(validateRequestFn) {
 }
 
 function getPlugins(validateRequestFn) {
+    if (!fastifyValidationPlugin) {
+        fastifyValidationPlugin = _fastifyValidationPlugin(validateRequestFn);
+    }
+
     return {
-        fastifyValidationPlugin: fastifyValidationPlugin(validateRequestFn)
+        fastifyValidationPlugin
     };
 }
 
