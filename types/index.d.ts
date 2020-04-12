@@ -34,7 +34,8 @@ export interface ErrorDetails {
 
 export enum frameworks {
     koa,
-    express
+    express,
+    fastify
 }
 
 export interface format {
