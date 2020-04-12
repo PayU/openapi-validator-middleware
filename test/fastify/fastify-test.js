@@ -5,20 +5,18 @@ const chai = require('chai'),
 chai.use(chaiSinon);
 const inputValidation = require('../../src/middleware');
 
-describe('fastify plugin', () => {
+describe.only('fastify plugin', () => {
     let app;
-    let fastifyValidationPlugins;
     before(() => {
         inputValidation.init('test/pet-store-swagger.yaml', {
             framework: 'fastify'
         });
-        fastifyValidationPlugins = inputValidation.getFrameworkPlugins();
     });
 
     beforeEach(async () => {
         app = fastify({ logger: true });
 
-        app.register(fastifyValidationPlugins.fastifyValidationPlugin);
+        app.register(inputValidation.validate);
         app.setErrorHandler(async (err, req, reply) => {
             if (err instanceof inputValidation.InputValidationError) {
                 return reply.status(400).send({ more_info: JSON.stringify(err.errors) });
@@ -37,11 +35,6 @@ describe('fastify plugin', () => {
 
     afterEach(() => {
         return app.close();
-    });
-
-    it('Getting plugins multiple times works correctly', () => {
-        const plugins = inputValidation.getFrameworkPlugins();
-        expect(Object.keys(plugins)).to.eql(['fastifyValidationPlugin']);
     });
 
     it('Accepts simple GET', async () => {

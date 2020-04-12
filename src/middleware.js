@@ -10,6 +10,7 @@ let schemas = {};
 let middlewareOptions;
 let framework;
 let schemaEndpointResolver;
+let validationMiddleware;
 
 function init(swaggerPath, options) {
     middlewareOptions = options || {};
@@ -18,6 +19,7 @@ function init(swaggerPath, options) {
     });
 
     framework = frameworkToLoad ? require(`./frameworks/${frameworkToLoad}`) : require('./frameworks/express');
+    validationMiddleware = framework.getValidator(_validateRequest);
     schemaEndpointResolver = new SchemaEndpointResolver();
 
     // build schema for requests only
@@ -26,15 +28,7 @@ function init(swaggerPath, options) {
 }
 
 function validate(...args) {
-    return framework.validate(_validateRequest, ...args);
-}
-
-function getFrameworkPlugins(){
-    if (!framework) {
-        throw new Error('Please call init() before retrieving plugins');
-    }
-
-    return framework.getPlugins ? framework.getPlugins(_validateRequest) : {};
+    return validationMiddleware(...args);
 }
 
 function _getContentType(headers) {
@@ -96,6 +90,5 @@ function _validateParams(headers, pathParams, query, files, path, method) {
 module.exports = {
     init,
     validate,
-    getFrameworkPlugins,
     InputValidationError
 };

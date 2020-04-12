@@ -1,3 +1,12 @@
+function getValidator(validateRequest) {
+    return function validate(req, res, next) {
+        const requestOptions = _getParameters(req);
+        validateRequest(requestOptions).then(function(errors) {
+            next(errors);
+        });
+    };
+};
+
 function _getParameters(req) {
     const requestOptions = {};
     const path = req.baseUrl.concat(req.route.path);
@@ -12,13 +21,4 @@ function _getParameters(req) {
     return requestOptions;
 }
 
-function validate(validateRequest, req, res, next) {
-    const requestOptions = _getParameters(req);
-    validateRequest(requestOptions).then(function(errors) {
-        next(errors);
-    });
-}
-
-module.exports = {
-    validate: validate
-};
+module.exports = { getValidator };
