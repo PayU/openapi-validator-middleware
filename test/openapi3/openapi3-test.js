@@ -1,12 +1,11 @@
 'use strict';
 
-let chai = require('chai'),
+const chai = require('chai'),
     expect = chai.expect,
-    sinon = require('sinon'),
     chaiSinon = require('sinon-chai'),
     request = require('supertest');
 chai.use(chaiSinon);
-let inputValidationOptions = function () {
+const inputValidationOptions = function () {
     return {
         formats: [
             { name: 'double', pattern: /\d+(\.\d+)?/ },
@@ -63,7 +62,7 @@ describe('input-validation middleware tests', function () {
                         throw err;
                     }
                     expect(res.body).to.eql({
-                        'more_info': "[\"body/bark should be string\",\"body should have required property 'fur'\",\"body should match exactly one schema in oneOf\"]"
+                        more_info: "[\"body/bark should be string\",\"body should have required property 'fur'\",\"body should match exactly one schema in oneOf\"]"
                     });
                     done();
                 });
@@ -97,7 +96,7 @@ describe('input-validation middleware tests', function () {
                         throw err;
                     }
                     expect(res.body).to.deep.equal({
-                        'more_info': '["body/bark should be equal to one of the allowed values [foo,bar]","body should have required property \'fur\'","body should match exactly one schema in oneOf"]'
+                        more_info: '["body/bark should be equal to one of the allowed values [foo,bar]","body should have required property \'fur\'","body should match exactly one schema in oneOf"]'
                     });
                     done();
                 });
@@ -146,7 +145,7 @@ describe('input-validation middleware tests', function () {
                         throw err;
                     }
                     expect(res.body).to.eql({
-                        'more_info': "[\"body should have required property 'bark'\",\"body/fur should match pattern \\\"^\\\\d+$\\\"\",\"body should match exactly one schema in oneOf\"]"
+                        more_info: "[\"body should have required property 'bark'\",\"body/fur should match pattern \\\"^\\\\d+$\\\"\",\"body should match exactly one schema in oneOf\"]"
                     });
                     done();
                 });
@@ -162,7 +161,7 @@ describe('input-validation middleware tests', function () {
                         throw err;
                     }
                     expect(res.body).to.eql({
-                        'more_info': "[\"headers should have required property 'public-key'\"]"
+                        more_info: "[\"headers should have required property 'public-key'\"]"
                     });
                     done();
                 });
@@ -176,7 +175,7 @@ describe('input-validation middleware tests', function () {
                         throw err;
                     }
                     expect(res.body).to.eql({
-                        'result': 'OK'
+                        result: 'OK'
                     });
                     done();
                 });
@@ -194,7 +193,7 @@ describe('input-validation middleware tests', function () {
                             throw err;
                         }
                         expect(res.body).to.eql({
-                            'more_info': '["body/type should be equal to one of the allowed values [dog_object,cat_object]"]'
+                            more_info: '["body/type should be equal to one of the allowed values [dog_object,cat_object]"]'
                         });
                         done();
                     });
@@ -212,7 +211,7 @@ describe('input-validation middleware tests', function () {
                             throw err;
                         }
                         expect(res.body).to.eql({
-                            'more_info': "[\"body should have required property 'bark'\"]"
+                            more_info: "[\"body should have required property 'bark'\"]"
                         });
                         done();
                     });
@@ -231,7 +230,7 @@ describe('input-validation middleware tests', function () {
                             throw err;
                         }
                         expect(res.body).to.eql({
-                            'more_info': '["body/type should be equal to one of the allowed values [dog_multiple,cat_object]"]'
+                            more_info: '["body/type should be equal to one of the allowed values [dog_multiple,cat_object]"]'
                         });
                         done();
                     });
@@ -249,7 +248,7 @@ describe('input-validation middleware tests', function () {
                             throw err;
                         }
                         expect(res.body).to.eql({
-                            'more_info': '["body/model should be equal to one of the allowed values [small_dog,big_dog]"]'
+                            more_info: '["body/model should be equal to one of the allowed values [small_dog,big_dog]"]'
                         });
                         done();
                     });
@@ -268,7 +267,7 @@ describe('input-validation middleware tests', function () {
                             throw err;
                         }
                         expect(res.body).to.eql({
-                            'more_info': "[\"body should have required property 'max_length'\",\"body should have required property 'name'\",\"body should have required property 'dog_age'\"]"
+                            more_info: "[\"body should have required property 'max_length'\",\"body should have required property 'name'\",\"body should have required property 'dog_age'\"]"
                         });
                         done();
                     });
@@ -290,7 +289,7 @@ describe('input-validation middleware tests', function () {
                             throw err;
                         }
                         expect(res.body).to.eql({
-                            'result': 'OK'
+                            result: 'OK'
                         });
                         done();
                     });
@@ -309,7 +308,7 @@ describe('input-validation middleware tests', function () {
                             throw err;
                         }
                         expect(res.body).to.eql({
-                            'more_info': '["body/type should be equal to one of the allowed values [mapped_dog,mapped_cat]"]'
+                            more_info: '["body/type should be equal to one of the allowed values [mapped_dog,mapped_cat]"]'
                         });
                         done();
                     });
@@ -328,7 +327,7 @@ describe('input-validation middleware tests', function () {
                             throw err;
                         }
                         expect(res.body).to.eql({
-                            'more_info': "[\"body should have required property 'max_length'\",\"body should have required property 'name'\",\"body should have required property 'dog_age'\"]"
+                            more_info: "[\"body should have required property 'max_length'\",\"body should have required property 'name'\",\"body should have required property 'dog_age'\"]"
                         });
                         done();
                     });
@@ -350,7 +349,7 @@ describe('input-validation middleware tests', function () {
                             throw err;
                         }
                         expect(res.body).to.eql({
-                            'result': 'OK'
+                            result: 'OK'
                         });
                         done();
                     });
@@ -372,7 +371,7 @@ describe('input-validation middleware tests', function () {
                             throw err;
                         }
                         expect(res.body).to.eql({
-                            'more_info': JSON.stringify(
+                            more_info: JSON.stringify(
                                 [
                                     "body should NOT have additional properties 'additional1'",
                                     "body should NOT have additional properties 'additional2'"])
@@ -404,7 +403,7 @@ describe('input-validation middleware tests', function () {
                         throw err;
                     }
                     expect(res.body).to.eql({
-                        'more_info': "\"body should have required property 'max_length'\""
+                        more_info: "\"body should have required property 'max_length'\""
                     });
                     done();
                 });
@@ -425,7 +424,7 @@ describe('input-validation middleware tests', function () {
                             throw err;
                         }
                         expect(res.body).to.eql({
-                            'more_info': JSON.stringify(
+                            more_info: JSON.stringify(
                                 "body should NOT have additional properties 'additional1'")
                         });
                         done();

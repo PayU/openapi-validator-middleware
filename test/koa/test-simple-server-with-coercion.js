@@ -4,8 +4,8 @@ const Koa = require('koa');
 const Router = require('koa-router');
 const bodyParser = require('koa-bodyparser');
 const inputValidation = require('../../src/middleware');
-let app = new Koa();
-let router = new Router();
+const app = new Koa();
+const router = new Router();
 
 app.use(async function(ctx, next) {
     try {
@@ -23,9 +23,9 @@ app.use(router.routes());
 module.exports = () => {
     inputValidation.init('test/pet-store-swagger.yaml', {
         framework: 'koa',
-        ajvConfigBody: {
-            coerceTypes: true },
-        makeOptionalAttributesNullable: true });
+        ajvConfigBody: { coerceTypes: true },
+        makeOptionalAttributesNullable: true
+    });
 
     router.get('/pets', inputValidation.validate, async function(ctx, next) {
         ctx.status = 200;

@@ -13,5 +13,5 @@ jobs:
       script: "npm run node6-test"
     - language: node_js
       node_js: node
-      script: "npm run test:coverage"
+      script: "npm run test:ci"
       after_success: "npm run coveralls"

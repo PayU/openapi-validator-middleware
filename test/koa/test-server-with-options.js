@@ -4,8 +4,8 @@ const Koa = require('koa');
 const Router = require('koa-router');
 const bodyParser = require('koa-bodyparser');
 const inputValidation = require('../../src/middleware');
-let app = new Koa();
-let router = new Router();
+const app = new Koa();
+const router = new Router();
 
 app.use(async function(ctx, next) {
     try {
@@ -20,7 +20,7 @@ app.use(async function(ctx, next) {
 app.use(bodyParser({ enableTypes: ['text', 'json'] }));
 app.use(router.routes());
 
-let inputValidationOptions = {
+const inputValidationOptions = {
     formats: [
         { name: 'double', pattern: /\d+(\.\d+)?/ },
         { name: 'int64', pattern: /^\d{1,19}$/ },
