@@ -8,7 +8,7 @@ describe('schemaEndpointResolver', () => {
     let schemas;
     let schemaEndpointResolver;
     before(() => {
-        let schemaBuilderOptions = {buildRequests: true, buildResponses: true};
+        const schemaBuilderOptions = { buildRequests: true, buildResponses: true };
         return apiSchemaBuilder.buildSchema(swaggerPath, schemaBuilderOptions).then((receivedSchemas) => {
             schemas = receivedSchemas;
         });

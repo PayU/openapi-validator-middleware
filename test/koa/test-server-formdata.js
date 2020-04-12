@@ -7,8 +7,8 @@ const inputValidation = require('../../src/middleware');
 const multer = require('koa-multer');
 const upload = multer();
 
-let app = new Koa();
-let router = new Router();
+const app = new Koa();
+const router = new Router();
 
 app.use(async function(ctx, next) {
     try {

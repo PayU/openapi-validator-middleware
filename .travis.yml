@@ -9,9 +9,15 @@ script: "npm test"
 jobs:
   include:
     - language: node_js
+      node_js: node
+      script:
+        - "npm run lint"
+        - "npm run lint:types"
+    - language: node_js
       node_js: 6
       script: "npm run node6-test"
     - language: node_js
       node_js: node
       script: "npm run test:coverage"
       after_success: "npm run coveralls"
+

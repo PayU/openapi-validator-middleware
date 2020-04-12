@@ -1,11 +1,11 @@
 'use strict';
 
-let chai = require('chai'),
+const chai = require('chai'),
     expect = chai.expect,
     chaiSinon = require('sinon-chai');
 chai.use(chaiSinon);
 
-let inputValidationOptions = function () {
+const inputValidationOptions = function () {
     return {
         formats: [
             { name: 'double', pattern: /\d+(\.\d+)?/ },

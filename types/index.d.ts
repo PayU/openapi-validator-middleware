@@ -32,11 +32,13 @@ export interface ErrorDetails {
     schemaPath: string;
 }
 
+/* eslint-disable no-unused-vars */
 export enum frameworks {
-    koa,
-    express,
-    fastify
+    koa = 'koa',
+    express = 'express',
+    fastify = 'fastify'
 }
+/* eslint-enable no-unused-vars */
 
 export interface format {
     name: string;

@@ -9,14 +9,14 @@ chai.use(chaiSinon);
 describe('input-validation middleware tests - Express', function () {
     describe('init function tests', function () {
         it('should throw an error in case the file doesn\'t exists', function () {
-            let middleware = require('../../src/middleware');
+            const middleware = require('../../src/middleware');
             expect(() => {
-                middleware.init('test/pet-store-swagger1.yaml')
-            }).to.throw
+                middleware.init('test/pet-store-swagger1.yaml');
+            }).to.throw;
         });
         it('should resolve without formats', function () {
-            let rewire = require('rewire');
-            let middleware = rewire('../../src/middleware');
+            const rewire = require('rewire');
+            const middleware = rewire('../../src/middleware');
             middleware.init('test/pet-store-swagger.yaml');
         });
     });
@@ -75,7 +75,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('api-version');
                     expect(res.body.more_info).to.includes('should have required property \'api-version\'');
@@ -92,7 +92,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('api-version');
                     expect(res.body.more_info).to.includes('should match pattern');
@@ -109,7 +109,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('request-id');
                     expect(res.body.more_info).to.includes('should NOT be shorter than 1 characters');
@@ -124,7 +124,7 @@ describe('input-validation middleware tests - Express', function () {
                 .send({
                     name: '111',
                     tag: 12344,
-                    'test': {
+                    test: {
                         field1: '1'
                     }
                 })
@@ -132,7 +132,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('tag');
                     done();
@@ -145,7 +145,7 @@ describe('input-validation middleware tests - Express', function () {
                 .set('api-version', '1.0')
                 .send({
                     tag: 'tag',
-                    'test': {
+                    test: {
                         field1: '1'
                     }
                 })
@@ -153,7 +153,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('name');
                     done();
@@ -172,7 +172,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('test');
                     done();
@@ -192,7 +192,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('test');
                     done();
@@ -212,7 +212,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('field1');
                     done();
@@ -234,7 +234,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('field1');
                     done();
@@ -256,7 +256,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('should be equal to one of the allowed values');
                     done();
@@ -272,7 +272,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('page');
                     done();
@@ -288,7 +288,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('limit');
                     done();
@@ -304,7 +304,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('limit');
                     done();
@@ -320,7 +320,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('petId');
                     done();
@@ -340,7 +340,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(moreInfoAsJson.length).to.equal(2);
                     expect(res.body.more_info).to.includes('field1');
@@ -369,7 +369,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('[1].test.field1');
                     done();
@@ -389,7 +389,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('should be array');
                     done();
@@ -632,7 +632,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('api-version');
                     expect(res.body.more_info).to.includes('should have required property \'api-version\'');
@@ -649,7 +649,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('api-version');
                     expect(res.body.more_info).to.includes('should match pattern');
@@ -666,7 +666,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('request-id');
                     expect(res.body.more_info).to.includes('should NOT be shorter than 1 characters');
@@ -681,7 +681,7 @@ describe('input-validation middleware tests - Express', function () {
                 .send({
                     name: '111',
                     tag: 12344,
-                    'test': {
+                    test: {
                         field1: '1'
                     }
                 })
@@ -689,7 +689,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('tag');
                     done();
@@ -702,7 +702,7 @@ describe('input-validation middleware tests - Express', function () {
                 .set('api-version', '1.0')
                 .send({
                     tag: 'tag',
-                    'test': {
+                    test: {
                         field1: '1'
                     }
                 })
@@ -710,7 +710,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('name');
                     done();
@@ -729,7 +729,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('test');
                     done();
@@ -749,7 +749,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('test');
                     done();
@@ -769,7 +769,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('field1');
                     done();
@@ -791,7 +791,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('field1');
                     done();
@@ -813,7 +813,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('should be equal to one of the allowed values');
                     done();
@@ -829,7 +829,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('page');
                     done();
@@ -845,7 +845,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('limit');
                     done();
@@ -861,7 +861,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('limit');
                     done();
@@ -877,7 +877,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('petId');
                     done();
@@ -897,7 +897,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(moreInfoAsJson.length).to.equal(2);
                     expect(res.body.more_info).to.includes('field1');
@@ -926,7 +926,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('[1].test.field1');
                     done();
@@ -946,7 +946,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('should be array');
                     done();
@@ -981,7 +981,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('api-version');
                     expect(res.body.more_info).to.includes('should have required property \'api-version\'');
@@ -998,7 +998,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('api-version');
                     expect(res.body.more_info).to.includes('should match pattern');
@@ -1015,7 +1015,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('request-id');
                     expect(res.body.more_info).to.includes('should NOT be shorter than 1 characters');
@@ -1030,7 +1030,7 @@ describe('input-validation middleware tests - Express', function () {
                 .send({
                     name: '111',
                     tag: 12344,
-                    'test': {
+                    test: {
                         field1: '1'
                     }
                 })
@@ -1038,7 +1038,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('tag');
                     done();
@@ -1051,7 +1051,7 @@ describe('input-validation middleware tests - Express', function () {
                 .set('api-version', '1.0')
                 .send({
                     tag: 'tag',
-                    'test': {
+                    test: {
                         field1: '1'
                     }
                 })
@@ -1059,7 +1059,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('name');
                     done();
@@ -1078,7 +1078,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('test');
                     done();
@@ -1098,7 +1098,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('test');
                     done();
@@ -1118,7 +1118,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('field1');
                     done();
@@ -1140,7 +1140,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('field1');
                     done();
@@ -1162,7 +1162,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('should be equal to one of the allowed values');
                     done();
@@ -1178,7 +1178,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('page');
                     done();
@@ -1194,7 +1194,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('limit');
                     done();
@@ -1210,7 +1210,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('limit');
                     done();
@@ -1226,7 +1226,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('petId');
                     done();
@@ -1246,7 +1246,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(moreInfoAsJson.length).to.equal(2);
                     expect(res.body.more_info).to.includes('field1');
@@ -1275,7 +1275,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('[1].test.field1');
                     done();
@@ -1295,7 +1295,7 @@ describe('input-validation middleware tests - Express', function () {
                     if (err) {
                         throw err;
                     }
-                    let moreInfoAsJson = JSON.parse(res.body.more_info);
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('should be array');
                     done();
@@ -1373,7 +1373,7 @@ describe('input-validation middleware tests - Express', function () {
                 .send({
                     name: '111',
                     tag: 12344,
-                    'test': {
+                    test: {
                         field1: '1'
                     }
                 })
@@ -1393,7 +1393,7 @@ describe('input-validation middleware tests - Express', function () {
                 .set('api-version', '1.0')
                 .send({
                     tag: 'tag',
-                    'test': {
+                    test: {
                         field1: '1'
                     }
                 })
@@ -1766,7 +1766,7 @@ describe('input-validation middleware tests - Express', function () {
                 .send({
                     name: '111',
                     tag: 12344,
-                    'test': {
+                    test: {
                         field1: 'enum1'
                     }
                 })
@@ -1789,7 +1789,7 @@ describe('input-validation middleware tests - Express', function () {
                 .send({
                     name: '111',
                     tag: 12344,
-                    'test': {
+                    test: {
                         field1: '1'
                     }
                 })
@@ -1809,7 +1809,7 @@ describe('input-validation middleware tests - Express', function () {
                 .set('api-version', '1.0')
                 .send({
                     tag: 'tag',
-                    'test': {
+                    test: {
                         field1: '1'
                     }
                 })
