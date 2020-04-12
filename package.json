@@ -29,9 +29,10 @@
   },
   "scripts": {
     "lint:types": "dtslint types && eslint types/index.d.ts",
+    "lint:fix": "eslint --fix .",
     "test": "mocha test/**/*-test.js && npm run lint:types",
     "test:coverage": "nyc mocha test/**/*-test.js && npm run lint:types",
-    "node6-test": "mocha --exclude test/koa/**/*-test.js test/**/*-test.js",
+    "node6-test": "mocha --exclude test/koa/**/*-test.js --exclude test/fastify/**/*-test.js test/**/*-test.js",
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
     "doctoc": "npm install -g doctoc && doctoc README.md"
   },
@@ -77,6 +78,8 @@
     "eslint-plugin-node": "^9.2.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
+    "fastify": "^2.13.0",
+    "fastify-plugin": "^1.6.1",
     "express": "^4.17.1",
     "koa": "^2.11.0",
     "koa-bodyparser": "^4.2.1",
