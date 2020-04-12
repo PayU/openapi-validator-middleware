@@ -60,11 +60,6 @@ The function executes synchronously and does not return anything.
 - `pathToSwaggerFile`: Path to the swagger definition.
 - `options`: Additional options for the middleware (see below).
 
-### express-ajv-swagger-validation.getFrameworkPlugins()
-
-Returns an object, containing all plugins exposed for this particular framework, initialized with `express-ajv-swagger-validation` configuration.
-Should only be run after `express-ajv-swagger-validation.init()` was already called.
-
 #### Options
 
 Options currently supported:
@@ -165,10 +160,9 @@ async function getApp() {
     inputValidation.init('test/pet-store-swagger.yaml', { 
         framework: 'fastify'
     });
-    const fastifyValidationPlugins = inputValidation.getFrameworkPlugins();
     const app = fastify({ logger: true });
 
-    app.register(fastifyValidationPlugins.fastifyValidationPlugin);
+    app.register(inputValidation.validate());
     app.setErrorHandler(async (err, req, reply) => {
         if (err instanceof inputValidation.InputValidationError) {
              return reply.status(400).send({ more_info: JSON.stringify(err.errors) });
