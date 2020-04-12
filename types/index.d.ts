@@ -34,9 +34,9 @@ export interface ErrorDetails {
 
 /* eslint-disable no-unused-vars */
 export enum frameworks {
-    koa,
-    express,
-    fastify
+    koa = 'koa',
+    express = 'express',
+    fastify = 'fastify'
 }
 /* eslint-enable no-unused-vars */
 
