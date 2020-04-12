@@ -5,7 +5,7 @@ const chai = require('chai'),
 chai.use(chaiSinon);
 const inputValidation = require('../../src/middleware');
 
-describe.only('fastify plugin', () => {
+describe('fastify plugin', () => {
     let app;
     before(() => {
         inputValidation.init('test/pet-store-swagger.yaml', {
@@ -16,7 +16,7 @@ describe.only('fastify plugin', () => {
     beforeEach(async () => {
         app = fastify({ logger: true });
 
-        app.register(inputValidation.validate);
+        app.register(inputValidation.validate());
         app.setErrorHandler(async (err, req, reply) => {
             if (err instanceof inputValidation.InputValidationError) {
                 return reply.status(400).send({ more_info: JSON.stringify(err.errors) });

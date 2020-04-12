@@ -1,10 +1,12 @@
 const fp = require('fastify-plugin');
 
 function getValidator(validateRequest) {
-    return fp(function (fastify, options, next) {
-        fastify.addHook('onRequest', validate);
-        next();
-    });
+    return () => {
+        return fp(function (fastify, options, next) {
+            fastify.addHook('onRequest', validate);
+            next();
+        });
+    };
 
     function validate(request, reply) {
         const requestOptions = _getParameters(request);
