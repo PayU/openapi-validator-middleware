@@ -31,9 +31,8 @@
     "lint": "eslint .",
     "lint:types": "dtslint types && eslint types/index.d.ts",
     "lint:fix": "eslint --fix .",
-    "test": "mocha test/**/*-test.js && npm run lint:types",
-    "test:coverage": "nyc mocha test/**/*-test.js && npm run lint:types",
-    "test:ci": "npm run lint && npm run lint:types && npm run test:coverage",
+    "test": "mocha test/**/*-test.js",
+    "test:coverage": "nyc mocha test/**/*-test.js",
     "node6-test": "mocha --exclude test/koa/**/*-test.js --exclude test/fastify/**/*-test.js test/**/*-test.js",
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
     "doctoc": "npm install -g doctoc && doctoc README.md"
