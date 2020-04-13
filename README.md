@@ -1,6 +1,5 @@
 # openapi-validator-middleware
 
-[![Join the chat at https://gitter.im/Zooz/express-ajv-swagger-validation](https://badges.gitter.im/Zooz/openapi-validator-middleware.svg)](https://gitter.im/Zooz/express-ajv-swagger-validation?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![NPM Version][npm-image]][npm-url]
 [![NPM Downloads][downloads-image]][downloads-url]
 [![Build Status][travis-image]][travis-url]
