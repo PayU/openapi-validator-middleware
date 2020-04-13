@@ -1,7 +1,7 @@
 {
   "name": "openapi-validator-middleware",
-  "version": "0.0.0",
-  "description": "Fast input validation middleware using OpenAPI definitions file and ajv",
+  "version": "1.2.0",
+  "description": "Fast input validation middleware using OpenAPI or Swagger definitions file and ajv",
   "main": "src/middleware.js",
   "types": "types/index.d.ts",
   "files": [
