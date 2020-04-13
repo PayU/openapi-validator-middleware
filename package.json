@@ -1,7 +1,7 @@
 {
-  "name": "express-ajv-swagger-validation",
-  "version": "1.2.0",
-  "description": "Input validation using Swagger (Open API) and ajv",
+  "name": "openapi-validator-middleware",
+  "version": "0.0.0",
+  "description": "Fast input validation middleware using OpenAPI definitions file and ajv",
   "main": "src/middleware.js",
   "types": "types/index.d.ts",
   "files": [
@@ -39,7 +39,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/Zooz/express-ajv-swagger-validation.git"
+    "url": "git://github.com/PayU/openapi-validator-middleware.git"
   },
   "keywords": [
     "ajv",
@@ -53,9 +53,9 @@
     "koa"
   ],
   "bugs": {
-    "url": "https://github.com/Zooz/express-ajv-swagger-validation"
+    "url": "https://github.com/PayU/openapi-validator-middleware/issues"
   },
-  "homepage": "https://github.com/Zooz/express-ajv-swagger-validation",
+  "homepage": "https://github.com/PayU/openapi-validator-middleware",
   "author": "Idan Tovi",
   "license": "Apache-2.0",
   "dependencies": {
