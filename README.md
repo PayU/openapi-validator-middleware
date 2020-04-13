@@ -1,6 +1,5 @@
-# express-ajv-swagger-validation
+# openapi-validator-middleware
 
-[![Join the chat at https://gitter.im/Zooz/express-ajv-swagger-validation](https://badges.gitter.im/Zooz/express-ajv-swagger-validation.svg)](https://gitter.im/Zooz/express-ajv-swagger-validation?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![NPM Version][npm-image]][npm-url]
 [![NPM Downloads][downloads-image]][downloads-url]
 [![Build Status][travis-image]][travis-url]
@@ -16,8 +15,8 @@ This package provides data validation within an Express, Koa or Fastify app acco
 
 - [Installation](#installation)
 - [API](#api)
-  - [express-ajv-swagger-validation.validate](#express-ajv-swagger-validationvalidate)
-  - [express-ajv-swagger-validation.init(pathToSwaggerFile, options)](#express-ajv-swagger-validationinitpathtoswaggerfile-options)
+  - [openapi-validator-middleware.validate](#openapi-validator-middlewarevalidate)
+  - [openapi-validator-middleware.init(pathToSwaggerFile, options)](#openapi-validator-middlewareinitpathtoswaggerfile-options)
     - [Options](#options)
 - [Usage Example](#usage-example)
   - [Express](#express)
@@ -37,22 +36,22 @@ This package provides data validation within an Express, Koa or Fastify app acco
 Install using the node package registry:
 
 ```bash
-npm install --save express-ajv-swagger-validation
+npm install --save openapi-validator-middleware
 ```
 
 Then import the module in your code:
 
 ```js
-const swaggerValidation = require('express-ajv-swagger-validation');
+const swaggerValidation = require('openapi-validator-middleware');
 ```
 
 ## API
 
-### express-ajv-swagger-validation.validate
+### openapi-validator-middleware.validate
 
 This middleware function validates the request body, headers, path parameters and query parameters according to the _paths_ definition of the swagger file. Make sure to use this middleware inside a route definition in order to have `req.route.path` assigned to the most accurate express route.
 
-### express-ajv-swagger-validation.init(pathToSwaggerFile, options)
+### openapi-validator-middleware.init(pathToSwaggerFile, options)
 
 Initialize the middleware using a swagger definition.
 The function executes synchronously and does not return anything.
@@ -216,15 +215,15 @@ The tests use mocha, istanbul and mochawesome. Run them using the node test scri
 npm test
 ```
 
-[npm-image]: https://img.shields.io/npm/v/express-ajv-swagger-validation.svg?style=flat
-[npm-url]: https://npmjs.org/package/express-ajv-swagger-validation
-[travis-image]: https://travis-ci.org/Zooz/express-ajv-swagger-validation.svg?branch=master
-[travis-url]: https://travis-ci.org/Zooz/express-ajv-swagger-validation
-[coveralls-image]: https://coveralls.io/repos/github/Zooz/express-ajv-swagger-validation/badge.svg?branch=master
-[coveralls-url]: https://coveralls.io/github/Zooz/express-ajv-swagger-validation?branch=master
-[downloads-image]: http://img.shields.io/npm/dm/express-ajv-swagger-validation.svg?style=flat
-[downloads-url]: https://img.shields.io/npm/dm/express-ajv-swagger-validation.svg
+[npm-image]: https://img.shields.io/npm/v/openapi-validator-middleware.svg?style=flat
+[npm-url]: https://npmjs.org/package/openapi-validator-middleware
+[travis-image]: https://travis-ci.org/PayU/openapi-validator-middleware.svg?branch=master
+[travis-url]: https://travis-ci.org/PayU/openapi-validator-middleware
+[coveralls-image]: https://coveralls.io/repos/github/PayU/openapi-validator-middleware/badge.svg?branch=master
+[coveralls-url]: https://coveralls.io/github/PayU/openapi-validator-middleware?branch=master
+[downloads-image]: http://img.shields.io/npm/dm/openapi-validator-middleware.svg?style=flat
+[downloads-url]: https://img.shields.io/npm/dm/openapi-validator-middleware.svg
 [license-image]: https://img.shields.io/badge/license-Apache_2.0-green.svg?style=flat
 [license-url]: LICENSE
-[snyk-image]: https://snyk.io/test/npm/express-ajv-swagger-validation/badge.svg
-[snyk-url]: https://snyk.io/test/npm/express-ajv-swagger-validation
+[snyk-image]: https://snyk.io/test/github/PayU/openapi-validator-middleware/badge.svg?targetFile=package.json
+[snyk-url]: https://snyk.io/test/github/PayU/openapi-validator-middleware?targetFile=package.json
