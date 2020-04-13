@@ -226,5 +226,5 @@ npm test
 [downloads-url]: https://img.shields.io/npm/dm/openapi-validator-middleware.svg
 [license-image]: https://img.shields.io/badge/license-Apache_2.0-green.svg?style=flat
 [license-url]: LICENSE
-[snyk-image]: https://snyk.io/test/npm/openapi-validator-middleware/badge.svg
-[snyk-url]: https://snyk.io/test/npm/openapi-validator-middleware
+[snyk-image]: https://snyk.io/test/github/PayU/openapi-validator-middleware/badge.svg?targetFile=package.json
+[snyk-url]: https://snyk.io/test/github/PayU/openapi-validator-middleware?targetFile=package.json
