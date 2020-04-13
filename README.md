@@ -9,6 +9,9 @@
 
 This package provides data validation within an Express, Koa or Fastify app according to a [Swagger/OpenAPI definition](https://swagger.io/specification/). It uses [Ajv](https://www.npmjs.com/package/ajv) under the hood for validation.
 
+NOTICE: As this package gone through a long way and we added support for OpenAPI 3.0 definitions while also adding support for more frameworks such as Koa and Fastify, we finally took the step of changing [express-ajv-swagger-validation](https://www.npmjs.com/package/express-ajv-swagger-validation) name to something that describes it better. As of now we'll be using the name [openapi-validator-middleware](https://www.npmjs.com/package/openapi-validator-middleware) instead.  
+There are no code changes in `openapi-validator-middleware@2.0.0` compared to `express-ajv-swagger-validation@1.2.0` apart the name change.
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  <!-- *generated with [DocToc](https://github.com/thlorenz/doctoc)* -->
