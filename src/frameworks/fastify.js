@@ -1,7 +1,13 @@
 const fp = require('fastify-plugin');
 
 function getValidator(validateRequest) {
-    return () => {
+    let skiplist = [];
+
+    return (pluginOptions) => {
+        if (pluginOptions && pluginOptions.skiplist) {
+            skiplist = [...pluginOptions.skiplist];
+        }
+
         return fp(function (fastify, options, next) {
             fastify.addHook('onRequest', validate);
             next();
@@ -10,6 +16,10 @@ function getValidator(validateRequest) {
 
     function validate(request, reply) {
         const requestOptions = _getParameters(request);
+        if (skiplist.includes(requestOptions.path)) {
+            return Promise.resolve();
+        }
+
         return validateRequest(requestOptions).then(function (errors) {
             if (errors) {
                 throw errors;
@@ -19,7 +29,7 @@ function getValidator(validateRequest) {
 
     function _getParameters(req) {
         const requestOptions = {};
-        const path = req.raw.url;
+        const path = req.urlData().path;
         requestOptions.path = path.endsWith('/') ? path.substring(0, path.length - 1) : path;
         requestOptions.headers = req.headers;
         requestOptions.params = req.params;

@@ -156,6 +156,7 @@ return app;
 ```js
 'use strict';
 const fastify = require('fastify');
+const fastifyUrlData = require('fastify-url-data');
 const inputValidation = require('../../src/middleware');
 
 async function getApp() {
@@ -164,7 +165,10 @@ async function getApp() {
     });
     const app = fastify({ logger: true });
 
-    app.register(inputValidation.validate());
+    app.register(fastifyUrlData);
+    app.register(inputValidation.validate({
+      skiplist: ['/_metrics']
+    }));
     app.setErrorHandler(async (err, req, reply) => {
         if (err instanceof inputValidation.InputValidationError) {
              return reply.status(400).send({ more_info: JSON.stringify(err.errors) });
@@ -195,6 +199,7 @@ Multipart/form-data (files) support is based on [`express/multer`](https://githu
 
 ### Fastify support
 
+Fastify support requires `fastify-url-data` plugin to be registered in your application.
 When using this package as middleware for fastify, the validations errors are being thrown.
 
 ### Koa support
