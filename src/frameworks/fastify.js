@@ -18,8 +18,7 @@ function getValidator(validateRequest) {
     function validate(request, reply) {
         const requestOptions = _getParameters(request);
         if (skiplist.some((skipListRegex) => {
-            const testresult = skipListRegex.test(requestOptions.path);
-            return testresult;
+            return skipListRegex.test(requestOptions.path);
         })) {
             return Promise.resolve();
         }
