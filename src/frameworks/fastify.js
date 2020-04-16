@@ -1,11 +1,12 @@
 const fp = require('fastify-plugin');
 
 function getValidator(validateRequest) {
+    const urijs = require('uri-js');
     let skiplist = [];
 
     return (pluginOptions) => {
         if (pluginOptions && pluginOptions.skiplist) {
-            skiplist = [...pluginOptions.skiplist];
+            skiplist = pluginOptions.skiplist.map((regexStr) => new RegExp(regexStr));
         }
 
         return fp(function (fastify, options, next) {
@@ -16,7 +17,10 @@ function getValidator(validateRequest) {
 
     function validate(request, reply) {
         const requestOptions = _getParameters(request);
-        if (skiplist.includes(requestOptions.path)) {
+        if (skiplist.some((skipListRegex) => {
+            const testresult = skipListRegex.test(requestOptions.path);
+            return testresult;
+        })) {
             return Promise.resolve();
         }
 
@@ -29,7 +33,7 @@ function getValidator(validateRequest) {
 
     function _getParameters(req) {
         const requestOptions = {};
-        const path = req.urlData().path;
+        const path = resolveUrlData(req.headers, req.raw).path;
         requestOptions.path = path.endsWith('/') ? path.substring(0, path.length - 1) : path;
         requestOptions.headers = req.headers;
         requestOptions.params = req.params;
@@ -40,6 +44,13 @@ function getValidator(validateRequest) {
 
         return requestOptions;
     }
-};
+
+    function resolveUrlData(headers, req) {
+        const scheme = (headers[':scheme'] ? headers[':scheme'] + ':' : '') + '//';
+        const host = headers[':authority'] || headers.host;
+        const path = headers[':path'] || req.url;
+        return urijs.parse(scheme + host + path);
+    }
+}
 
 module.exports = { getValidator };

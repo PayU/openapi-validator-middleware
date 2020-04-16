@@ -1,5 +1,4 @@
 const fastify = require('fastify');
-const fastifyUrlData = require('fastify-url-data');
 const chai = require('chai'),
     expect = chai.expect,
     chaiSinon = require('sinon-chai');
@@ -17,7 +16,6 @@ describe('fastify plugin', () => {
     beforeEach(async () => {
         app = fastify({ logger: true });
 
-        app.register(fastifyUrlData);
         app.register(inputValidation.validate());
         app.setErrorHandler(async (err, req, reply) => {
             if (err instanceof inputValidation.InputValidationError) {
