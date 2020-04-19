@@ -1,7 +1,7 @@
 function getValidator(validateRequest) {
     return async function validate(ctx, next) {
         const requestOptions = _getParameters(ctx);
-        const errors = await validateRequest(requestOptions);
+        const errors = validateRequest(requestOptions);
         if (errors) {
             throw errors;
         }
@@ -21,6 +21,6 @@ function getValidator(validateRequest) {
 
         return requestOptions;
     }
-};
+}
 
 module.exports = { getValidator };

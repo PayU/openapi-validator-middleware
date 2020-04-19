@@ -38,14 +38,14 @@ function _getContentType(headers) {
 }
 
 function _validateRequest(requestOptions) {
-    return Promise.all([
-        _validateParams(requestOptions.headers, requestOptions.params, requestOptions.query, requestOptions.files, requestOptions.path, requestOptions.method.toLowerCase()).catch(e => e),
-        _validateBody(requestOptions.body, requestOptions.path, requestOptions.method.toLowerCase(), _getContentType(requestOptions.headers)).catch(e => e)
-    ]).then(function (errors) {
-        if (errors[0] || errors[1]) {
-            return errors[0] && errors[1] ? Promise.reject(errors[0].concat(errors[1])) : errors[0] ? Promise.reject(errors[0]) : Promise.reject(errors[1]);
-        }
-    }).catch(function (errors) {
+    const paramValidationErrors = _validateParams(requestOptions.headers, requestOptions.params, requestOptions.query, requestOptions.files, requestOptions.path, requestOptions.method.toLowerCase());
+    const bodyValidationErrors = _validateBody(requestOptions.body, requestOptions.path, requestOptions.method.toLowerCase(), _getContentType(requestOptions.headers));
+
+    const errors = paramValidationErrors && bodyValidationErrors
+        ? paramValidationErrors.concat(bodyValidationErrors)
+        : paramValidationErrors || bodyValidationErrors;
+
+    if (errors) {
         let error;
 
         if (middlewareOptions.errorFormatter) {
@@ -58,33 +58,26 @@ function _validateRequest(requestOptions) {
                 });
         }
 
-        return Promise.resolve(error);
-    });
+        return error;
+    }
 }
 
 function _validateBody(body, path, method, contentType) {
-    return new Promise(function (resolve, reject) {
-        const methodSchema = schemaEndpointResolver.getMethodSchema(schemas, path, method) || {};
+    const methodSchema = schemaEndpointResolver.getMethodSchema(schemas, path, method) || {};
 
-        if (methodSchema.body) {
-            const validator = methodSchema.body[contentType] || methodSchema.body;
-            if (!validator.validate(body)) {
-                return reject(validator.errors);
-            }
+    if (methodSchema.body) {
+        const validator = methodSchema.body[contentType] || methodSchema.body;
+        if (!validator.validate(body)) {
+            return validator.errors;
         }
-        return resolve();
-    });
+    }
 }
 
 function _validateParams(headers, pathParams, query, files, path, method) {
-    return new Promise(function (resolve, reject) {
-        const methodSchema = schemaEndpointResolver.getMethodSchema(schemas, path, method);
-        if (methodSchema && methodSchema.parameters && !methodSchema.parameters.validate({ query: query, headers: headers, path: pathParams, files: files })) {
-            return reject(methodSchema.parameters.errors);
-        }
-
-        return resolve();
-    });
+    const methodSchema = schemaEndpointResolver.getMethodSchema(schemas, path, method);
+    if (methodSchema && methodSchema.parameters && !methodSchema.parameters.validate({ query: query, headers: headers, path: pathParams, files: files })) {
+        return methodSchema.parameters.errors;
+    }
 }
 
 module.exports = {
