@@ -69,4 +69,19 @@ describe('fastify plugin', () => {
             more_info: "[{\"keyword\":\"required\",\"dataPath\":\".query\",\"schemaPath\":\"#/properties/query/required\",\"params\":{\"missingProperty\":\"page\"},\"message\":\"should have required property 'page'\"}]"
         });
     });
+
+    it('Correctly matches endpoint with query params', async () => {
+        const response = await app.inject()
+            .headers({
+                'api-version': '1.0'
+            })
+            .query({
+                dummy: 1
+            })
+            .get('/pets');
+        expect(response.statusCode).to.equal(400);
+        expect(response.json()).to.eql({
+            more_info: "[{\"keyword\":\"additionalProperties\",\"dataPath\":\".query\",\"schemaPath\":\"#/properties/query/additionalProperties\",\"params\":{\"additionalProperty\":\"dummy\"},\"message\":\"should NOT have additional properties\"},{\"keyword\":\"required\",\"dataPath\":\".query\",\"schemaPath\":\"#/properties/query/required\",\"params\":{\"missingProperty\":\"page\"},\"message\":\"should have required property 'page'\"}]"
+        });
+    });
 });

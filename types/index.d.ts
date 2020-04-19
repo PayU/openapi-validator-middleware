@@ -16,6 +16,7 @@ export { init };
  */
 declare function validate(ctx: Object, next: Function): void; // koa
 declare function validate(req: Object, res: Object, next: Function): void; // express
+declare function validate(options: FastifyPluginOptions): any; // fastify
 export { validate };
 
 export class InputValidationError extends Error {
@@ -43,6 +44,10 @@ export enum frameworks {
 export interface format {
     name: string;
     pattern: RegExp | string;
+}
+
+export interface FastifyPluginOptions {
+    skiplist?: Array<string>;
 }
 
 export interface ajvValidatorOptions {

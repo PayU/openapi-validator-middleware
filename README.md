@@ -50,9 +50,15 @@ const swaggerValidation = require('openapi-validator-middleware');
 
 ## API
 
-### openapi-validator-middleware.validate
+### openapi-validator-middleware.validate(fastifyOptions)
 
 This middleware function validates the request body, headers, path parameters and query parameters according to the _paths_ definition of the swagger file. Make sure to use this middleware inside a route definition in order to have `req.route.path` assigned to the most accurate express route.
+
+- `fastifyOptions`: Only applicable for `fastify` framework. See below.
+
+#### fastifyOptions
+
+- `skiplist`: Endpoint paths for which validation should not be applied. An array of strings in RegExp format, e. g. `['^/pets$']` 
 
 ### openapi-validator-middleware.init(pathToSwaggerFile, options)
 
@@ -164,7 +170,9 @@ async function getApp() {
     });
     const app = fastify({ logger: true });
 
-    app.register(inputValidation.validate());
+    app.register(inputValidation.validate({
+      skiplist: ['^/_metrics$']
+    }));
     app.setErrorHandler(async (err, req, reply) => {
         if (err instanceof inputValidation.InputValidationError) {
              return reply.status(400).send({ more_info: JSON.stringify(err.errors) });
@@ -195,6 +203,7 @@ Multipart/form-data (files) support is based on [`express/multer`](https://githu
 
 ### Fastify support
 
+Fastify support requires `uri-js` dependency to be available.
 When using this package as middleware for fastify, the validations errors are being thrown.
 
 ### Koa support
