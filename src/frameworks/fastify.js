@@ -1,7 +1,12 @@
 const fp = require('fastify-plugin');
+let urijs;
 
 function getValidator(validateRequest) {
-    const urijs = require('uri-js');
+    try {
+        urijs = require('uri-js');
+    } catch (err) {
+        throw new Error('Missing `uri-js` dependency. Please run "npm install uri-js" to use fastify plugin');
+    }
     let skiplist = [];
 
     return (pluginOptions) => {
