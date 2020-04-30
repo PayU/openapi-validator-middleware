@@ -35,7 +35,9 @@
     "test:coverage": "nyc mocha test/**/*-test.js",
     "node6-test": "mocha --exclude test/koa/**/*-test.js --exclude test/fastify/**/*-test.js test/**/*-test.js",
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
-    "doctoc": "npm install -g doctoc && doctoc README.md"
+    "doctoc": "npm install -g doctoc && doctoc README.md",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -60,7 +62,8 @@
   "license": "Apache-2.0",
   "dependencies": {
     "api-schema-builder": "^1.2.2",
-    "memoizee": "^0.4.14"
+    "memoizee": "^0.4.14",
+    "snyk": "^1.316.1"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^2.27.0",
@@ -107,5 +110,6 @@
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
-  }
+  },
+  "snyk": true
 }
