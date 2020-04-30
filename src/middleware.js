@@ -38,14 +38,12 @@ function _getContentType(headers) {
 }
 
 function _validateRequest(requestOptions) {
-    const paramValidationErrors = _validateParams(requestOptions.headers, requestOptions.params, requestOptions.query, requestOptions.files, requestOptions.path, requestOptions.method.toLowerCase());
-    const bodyValidationErrors = _validateBody(requestOptions.body, requestOptions.path, requestOptions.method.toLowerCase(), _getContentType(requestOptions.headers));
+    const paramValidationErrors = _validateParams(requestOptions);
+    const bodyValidationErrors = _validateBody(requestOptions);
 
-    const errors = paramValidationErrors && bodyValidationErrors
-        ? paramValidationErrors.concat(bodyValidationErrors)
-        : paramValidationErrors || bodyValidationErrors;
+    const errors = paramValidationErrors.concat(bodyValidationErrors);
 
-    if (errors) {
+    if (errors.length) {
         let error;
 
         if (middlewareOptions.errorFormatter) {
@@ -62,22 +60,32 @@ function _validateRequest(requestOptions) {
     }
 }
 
-function _validateBody(body, path, method, contentType) {
+function _validateBody(requestOptions) {
+    const { body, path } = requestOptions;
+    const method = requestOptions.method.toLowerCase();
+    const contentType = _getContentType(requestOptions.headers);
     const methodSchema = schemaEndpointResolver.getMethodSchema(schemas, path, method) || {};
 
     if (methodSchema.body) {
         const validator = methodSchema.body[contentType] || methodSchema.body;
         if (!validator.validate(body)) {
-            return validator.errors;
+            return validator.errors || [];
         }
     }
+
+    return [];
 }
 
-function _validateParams(headers, pathParams, query, files, path, method) {
+function _validateParams(requestOptions) {
+    const { headers, params: pathParams, query, files, path } = requestOptions;
+    const method = requestOptions.method.toLowerCase();
+
     const methodSchema = schemaEndpointResolver.getMethodSchema(schemas, path, method);
     if (methodSchema && methodSchema.parameters && !methodSchema.parameters.validate({ query: query, headers: headers, path: pathParams, files: files })) {
-        return methodSchema.parameters.errors;
+        return methodSchema.parameters.errors || [];
     }
+
+    return [];
 }
 
 module.exports = {
