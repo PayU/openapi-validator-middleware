@@ -28,11 +28,11 @@ function getValidator(validateRequest) {
             return Promise.resolve();
         }
 
-        return validateRequest(requestOptions).then(function (errors) {
-            if (errors) {
-                throw errors;
-            }
-        });
+        const errors = validateRequest(requestOptions);
+        if (errors) {
+            return Promise.reject(errors);
+        }
+        return Promise.resolve();
     }
 
     function _getParameters(req) {

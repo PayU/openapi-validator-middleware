@@ -1,11 +1,10 @@
 function getValidator(validateRequest) {
     return function validate(req, res, next) {
         const requestOptions = _getParameters(req);
-        validateRequest(requestOptions).then(function(errors) {
-            next(errors);
-        });
+        const errors = validateRequest(requestOptions);
+        next(errors);
     };
-};
+}
 
 function _getParameters(req) {
     const requestOptions = {};
