@@ -3,6 +3,7 @@ node_js:
   - "8"
   - "10"
   - "12"
+  - "14"
 
 script: "npm test"
 
@@ -13,9 +14,6 @@ jobs:
       script:
         - "npm run lint"
         - "npm run lint:types"
-    - language: node_js
-      node_js: 6
-      script: "npm run node6-test"
     - language: node_js
       node_js: node
       script: "npm run test:coverage"
