@@ -44,12 +44,15 @@
     "ajv",
     "express",
     "swagger",
-    "OpenAPI",
+    "openapi",
     "open api",
     "input validation",
+    "request",
     "validation",
     "validator",
-    "koa"
+    "koa",
+    "fastify",
+    "middleware"
   ],
   "bugs": {
     "url": "https://github.com/PayU/openapi-validator-middleware/issues"
