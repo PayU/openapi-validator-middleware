@@ -1,12 +1,18 @@
 # Master (Unreleased)
 
+# 3.0.1 - ?
+
+### Improvements
+- Speed-up `openapi-validator-middleware` import by lazy loading required dependencies #129
+
+
 # 3.0.0 - 1 May, 2020
 
 ### New features
 
 - Support for servers and base path in OAS 3 
 - fastify: Fix support for requests with queryparams #117 
-- fastify: Implement endopoint skiplist logic #117
+- fastify: Implement endpoint skiplist logic #117
 
 ### Improvements
 
