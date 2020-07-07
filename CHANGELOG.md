@@ -1,6 +1,6 @@
-# Master (Unreleased)
+# Master
 
-# 3.0.1 - ?
+# 3.0.1 - 7 July, 2020
 
 ### Improvements
 - Speed-up `openapi-validator-middleware` import by lazy loading required dependencies #129
