@@ -15,7 +15,7 @@ function getValidator(validateRequest) {
         }
 
         return fp(function (fastify, options, next) {
-            fastify.addHook('onRequest', validate);
+            fastify.addHook('preValidation', validate);
             next();
         });
     };
