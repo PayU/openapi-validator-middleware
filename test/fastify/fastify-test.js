@@ -90,36 +90,20 @@ describe('fastify plugin', () => {
     });
 
     it('Accepts a valid POST request', async () => {
-        const response = await app.inject({
-            headers: {
-                // "api-version": "1.0",
-                // "request-id": 10,
-                // "content-type": "application/json",
-            },
-            payload: {
+        const response = await app.inject()
+            .payload({
                 name: 'A new pet',
                 test: { field1: 'enum1' }
-            },
-            method: 'POST',
-            url: '/pets'
-        });
+            }).post('/pets');
         expect(response.statusCode).to.equal(201);
     });
 
     it('Returns an error on invalid POST request with error', async () => {
-        const response = await app.inject({
-            headers: {
-                'api-version': '1.0',
-                'request-id': 10
-                // "content-type": "application/json",
-            },
-            payload: {
+        const response = await app.inject()
+            .payload({
                 name: 'A new pet',
                 test: 'field1'
-            },
-            method: 'POST',
-            url: '/pets'
-        });
+            }).post('/pets');
         expect(response.statusCode).to.equal(400);
     });
 });
