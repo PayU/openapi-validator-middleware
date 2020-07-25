@@ -30,6 +30,10 @@ describe('fastify plugin', () => {
             reply.status(204).send();
         });
 
+        app.post('/pets', (req, reply) => {
+            reply.status(201).send();
+        });
+
         await app.ready();
     });
 
@@ -83,5 +87,39 @@ describe('fastify plugin', () => {
         expect(response.json()).to.eql({
             more_info: "[{\"keyword\":\"additionalProperties\",\"dataPath\":\".query\",\"schemaPath\":\"#/properties/query/additionalProperties\",\"params\":{\"additionalProperty\":\"dummy\"},\"message\":\"should NOT have additional properties\"},{\"keyword\":\"required\",\"dataPath\":\".query\",\"schemaPath\":\"#/properties/query/required\",\"params\":{\"missingProperty\":\"page\"},\"message\":\"should have required property 'page'\"}]"
         });
+    });
+
+    it('Accepts a valid POST request', async () => {
+        const response = await app.inject({
+            headers: {
+                // "api-version": "1.0",
+                // "request-id": 10,
+                // "content-type": "application/json",
+            },
+            payload: {
+                name: 'A new pet',
+                test: { field1: 'enum1' }
+            },
+            method: 'POST',
+            url: '/pets'
+        });
+        expect(response.statusCode).to.equal(201);
+    });
+
+    it('Returns an error on invalid POST request with error', async () => {
+        const response = await app.inject({
+            headers: {
+                'api-version': '1.0',
+                'request-id': 10
+                // "content-type": "application/json",
+            },
+            payload: {
+                name: 'A new pet',
+                test: 'field1'
+            },
+            method: 'POST',
+            url: '/pets'
+        });
+        expect(response.statusCode).to.equal(400);
     });
 });
