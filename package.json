@@ -32,7 +32,7 @@
     "lint:types": "dtslint types && eslint types/index.d.ts",
     "lint:fix": "eslint --fix .",
     "test": "mocha test/**/*-test.js",
-    "test:ci": "npm run lint && npm run lint:types && npm run test:coverage && npm run coveralls",
+    "test:ci": "npm run lint && npm run lint:types && npm run test:coverage",
     "test:coverage": "nyc mocha test/**/*-test.js",
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
     "doctoc": "npm install -g doctoc && doctoc README.md"
