@@ -22,7 +22,7 @@ describe('input-validation middleware tests - Express', function () {
         });
     });
     describe('initAsync function tests', async function () {
-        it('should throw an error in case the file doesn\'t exists', function () {
+        it('should throw an error in case the file doesn\'t exists', async function () {
             const middleware = require('../../src/middleware');
             try {
                 await middleware.initAsync('test/pet-store-swagger1.yaml');
