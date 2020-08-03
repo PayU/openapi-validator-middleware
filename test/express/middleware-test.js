@@ -27,7 +27,7 @@ describe('input-validation middleware tests - Express', function () {
             try {
                 await middleware.initAsync('test/pet-store-swagger1.yaml');
                 assert.fail('no error was thrown');
-            } catch { }
+            } catch (err) { }
         });
         it('should resolve without formats', async function () {
             const rewire = require('rewire');
