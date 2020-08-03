@@ -11,6 +11,17 @@ declare function init(jsonSchema: Object, options?: ajvValidatorOptions): void;
 export { init };
 
 /**
+ * Initialize the input validation middleware by
+ * providing it with the swagger file path and
+ * configuration options. This function should be called
+ * and awaited before using `validate` middleware.
+ * This init variant support loading of external references.
+ */
+declare function initAsync(schemaPath: string, options?: ajvValidatorOptions): Promise<void>;
+declare function initAsync(jsonSchema: Object, options?: ajvValidatorOptions): Promise<void>;
+export { initAsync };
+
+/**
  * Middleware that validates the request against the swagger
  * file, according to the request method and route
  */
