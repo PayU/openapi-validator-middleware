@@ -16,24 +16,26 @@ There are no code changes in `openapi-validator-middleware@2.0.0` compared to `e
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  <!-- *generated with [DocToc](https://github.com/thlorenz/doctoc)* -->
 
-- [Installation](#installation)
-- [API](#api)
-  - [openapi-validator-middleware.validate(fastifyOptions)](#openapi-validator-middlewarevalidatefastifyoptions)
-    - [fastifyOptions](#fastifyoptions)
-  - [openapi-validator-middleware.init(pathToSwaggerFile, options)](#openapi-validator-middlewareinitpathtoswaggerfile-options)
-    - [Options](#options)
-- [Usage Example](#usage-example)
-  - [Express](#express)
-  - [Koa](#koa)
-  - [Fastify](#fastify)
-- [Important Notes](#important-notes)
-  - [Schema Objects](#schema-objects)
-  - [Multipart/form-data (files)](#multipartform-data-files)
-  - [Fastify support](#fastify-support)
-  - [Koa support](#koa-support)
-  - [Koa packages](#koa-packages)
-- [Known Issues with OpenAPI 3](#known-issues-with-openapi-3)
-- [Running Tests](#running-tests)
+- [openapi-validator-middleware](#openapi-validator-middleware)
+  - [Installation](#installation)
+  - [API](#api)
+    - [openapi-validator-middleware.validate(fastifyOptions)](#openapi-validator-middlewarevalidatefastifyoptions)
+      - [fastifyOptions](#fastifyoptions)
+    - [openapi-validator-middleware.init(pathToSwaggerFile, options)](#openapi-validator-middlewareinitpathtoswaggerfile-options)
+    - [openapi-validator-middleware.initAsync(pathToSwaggerFile, options)](#openapi-validator-middlewareinitasyncpathtoswaggerfile-options)
+      - [Options](#options)
+  - [Usage Example](#usage-example)
+    - [Express](#express)
+    - [Koa](#koa)
+    - [Fastify](#fastify)
+  - [Important Notes](#important-notes)
+    - [Schema Objects](#schema-objects)
+    - [Multipart/form-data (files)](#multipartform-data-files)
+    - [Fastify support](#fastify-support)
+    - [Koa support](#koa-support)
+    - [Koa packages](#koa-packages)
+  - [Known Issues with OpenAPI 3](#known-issues-with-openapi-3)
+  - [Running Tests](#running-tests)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -69,7 +71,17 @@ Initialize the middleware using a swagger definition.
 The function executes synchronously and does not return anything.
 
 - `pathToSwaggerFile`: Path to the swagger definition.
-- `options`: Additional options for the middleware (see below).
+- `options`: Additional options for the middleware ([see below](#options)).
+
+### openapi-validator-middleware.initAsync(pathToSwaggerFile, options)
+
+Initialize the middleware using a swagger definition.
+The function executes asynchronously and the resolved promise does not return anything.
+
+This Initilaztion function also supports schema with references to external files. 
+
+- `pathToSwaggerFile`: Path to the swagger definition.
+- `options`: Additional options for the middleware ([see below](#options)).
 
 #### Options
 
