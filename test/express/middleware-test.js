@@ -2,6 +2,7 @@
 
 const chai = require('chai'),
     expect = chai.expect,
+    assert = chai.assert,
     chaiSinon = require('sinon-chai'),
     request = require('supertest');
 chai.use(chaiSinon);
@@ -18,6 +19,24 @@ describe('input-validation middleware tests - Express', function () {
             const rewire = require('rewire');
             const middleware = rewire('../../src/middleware');
             middleware.init('test/pet-store-swagger.yaml');
+        });
+    });
+    describe('initAsync function tests', async function () {
+        it('should throw an error in case the file doesn\'t exists', async function () {
+            const middleware = require('../../src/middleware');
+            try {
+                await middleware.initAsync('test/pet-store-swagger1.yaml');
+                assert.fail('no error was thrown');
+            } catch (err) { }
+        });
+        it('should resolve without formats', async function () {
+            const rewire = require('rewire');
+            const middleware = rewire('../../src/middleware');
+            try {
+                await middleware.initAsync('test/pet-store-swagger.yaml');
+            } catch (err){
+                assert.fail('unexpected error: ' + err.message);
+            }
         });
     });
     describe('Simple server - no options', function () {
