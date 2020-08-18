@@ -1,5 +1,11 @@
 # Master
 
+# 3.1.0 - 18 August, 2020
+
+### Features
+- Support of external refs (async init only) #134
+
+
 # 3.0.1 - 7 July, 2020
 
 ### Improvements
