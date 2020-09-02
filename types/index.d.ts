@@ -60,6 +60,7 @@ export interface ajvValidatorOptions {
     ajvConfigParams?: object;
     beautifyErrors?: boolean;
     contentTypeValidation?: boolean;
+    errorFormatter?: (errors: ErrorDetails, options: ajvValidatorOptions) => Error;
     expectFormFieldsInBody?: boolean;
     firstError?: boolean;
     framework?: frameworks;
