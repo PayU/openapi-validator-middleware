@@ -1,5 +1,10 @@
 # Master
 
+# 3.1.1 - 2 September, 2020
+
+### Fixes
+- Add errorFormatter to ajvValidatorOptions types #137
+
 # 3.1.0 - 18 August, 2020
 
 ### Features
