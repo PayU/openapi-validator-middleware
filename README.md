@@ -132,7 +132,7 @@ app.get('/pets/:petId', swaggerValidation.validate, (req, res, next) => {
     return res.json({ result: 'OK' });
 });
 
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
     if (err instanceof swaggerValidation.InputValidationError) {
         return res.status(400).json({ more_info: JSON.stringify(err.errors) });
     }
