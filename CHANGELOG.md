@@ -1,5 +1,10 @@
 # Master
 
+# 3.2.0 - 26 November, 2020
+
+### Features
+- Add getNewMiddleware which allow crating multiple-instances of the middleware #145
+
 # 3.1.1 - 2 September, 2020
 
 ### Fixes

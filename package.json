@@ -63,6 +63,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "api-schema-builder": "^2.0.3",
+    "auto-bind": "^4.0.0",
     "memoizee": "^0.4.14"
   },
   "devDependencies": {

@@ -3,8 +3,10 @@
 const chai = require('chai'),
     expect = chai.expect,
     chaiSinon = require('sinon-chai'),
-    request = require('supertest');
+    request = require('supertest'),
+    inputValidation = require('../../src/middleware');
 chai.use(chaiSinon);
+
 const inputValidationOptions = function () {
     return {
         formats: [
@@ -427,6 +429,47 @@ describe('input-validation middleware tests', function () {
                             more_info: JSON.stringify(
                                 "body should NOT have additional properties 'additional1'")
                         });
+                        done();
+                    });
+            });
+        });
+    });
+    describe('support multi instances', function (){
+        before(function (){
+            app = require('./test-server-validator-instance')(inputValidationOptions());
+        });
+
+        describe('when running server with two seperated yaml one with get and other with post - should make validator per each yaml', function (){
+            it('verify two instances has two different schemas', function (){
+                const inputValidationWithGet = inputValidation.getNewMiddleware(`${__dirname}/pets-instance1.yaml`);
+                const inputValidationWithPost = inputValidation.getNewMiddleware(`${__dirname}/pets-instance2.yaml`);
+                expect(JSON.stringify(inputValidationWithGet.schemas)).eql('{"/pets":{"get":{}}}');
+                expect(JSON.stringify(inputValidationWithPost.schemas)).eql('{"/pets":{"post":{"body":{"errors":null,"application/json":{"errors":null},"application/x-www-form-urlencoded":{"errors":null}},"parameters":{"errors":null}}}}');
+            });
+            it('get pets from pets-instance1.yaml', function (done){
+                request(app)
+                    .get('/pets')
+                    .expect(200, function (err, res) {
+                        if (err) {
+                            throw err;
+                        }
+                        expect(res.body.result).to.equal('OK');
+                        done();
+                    });
+            });
+
+            it('post pets from pets-instance2.yaml', function (done){
+                request(app)
+                    .post('/pets')
+                    .set('public-key', '1.0')
+                    .send({
+                        bark: 'hav hav'
+                    })
+                    .expect(200, function (err, res) {
+                        if (err) {
+                            throw err;
+                        }
+                        expect(res.body.result).to.equal('OK');
                         done();
                     });
             });
