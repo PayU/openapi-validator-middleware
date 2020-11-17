@@ -28,6 +28,7 @@ There are no code changes in `openapi-validator-middleware@2.0.0` compared to `e
     - [Express](#express)
     - [Koa](#koa)
     - [Fastify](#fastify)
+    - [Multiple-instances](#multiple-instances)
   - [Important Notes](#important-notes)
     - [Schema Objects](#schema-objects)
     - [Multipart/form-data (files)](#multipartform-data-files)
@@ -206,6 +207,21 @@ async function getApp() {
 }
 ```
 
+### multiple-instances
+```js
+const inputValidation = require('../../src/middleware');
+const validatorA = inputValidation.getNewMiddleware('test/pet-store-swaggerA.yaml', {framework: 'express'});
+const validatorB = inputValidation.getNewMiddleware('test/pet-store-swaggerB.yaml', {framework: 'express'});
+
+app.get('/pets', validatorA.validate, (req, res, next) => {
+    return res.json({ result: 'OK' });
+});
+
+app.post('/pets', validatorB.validate, (req, res, next) => {
+    return res.json({ result: 'OK' });
+});
+
+```
 ## Important Notes
 
 ### Schema Objects
