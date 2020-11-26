@@ -3,6 +3,17 @@
 ### Improvements
 - Update dependencies to address security vulnerabilities
 
+# 3.1.1 - 2 September, 2020
+
+### Fixes
+- Add errorFormatter to ajvValidatorOptions types #137
+
+# 3.1.0 - 18 August, 2020
+
+### Features
+- Support of external refs (async init only) #134
+
+
 # 3.0.1 - 7 July, 2020
 
 ### Improvements

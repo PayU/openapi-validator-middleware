@@ -13,6 +13,24 @@ let schemaEndpointResolver;
 let validationMiddleware;
 
 function init(swaggerPath, options) {
+    _baseInit(swaggerPath, options);
+    // build schema for requests only
+    const schemaBuilderOptions = Object.assign({}, options, { buildRequests: true, buildResponses: false });
+    schemas = apiSchemaBuilder.buildSchemaSync(swaggerPath, schemaBuilderOptions);
+}
+
+async function initAsync(swaggerPath, options){
+    _baseInit(swaggerPath, options);
+    // build schema for requests only
+    const schemaBuilderOptions = Object.assign({}, options, { buildRequests: true, buildResponses: false });
+    schemas = await apiSchemaBuilder.buildSchema(swaggerPath, schemaBuilderOptions);
+}
+
+function validate(...args) {
+    return validationMiddleware(...args);
+}
+
+function _baseInit(swaggerPath, options) {
     middlewareOptions = options || {};
     const frameworkToLoad = allowedFrameworks.find((frameworkName) => {
         return middlewareOptions.framework === frameworkName;
@@ -21,14 +39,6 @@ function init(swaggerPath, options) {
     framework = frameworkToLoad ? require(`./frameworks/${frameworkToLoad}`) : require('./frameworks/express');
     validationMiddleware = framework.getValidator(_validateRequest);
     schemaEndpointResolver = new SchemaEndpointResolver();
-
-    // build schema for requests only
-    const schemaBuilderOptions = Object.assign({}, options, { buildRequests: true, buildResponses: false });
-    schemas = apiSchemaBuilder.buildSchemaSync(swaggerPath, schemaBuilderOptions);
-}
-
-function validate(...args) {
-    return validationMiddleware(...args);
 }
 
 function _getContentType(headers) {
@@ -90,6 +100,7 @@ function _validateParams(requestOptions) {
 
 module.exports = {
     init,
+    initAsync,
     validate,
     InputValidationError
 };
