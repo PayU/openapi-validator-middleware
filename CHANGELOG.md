@@ -1,5 +1,8 @@
 # Master
 
+### Improvements
+- Update dependencies to address security vulnerabilities
+
 # 3.1.1 - 2 September, 2020
 
 ### Fixes
