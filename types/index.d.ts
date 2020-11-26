@@ -7,7 +7,7 @@
  * before using `validate` middleware.
  */
 declare function init(schemaPath: string, options?: ajvValidatorOptions): void;
-declare function init(jsonSchema: Object, options?: ajvValidatorOptions): void;
+declare function init(jsonSchema: Record<string, any>, options?: ajvValidatorOptions): void;
 export { init };
 
 /**
@@ -18,15 +18,15 @@ export { init };
  * This init variant support loading of external references.
  */
 declare function initAsync(schemaPath: string, options?: ajvValidatorOptions): Promise<void>;
-declare function initAsync(jsonSchema: Object, options?: ajvValidatorOptions): Promise<void>;
+declare function initAsync(jsonSchema: Record<string, any>, options?: ajvValidatorOptions): Promise<void>;
 export { initAsync };
 
 /**
  * Middleware that validates the request against the swagger
  * file, according to the request method and route
  */
-declare function validate(ctx: Object, next: Function): void; // koa
-declare function validate(req: Object, res: Object, next: Function): void; // express
+declare function validate(ctx: Record<string, any>, next: Function): void; // koa
+declare function validate(req: Record<string, any>, res: Record<string, any>, next: Function): void; // express
 declare function validate(options: FastifyPluginOptions): any; // fastify
 export { validate };
 
@@ -56,8 +56,8 @@ export interface FastifyPluginOptions {
 }
 
 export interface ajvValidatorOptions {
-    ajvConfigBody?: object;
-    ajvConfigParams?: object;
+    ajvConfigBody?: Record<string, any>;
+    ajvConfigParams?: Record<string, any>;
     beautifyErrors?: boolean;
     contentTypeValidation?: boolean;
     errorFormatter?: (errors: Array<ErrorDetails>, options: ajvValidatorOptions) => Error;
