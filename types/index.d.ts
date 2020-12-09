@@ -73,3 +73,23 @@ export interface inputValidationOptions {
     beautifyErrors?: boolean;
     firstError?: boolean;
 }
+
+declare class MiddlewareClass {
+    InputValidationError: InputValidationError;
+
+    init(schemaPath: string, options?: ajvValidatorOptions): void;
+    // eslint-disable-next-line no-dupe-class-members
+    init(jsonSchema: Record<string, any>, options?: ajvValidatorOptions): void;
+    initAsync(schemaPath: string, options?: ajvValidatorOptions): Promise<void>;
+    // eslint-disable-next-line no-dupe-class-members
+    initAsync(jsonSchema: Record<string, any>, options?: ajvValidatorOptions): Promise<void>;
+
+    validate(ctx: Object, next: Function): void; // koa
+    // eslint-disable-next-line no-dupe-class-members
+    validate(req: Object, res: Object, next: Function): void; // express
+    // eslint-disable-next-line no-dupe-class-members
+    validate(options: FastifyPluginOptions): any; // fastify
+}
+
+declare function getNewMiddleware(schemaPath: string, options?: ajvValidatorOptions): MiddlewareClass;
+export { getNewMiddleware };
