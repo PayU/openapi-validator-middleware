@@ -1,15 +1,13 @@
 # Master
 
-### Improvements
-- Update dependencies to address security vulnerabilities
 
 # 3.2.1 - 9 December, 2020
-
 ### Fixes
-
 - Add getNewMiddleware to index.d.ts #149
 
 # 3.2.0 - 26 November, 2020
+### Improvements
+- Update dependencies to address security vulnerabilities
 
 ### Features
 - Add getNewMiddleware which allow crating multiple-instances of the middleware #145
