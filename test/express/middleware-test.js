@@ -44,20 +44,6 @@ describe('input-validation middleware tests - Express', function () {
         before(function () {
             app = require('./test-simple-server')();
         });
-        it.only('valid request - use with router module', function (done) {
-            request(app)
-                .get('/petsRouter/pets/1234')
-                .set('api-version', '1.0')
-                .set('request-id', '123456')
-                .query({ page: 0 })
-                .expect(200, function (err, res) {
-                    if (err) {
-                        throw err;
-                    }
-                    expect(res.body.result).to.equal('OK');
-                    done();
-                });
-        });
         it('valid request - should pass validation', function (done) {
             request(app)
                 .get('/pets')
@@ -425,6 +411,20 @@ describe('input-validation middleware tests - Express', function () {
                     const moreInfoAsJson = JSON.parse(res.body.more_info);
                     expect(moreInfoAsJson).to.be.instanceof(Array);
                     expect(res.body.more_info).to.includes('should be array');
+                    done();
+                });
+        });
+        it('valid request - use with router module', function (done) {
+            request(app)
+                .get('/petsRouter/pets/1234')
+                .set('api-version', '1.0')
+                .set('request-id', '123456')
+                .query({ page: 0 })
+                .expect(200, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.result).to.equal('OK');
                     done();
                 });
         });
