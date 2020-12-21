@@ -16,6 +16,10 @@ function _getParameters(req) {
     requestOptions.files = req.files;
     requestOptions.method = req.method;
     requestOptions.body = req.body;
+    if (req.file || req.files) {
+        const files = req.files ? req.files : []
+        requestOptions.files = [req.file, ...files];
+    }
 
     return requestOptions;
 }
