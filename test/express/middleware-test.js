@@ -2345,7 +2345,6 @@ describe('input-validation middleware tests - Express', function () {
                     done();
                 });
         });
-
     });
     describe('Keywords', function () {
         let app;

@@ -50,7 +50,7 @@ module.exports = () => {
         ctx.status = 200;
         ctx.body = { result: 'OK' };
     });
-    router.post('/singleFile', upload.single("image"), inputValidation.validate, function (ctx, next) {
+    router.post('/singleFile', upload.single('image'), inputValidation.validate, function (ctx, next) {
         ctx.status = 200;
         ctx.body = { result: 'OK' };
     });

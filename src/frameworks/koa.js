@@ -1,4 +1,4 @@
-const getRequestFiles = require("../utils/requestFilesExtractor")
+const getRequestFiles = require('../utils/requestFilesExtractor');
 
 function getValidator(validateRequest) {
     return async function validate(ctx, next) {

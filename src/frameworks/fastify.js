@@ -1,5 +1,5 @@
 const fp = require('fastify-plugin');
-const getRequestFiles = require("../utils/requestFilesExtractor")
+const getRequestFiles = require('../utils/requestFilesExtractor');
 
 let urijs;
 
