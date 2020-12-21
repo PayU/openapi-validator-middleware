@@ -1,3 +1,4 @@
+const getRequestFiles = require("../utils/requestFilesExtractor")
 function getValidator(validateRequest) {
     return function validate(req, res, next) {
         const requestOptions = _getParameters(req);
@@ -13,13 +14,9 @@ function _getParameters(req) {
     requestOptions.headers = req.headers;
     requestOptions.params = req.params;
     requestOptions.query = req.query;
-    requestOptions.files = req.files;
     requestOptions.method = req.method;
     requestOptions.body = req.body;
-    if (req.file || req.files) {
-        const files = req.files ? req.files : []
-        requestOptions.files = [req.file, ...files];
-    }
+    requestOptions.files = getRequestFiles(req);
 
     return requestOptions;
 }
