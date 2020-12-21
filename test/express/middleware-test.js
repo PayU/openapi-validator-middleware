@@ -2332,6 +2332,20 @@ describe('input-validation middleware tests - Express', function () {
                     done();
                 });
         });
+        it('supports single file upload', function (done) {
+            request(app)
+                .post('/singleFile')
+                .set('api-version', '1.0')
+                .attach('image', 'LICENSE')
+                .expect(200, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body.result).to.equal('OK');
+                    done();
+                });
+        });
+
     });
     describe('Keywords', function () {
         let app;
