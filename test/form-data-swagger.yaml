@@ -75,6 +75,22 @@ paths:
       responses:
         '200':
           description: Import result
+  /singleFile:
+    post:
+      description: Single file upload
+      produces:
+        - application/json
+      consumes:
+        - multipart/form-data
+      parameters:
+        - name: image
+          in: formData
+          required: true
+          type: file
+          description: File to upload from.
+      responses:
+        '200':
+          description: Import result
 definitions:
 
 parameters:
