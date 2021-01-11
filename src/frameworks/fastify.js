@@ -1,4 +1,6 @@
 const fp = require('fastify-plugin');
+const getRequestFiles = require('../utils/requestFilesExtractor');
+
 let urijs;
 
 function getValidator(validateRequest) {
@@ -42,7 +44,7 @@ function getValidator(validateRequest) {
         requestOptions.headers = req.headers;
         requestOptions.params = req.params;
         requestOptions.query = req.query;
-        requestOptions.files = req.files;
+        requestOptions.files = getRequestFiles(req);
         requestOptions.method = req.raw.method;
         requestOptions.body = req.body;
 

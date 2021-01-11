@@ -9,6 +9,9 @@
 declare function init(schemaPath: string, options?: ajvValidatorOptions): void;
 declare function init(jsonSchema: Record<string, any>, options?: ajvValidatorOptions): void;
 export { init };
+export { initAsync };
+export { validate };
+export { getNewMiddleware };
 
 /**
  * Initialize the input validation middleware by
@@ -19,7 +22,6 @@ export { init };
  */
 declare function initAsync(schemaPath: string, options?: ajvValidatorOptions): Promise<void>;
 declare function initAsync(jsonSchema: Record<string, any>, options?: ajvValidatorOptions): Promise<void>;
-export { initAsync };
 
 /**
  * Middleware that validates the request against the swagger
@@ -28,7 +30,6 @@ export { initAsync };
 declare function validate(ctx: Record<string, any>, next: Function): void; // koa
 declare function validate(req: Record<string, any>, res: Record<string, any>, next: Function): void; // express
 declare function validate(options: FastifyPluginOptions): any; // fastify
-export { validate };
 
 export class InputValidationError extends Error {
     errors: Array<ErrorDetails | string>;
@@ -73,3 +74,22 @@ export interface inputValidationOptions {
     beautifyErrors?: boolean;
     firstError?: boolean;
 }
+
+declare class MiddlewareClass {
+    InputValidationError: InputValidationError;
+
+    init(schemaPath: string, options?: ajvValidatorOptions): void;
+    // eslint-disable-next-line no-dupe-class-members
+    init(jsonSchema: Record<string, any>, options?: ajvValidatorOptions): void;
+    initAsync(schemaPath: string, options?: ajvValidatorOptions): Promise<void>;
+    // eslint-disable-next-line no-dupe-class-members
+    initAsync(jsonSchema: Record<string, any>, options?: ajvValidatorOptions): Promise<void>;
+
+    validate(ctx: Record<string, any>, next: Function): void; // koa
+    // eslint-disable-next-line no-dupe-class-members
+    validate(req: Record<string, any>, res: Record<string, any>, next: Function): void; // express
+    // eslint-disable-next-line no-dupe-class-members
+    validate(options: FastifyPluginOptions): any; // fastify
+}
+
+declare function getNewMiddleware(schemaPath: string, options?: ajvValidatorOptions): MiddlewareClass;

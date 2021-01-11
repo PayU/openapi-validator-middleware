@@ -37,6 +37,9 @@ module.exports = () => {
     app.post('/login', upload.any(), inputValidation.validate, function (req, res, next) {
         res.json({ result: 'OK' });
     });
+    app.post('/singleFile', upload.single('image'), inputValidation.validate, function (req, res, next) {
+        res.json({ result: 'OK' });
+    });
     app.use(function (err, req, res, next) {
         if (err instanceof inputValidation.InputValidationError) {
             res.status(400).json({ more_info: err.errors });
