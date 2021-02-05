@@ -3,7 +3,7 @@ const memoize = require('nano-memoize');
 // This logic is wrapped into class to have isolated memoization contexts
 class SchemaEndpointResolver {
     constructor() {
-        this.getMethodSchema = memoize(getMethodSchemaInternal);
+        this.getMethodSchema = memoize(getMethodSchemaInternal, { maxAge: -1 });
     }
 }
 
