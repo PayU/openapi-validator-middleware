@@ -64,7 +64,7 @@
   "dependencies": {
     "auto-bind": "^4.0.0",
     "api-schema-builder": "^2.0.4",
-    "memoizee": "^0.4.14"
+    "nano-memoize": "^1.2.1"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "3.10.1",

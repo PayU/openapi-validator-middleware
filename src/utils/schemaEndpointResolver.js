@@ -1,4 +1,4 @@
-const memoize = require('memoizee');
+const memoize = require('nano-memoize');
 
 // This logic is wrapped into class to have isolated memoization contexts
 class SchemaEndpointResolver {
