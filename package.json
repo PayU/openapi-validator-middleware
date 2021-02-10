@@ -62,8 +62,8 @@
   "author": "Idan Tovi",
   "license": "Apache-2.0",
   "dependencies": {
-    "auto-bind": "^4.0.0",
     "api-schema-builder": "^2.0.4",
+    "auto-bind": "^4.0.0",
     "nano-memoize": "^1.2.1"
   },
   "devDependencies": {
@@ -95,7 +95,7 @@
     "nyc": "^15.1.0",
     "request": "^2.88.2",
     "rewire": "^4.0.1",
-    "sinon": "^9.2.1",
+    "sinon": "^9.2.4",
     "sinon-chai": "^3.5.0",
     "supertest": "^4.0.2",
     "typescript": "4.0.5",

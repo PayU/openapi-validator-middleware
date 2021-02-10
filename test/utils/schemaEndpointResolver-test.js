@@ -1,5 +1,6 @@
 const chai = require('chai'),
     expect = chai.expect;
+const sinon = require('sinon')
 const apiSchemaBuilder = require('api-schema-builder');
 const SchemaEndpointResolver = require('../../src/utils/schemaEndpointResolver');
 const swaggerPath = 'test/openapi3/pets-parametrized.yaml';
@@ -15,6 +16,31 @@ describe('schemaEndpointResolver', () => {
     });
     beforeEach(() => {
         schemaEndpointResolver = new SchemaEndpointResolver();
+    });
+
+    it('memoizes resolved path correctly', () => {
+        const spy = sinon.spy(Object, 'keys');
+        const endpoint = schemaEndpointResolver.getMethodSchema(schemas, '/pets/:petId', 'get');
+        const endpoint2 = schemaEndpointResolver.getMethodSchema(schemas, '/pets/:petId', 'get');
+        expect(spy.callCount).to.equal(1);
+        const endpoint3 = schemaEndpointResolver.getMethodSchema(schemas, '/pets/:petId', 'put');
+        const endpoint4 = schemaEndpointResolver.getMethodSchema(schemas, '/pets/:petId', 'put');
+        expect(spy.callCount).to.equal(2);
+
+        const endpoint5 = schemaEndpointResolver.getMethodSchema(schemas, '/pets', 'put');
+        const endpoint6 = schemaEndpointResolver.getMethodSchema(schemas, '/pets', 'put');
+        expect(spy.callCount).to.equal(4); // This invokes resolver twice, first for exact match, then for inexact
+
+        sinon.restore();
+        expect(endpoint).to.equal(endpoint2);
+        expect(endpoint.body).to.equal(undefined);
+
+        expect(endpoint).not.to.equal(endpoint3);
+        expect(endpoint3).to.equal(endpoint4);
+        expect(endpoint3.body).to.be.an('object');
+
+        expect(endpoint5).to.equal(endpoint6);
+        expect(endpoint5).to.equal(undefined);
     });
 
     it('resolves exact path correctly', () => {
