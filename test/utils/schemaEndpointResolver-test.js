@@ -1,6 +1,6 @@
 const chai = require('chai'),
     expect = chai.expect;
-const sinon = require('sinon')
+const sinon = require('sinon');
 const apiSchemaBuilder = require('api-schema-builder');
 const SchemaEndpointResolver = require('../../src/utils/schemaEndpointResolver');
 const swaggerPath = 'test/openapi3/pets-parametrized.yaml';
