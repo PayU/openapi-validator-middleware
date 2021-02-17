@@ -12,7 +12,8 @@ function getValidator(validateRequest) {
     let skiplist = {
         get: [],
         post: [],
-        put: []
+        put: [],
+        delete: []
     };
 
     return (pluginOptions) => {
@@ -20,6 +21,7 @@ function getValidator(validateRequest) {
             skiplist.get = pluginOptions.skiplist.get.map((regexStr) => new RegExp(regexStr));
             skiplist.post = pluginOptions.skiplist.post.map((regexStr) => new RegExp(regexStr));
             skiplist.put = pluginOptions.skiplist.put.map((regexStr) => new RegExp(regexStr));
+            skiplist.delete = pluginOptions.skiplist.delete.map((regexStr) => new RegExp(regexStr));
         }
 
         return fp(function (fastify, options, next) {
