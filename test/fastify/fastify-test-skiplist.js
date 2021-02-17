@@ -17,7 +17,9 @@ describe('fastify plugin skiplist', () => {
         app = fastify({ logger: true });
 
         app.register(inputValidation.validate({
-            skiplist: ['^/pets$']
+            skiplist: {
+                get: ['^/pets$']
+            }
         }));
         app.setErrorHandler(async (err, req, reply) => {
             if (err instanceof inputValidation.InputValidationError) {
@@ -30,6 +32,9 @@ describe('fastify plugin skiplist', () => {
 
         app.get('/pets', (req, reply) => {
             reply.status(204).send();
+        });
+        app.post('/pets', (req, reply) => {
+            reply.status(201).send();
         });
 
         await app.ready();
@@ -50,6 +55,21 @@ describe('fastify plugin skiplist', () => {
             .get('/pets');
         expect(response.statusCode).to.equal(204);
         expect(response.body).to.eql('');
+    });
+
+    it('POST fails if only GET validation is ignored', async () => {
+        const response = await app.inject()
+            .headers({
+                'api-version': '1.0'
+            })
+            .body({
+                age: true
+            })
+            .post('/pets');
+        expect(response.statusCode).to.equal(400);
+        expect(response.json()).to.eql({
+            more_info: "[{\"keyword\":\"required\",\"dataPath\":\"\",\"schemaPath\":\"#/required\",\"params\":{\"missingProperty\":\"name\"},\"message\":\"should have required property 'name'\"},{\"keyword\":\"type\",\"dataPath\":\".age\",\"schemaPath\":\"#/properties/age/type\",\"params\":{\"type\":\"integer\"},\"message\":\"should be integer\"},{\"keyword\":\"required\",\"dataPath\":\"\",\"schemaPath\":\"#/required\",\"params\":{\"missingProperty\":\"test\"},\"message\":\"should have required property 'test'\"}]"
+        });
     });
 
     it('Skips endpoint validation for request with multiple errors', async () => {
