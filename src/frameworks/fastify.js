@@ -9,22 +9,28 @@ function getValidator(validateRequest) {
     } catch (err) {
         throw new Error('Missing `uri-js` dependency. Please run "npm install uri-js" to use fastify plugin');
     }
-    let skiplist = [];
+    let skiplist = {
+        get: [],
+        post: [],
+        put: []
+    };
 
     return (pluginOptions) => {
         if (pluginOptions && pluginOptions.skiplist) {
-            skiplist = pluginOptions.skiplist.map((regexStr) => new RegExp(regexStr));
+            skiplist.get = pluginOptions.skiplist.get.map((regexStr) => new RegExp(regexStr));
+            skiplist.post = pluginOptions.skiplist.post.map((regexStr) => new RegExp(regexStr));
+            skiplist.put = pluginOptions.skiplist.put.map((regexStr) => new RegExp(regexStr));
         }
 
         return fp(function (fastify, options, next) {
-            fastify.addHook('preValidation', validate);
+            fastify.addHook('preHandler', validate);
             next();
         });
     };
 
     function validate(request, reply) {
         const requestOptions = _getParameters(request);
-        if (skiplist.some((skipListRegex) => {
+        if (skiplist[requestOptions.method.toLowerCase()].some((skipListRegex) => {
             return skipListRegex.test(requestOptions.path);
         })) {
             return Promise.resolve();
