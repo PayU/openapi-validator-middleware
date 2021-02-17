@@ -54,9 +54,11 @@ export interface format {
 
 export interface FastifyPluginOptions {
     skiplist?: {
-        get: Array<string>,
-        post: Array<string>
-        put: Array<string>
+        get?: Array<string>,
+        post?: Array<string>
+        put?: Array<string>,
+        delete?: Array<string>,
+        patch?: Array<string>,
     };
 }
 
