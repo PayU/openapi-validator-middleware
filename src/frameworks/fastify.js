@@ -19,7 +19,7 @@ function getValidator(validateRequest) {
 
     return (pluginOptions) => {
         if (pluginOptions && pluginOptions.skiplist) {
-            for (let key in pluginOptions.skiplist) {
+            for (const key in pluginOptions.skiplist) {
                 skiplist[key] = pluginOptions.skiplist[key].map((regexStr) => new RegExp(regexStr));
             }
         }
