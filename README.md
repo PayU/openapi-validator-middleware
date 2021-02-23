@@ -64,8 +64,14 @@ This middleware function validates the request body, headers, path parameters an
 
 #### fastifyOptions
 
-- `skiplist`: Endpoint paths for which validation should not be applied. An array of strings in RegExp format, e. g. `['^/pets$']` 
-
+- `skiplist`: Endpoint paths with methods for which validation should not be applied. An object with array of strings in RegExp format for every method you want to specify, e. g.:
+    ```js
+    skipList: {
+        get: ['^/pets$', '^/ui$'],
+        post: ['^/cat$'],
+        delete: ['^/cat$']
+    }
+    ``` 
 ### openapi-validator-middleware.init(pathToSwaggerFile, options)
 
 Initialize the middleware using a swagger definition.
