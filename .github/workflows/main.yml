@@ -27,8 +27,12 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node }}
-      - name: install dependencies
-        run: npm ci
+      - uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ matrix.node }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm ci-
       - name: Units Tests + Prepare Coveralls
         run: npm run test:ci
       - name: Coveralls
