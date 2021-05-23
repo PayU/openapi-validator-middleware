@@ -29,9 +29,8 @@ jobs:
           node-version: ${{ matrix.node }}
       - name: install dependencies
         run: npm ci
-      - name: Lint
+      - name: Tests
         run: npm run test:ci
-      - name: Units Tests + Prepare Coveralls
 
   release:
     name: release
