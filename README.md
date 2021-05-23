@@ -260,8 +260,6 @@ npm test
 
 [npm-image]: https://img.shields.io/npm/v/openapi-validator-middleware.svg?style=flat
 [npm-url]: https://npmjs.org/package/openapi-validator-middleware
-[circleci-image]: https://circleci.com/gh/PayU/openapi-validator-middleware.svg?style=svg
-[circleci-url]: https://circleci.com/gh/PayU/openapi-validator-middleware
 [coveralls-image]: https://coveralls.io/repos/github/PayU/openapi-validator-middleware/badge.svg?branch=master
 [coveralls-url]: https://coveralls.io/github/PayU/openapi-validator-middleware?branch=master
 [downloads-image]: http://img.shields.io/npm/dm/openapi-validator-middleware.svg?style=flat
