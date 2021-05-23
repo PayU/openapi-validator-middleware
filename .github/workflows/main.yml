@@ -29,8 +29,13 @@ jobs:
           node-version: ${{ matrix.node }}
       - name: install dependencies
         run: npm ci
-      - name: Tests
+      - name: Units Tests + Prepare Coveralls
         run: npm run test:ci
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        if: matrix.node == '14'
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
   release:
     name: release
