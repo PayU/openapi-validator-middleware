@@ -31,8 +31,9 @@ jobs:
         with:
           path: '**/node_modules'
           key: ${{ matrix.node }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-npm ci-
+      - name: install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci
       - name: Units Tests + Prepare Coveralls
         run: npm run test:ci
       - name: Coveralls
