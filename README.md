@@ -1,6 +1,7 @@
 # openapi-validator-middleware
 
 [![NPM Version][npm-image]][npm-url]
+![main workflow](https://github.com/PayU/openapi-validator-middleware/actions/workflows/main.yml/badge.svg)
 [![NPM Downloads][downloads-image]][downloads-url]
 [![Test Coverage][coveralls-image]][coveralls-url]
 [![Known Vulnerabilities][snyk-image]][snyk-url]
