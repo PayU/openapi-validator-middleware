@@ -43,6 +43,17 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
   release:
+    permissions:
+      actions: write
+      checks: write
+      contents: write
+      deployments: write
+      issues: write
+      packages: write
+      pull-requests: write
+      repository-projects: write
+      security-events: write
+      statuses: write
     name: release
     needs: [ test, lockfile-lint ]
     runs-on: 'ubuntu-latest'
