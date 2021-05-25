@@ -1,8 +1,8 @@
 # openapi-validator-middleware
 
 [![NPM Version][npm-image]][npm-url]
+![main workflow](https://github.com/PayU/openapi-validator-middleware/actions/workflows/main.yml/badge.svg)
 [![NPM Downloads][downloads-image]][downloads-url]
-[![Build Status][circleci-image]][circleci-url]
 [![Test Coverage][coveralls-image]][coveralls-url]
 [![Known Vulnerabilities][snyk-image]][snyk-url]
 [![Apache 2.0 License][license-image]][license-url]
@@ -260,8 +260,6 @@ npm test
 
 [npm-image]: https://img.shields.io/npm/v/openapi-validator-middleware.svg?style=flat
 [npm-url]: https://npmjs.org/package/openapi-validator-middleware
-[circleci-image]: https://circleci.com/gh/PayU/openapi-validator-middleware.svg?style=svg
-[circleci-url]: https://circleci.com/gh/PayU/openapi-validator-middleware
 [coveralls-image]: https://coveralls.io/repos/github/PayU/openapi-validator-middleware/badge.svg?branch=master
 [coveralls-url]: https://coveralls.io/github/PayU/openapi-validator-middleware?branch=master
 [downloads-image]: http://img.shields.io/npm/dm/openapi-validator-middleware.svg?style=flat

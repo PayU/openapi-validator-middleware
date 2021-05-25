@@ -1,0 +1,61 @@
+name: CI
+
+on: [ push, pull_request ]
+
+jobs:
+  lockfile-lint:
+    name: Lockfile lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: lint lock file
+        run: npx lockfile-lint --path package-lock.json --allowed-hosts npm --validate-https
+
+  test:
+    strategy:
+      matrix:
+        platform: [ ubuntu-latest ]
+        node: [ '10', '12', '14', '16' ]
+    needs: lockfile-lint
+    name: Unit Tests Node ${{ matrix.node }} (${{ matrix.platform }})
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+      - uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ matrix.node }}-node-${{ hashFiles('**/package-lock.json') }}
+      - name: install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci
+      - name: Units Tests + Prepare Coveralls
+        run: npm run test:ci
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        if: matrix.node == '14'
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  release:
+    name: release
+    needs: [ test, lockfile-lint ]
+    runs-on: 'ubuntu-latest'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: install dependencies
+        run: npm ci --ignore-scripts
+      - name: release
+        run: npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          NPM_TOKEN: ${{secrets.NPM_TOKEN}}
