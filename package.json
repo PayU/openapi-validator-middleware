@@ -39,7 +39,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/PayU/openapi-validator-middleware.git"
+    "url": "git+https://github.com/PayU/openapi-validator-middleware.git"
   },
   "keywords": [
     "ajv",
