@@ -443,7 +443,7 @@ describe('input-validation middleware tests', function () {
             it('verify two instances has two different schemas', function (){
                 const inputValidationWithGet = inputValidation.getNewMiddleware(`${__dirname}/pets-instance1.yaml`);
                 const inputValidationWithPost = inputValidation.getNewMiddleware(`${__dirname}/pets-instance2.yaml`);
-                expect(JSON.stringify(inputValidationWithGet.schemas)).eql('{"/pets":{"get":{}}}');
+                expect(JSON.stringify(inputValidationWithGet.schemas)).eql('{"/pets":{"get":{"parameters":{"errors":null}}}}');
                 expect(JSON.stringify(inputValidationWithPost.schemas)).eql('{"/pets":{"post":{"body":{"errors":null,"application/json":{"errors":null},"application/x-www-form-urlencoded":{"errors":null}},"parameters":{"errors":null}}}}');
             });
             it('get pets from pets-instance1.yaml', function (done){
