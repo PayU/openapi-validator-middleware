@@ -148,12 +148,12 @@ const server = app.listen(serverPort, () => {});
 const Koa = require('koa');
 const Router = require('koa-router');
 const bodyParser = require('koa-bodyparser');
-const inputValidation = require('../../src/middleware');
+const inputValidation = require('openapi-validator-middleware');
 let app = new Koa();
 let router = new Router();
 app.use(bodyParser());
 app.use(router.routes());
-module.exports = inputValidation.init('test/pet-store-swagger.yaml', {framework: 'koa'});
+module.exports = inputValidation.init('test/pet-store-swagger.yaml', { framework: 'koa' });
 router.get('/pets', inputValidation.validate, async (ctx, next) => {
     ctx.status = 200;
     ctx.body = { result: 'OK' };
@@ -178,7 +178,7 @@ return app;
 ```js
 'use strict';
 const fastify = require('fastify');
-const inputValidation = require('../../src/middleware');
+const inputValidation = require('openapi-validator-middleware');
 
 async function getApp() {
     inputValidation.init('test/pet-store-swagger.yaml', { 
@@ -209,7 +209,7 @@ async function getApp() {
 
 ### multiple-instances
 ```js
-const inputValidation = require('../../src/middleware');
+const inputValidation = require('openapi-validator-middleware');
 const validatorA = inputValidation.getNewMiddleware('test/pet-store-swaggerA.yaml', {framework: 'express'});
 const validatorB = inputValidation.getNewMiddleware('test/pet-store-swaggerB.yaml', {framework: 'express'});
 
@@ -234,12 +234,12 @@ Multipart/form-data (files) support is based on [`express/multer`](https://githu
 
 ### Fastify support
 
-Fastify support requires `uri-js` dependency to be available.
-When using this package as middleware for fastify, the validations errors are being thrown.
+Fastify support requires `uri-js` dependency to be installed. Make sure to run `npm install uri-js`.
+When using this package as a middleware for fastify, the validations errors will be thrown.
 
 ### Koa support
 
-When using this package as middleware for koa, the validations errors are being thrown.
+When using this package as middleware for koa, the validations errors will be thrown.
 
 ### Koa packages
 
