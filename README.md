@@ -148,12 +148,12 @@ const server = app.listen(serverPort, () => {});
 const Koa = require('koa');
 const Router = require('koa-router');
 const bodyParser = require('koa-bodyparser');
-const inputValidation = require('../../src/middleware');
+const inputValidation = require('openapi-validator-middleware');
 let app = new Koa();
 let router = new Router();
 app.use(bodyParser());
 app.use(router.routes());
-module.exports = inputValidation.init('test/pet-store-swagger.yaml', {framework: 'koa'});
+module.exports = inputValidation.init('test/pet-store-swagger.yaml', { framework: 'koa' });
 router.get('/pets', inputValidation.validate, async (ctx, next) => {
     ctx.status = 200;
     ctx.body = { result: 'OK' };
@@ -178,7 +178,7 @@ return app;
 ```js
 'use strict';
 const fastify = require('fastify');
-const inputValidation = require('../../src/middleware');
+const inputValidation = require('openapi-validator-middleware');
 
 async function getApp() {
     inputValidation.init('test/pet-store-swagger.yaml', { 
