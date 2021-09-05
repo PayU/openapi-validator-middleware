@@ -209,7 +209,7 @@ async function getApp() {
 
 ### multiple-instances
 ```js
-const inputValidation = require('../../src/middleware');
+const inputValidation = require('openapi-validator-middleware');
 const validatorA = inputValidation.getNewMiddleware('test/pet-store-swaggerA.yaml', {framework: 'express'});
 const validatorB = inputValidation.getNewMiddleware('test/pet-store-swaggerB.yaml', {framework: 'express'});
 
@@ -234,12 +234,12 @@ Multipart/form-data (files) support is based on [`express/multer`](https://githu
 
 ### Fastify support
 
-Fastify support requires `uri-js` dependency to be available.
-When using this package as middleware for fastify, the validations errors are being thrown.
+Fastify support requires `uri-js` dependency to be installed. Make sure to run `npm install uri-js`.
+When using this package as a middleware for fastify, the validations errors will be thrown.
 
 ### Koa support
 
-When using this package as middleware for koa, the validations errors are being thrown.
+When using this package as middleware for koa, the validations errors will be thrown.
 
 ### Koa packages
 
