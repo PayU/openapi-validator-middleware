@@ -103,27 +103,6 @@ describe('input-validation middleware tests', function () {
                     done();
                 });
         });
-        it.only('validate depending on content-type with contentTypeValidation: true -- invalid dog', function (done) {
-            const options = {
-                ...inputValidationOptions(),
-                contentTypeValidation: true
-            };
-            const appWithcontentTypeValidationIsTrue = require('./test-server-pet')(options);
-            request(appWithcontentTypeValidationIsTrue)
-                .post('/pet')
-                .set('public-key', '1.0')
-                .set('content-type', 'application/xml')
-                .send()
-                .expect(400, function (err, res) {
-                    if (err) {
-                        throw err;
-                    }
-                    expect(res.body).to.deep.equal({
-                        more_info: 'headers content-type must be one of application/json'
-                    });
-                    done();
-                });
-        });
         it('resolves content type for content-type with charset', function (done) {
             request(app)
                 .post('/pet')
@@ -409,8 +388,10 @@ describe('input-validation middleware tests', function () {
     });
     describe('firstError=true', function () {
         before(function () {
-            const options = inputValidationOptions();
-            options.firstError = true;
+            const options = {
+                ...inputValidationOptions(),
+                firstError: true
+            };
             app = require('./test-server-pet')(options);
         });
         it('when discriminator type is mapped_dog and model small_dog and missing root field name and specific dog field', function (done) {
@@ -453,6 +434,29 @@ describe('input-validation middleware tests', function () {
                         done();
                     });
             });
+        });
+        it('validate depending on content-type with contentTypeValidation: true -- invalid dog', function (done) {
+            const options = {
+                ...inputValidationOptions(),
+                contentTypeValidation: true,
+                firstError: true
+            };
+            const appWithcontentTypeValidationIsTrue = require('./test-server-pet')(options);
+            request(appWithcontentTypeValidationIsTrue)
+                .post('/pet')
+                .set('public-key', '1.0')
+                .set('content-type', 'application/xml')
+                .set('content-length', 1)
+                .send()
+                .expect(400, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body).to.deep.equal({
+                        more_info: '"headers content-type must be one of application/json,application/x-www-form-urlencoded"'
+                    });
+                    done();
+                });
         });
     });
     describe('support multi instances', function (){
