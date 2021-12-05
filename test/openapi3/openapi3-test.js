@@ -388,8 +388,10 @@ describe('input-validation middleware tests', function () {
     });
     describe('firstError=true', function () {
         before(function () {
-            const options = inputValidationOptions();
-            options.firstError = true;
+            const options = {
+                ...inputValidationOptions(),
+                firstError: true
+            };
             app = require('./test-server-pet')(options);
         });
         it('when discriminator type is mapped_dog and model small_dog and missing root field name and specific dog field', function (done) {
@@ -433,6 +435,29 @@ describe('input-validation middleware tests', function () {
                     });
             });
         });
+        it('validate depending on content-type with contentTypeValidation: true -- invalid dog', function (done) {
+            const options = {
+                ...inputValidationOptions(),
+                contentTypeValidation: true,
+                firstError: true
+            };
+            const appWithcontentTypeValidationIsTrue = require('./test-server-pet')(options);
+            request(appWithcontentTypeValidationIsTrue)
+                .post('/pet')
+                .set('public-key', '1.0')
+                .set('content-type', 'application/xml')
+                .set('content-length', 1)
+                .send()
+                .expect(400, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    expect(res.body).to.deep.equal({
+                        more_info: '"headers content-type must be one of application/json,application/x-www-form-urlencoded"'
+                    });
+                    done();
+                });
+        });
     });
     describe('support multi instances', function (){
         before(function (){
@@ -443,7 +468,7 @@ describe('input-validation middleware tests', function () {
             it('verify two instances has two different schemas', function (){
                 const inputValidationWithGet = inputValidation.getNewMiddleware(`${__dirname}/pets-instance1.yaml`);
                 const inputValidationWithPost = inputValidation.getNewMiddleware(`${__dirname}/pets-instance2.yaml`);
-                expect(JSON.stringify(inputValidationWithGet.schemas)).eql('{"/pets":{"get":{}}}');
+                expect(JSON.stringify(inputValidationWithGet.schemas)).eql('{"/pets":{"get":{"parameters":{"errors":null}}}}');
                 expect(JSON.stringify(inputValidationWithPost.schemas)).eql('{"/pets":{"post":{"body":{"errors":null,"application/json":{"errors":null},"application/x-www-form-urlencoded":{"errors":null}},"parameters":{"errors":null}}}}');
             });
             it('get pets from pets-instance1.yaml', function (done){

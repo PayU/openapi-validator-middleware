@@ -1,8 +1,8 @@
 # openapi-validator-middleware
 
 [![NPM Version][npm-image]][npm-url]
+![main workflow](https://github.com/PayU/openapi-validator-middleware/actions/workflows/main.yml/badge.svg)
 [![NPM Downloads][downloads-image]][downloads-url]
-[![Build Status][circleci-image]][circleci-url]
 [![Test Coverage][coveralls-image]][coveralls-url]
 [![Known Vulnerabilities][snyk-image]][snyk-url]
 [![Apache 2.0 License][license-image]][license-url]
@@ -154,12 +154,13 @@ const server = app.listen(serverPort, () => {});
 const Koa = require('koa');
 const Router = require('koa-router');
 const bodyParser = require('koa-bodyparser');
-const inputValidation = require('../../src/middleware');
-let app = new Koa();
-let router = new Router();
+const inputValidation = require('openapi-validator-middleware');
+const app = new Koa();
+const router = new Router();
 app.use(bodyParser());
 app.use(router.routes());
-module.exports = inputValidation.init('test/pet-store-swagger.yaml', {framework: 'koa'});
+inputValidation.init('test/pet-store-swagger.yaml', { framework: 'koa' });
+
 router.get('/pets', inputValidation.validate, async (ctx, next) => {
     ctx.status = 200;
     ctx.body = { result: 'OK' };
@@ -177,14 +178,27 @@ router.put('/pets', inputValidation.validate, async (ctx, next) => {
     ctx.body = { result: 'OK' };
 });
 
-return app;
+app.use(async (ctx, next) => {
+    try {
+        return await next();
+    } catch (err) {
+        if (err instanceof inputValidation.InputValidationError) {
+            ctx.status = 400;
+            ctx.body = err.errors;
+        }
+        throw err;
+    }
+})
+app.listen(process.env.PORT || 8888, function () {
+    console.log('listening on', this.address());
+});
 ```
 
 ### Fastify
 ```js
 'use strict';
 const fastify = require('fastify');
-const inputValidation = require('../../src/middleware');
+const inputValidation = require('openapi-validator-middleware');
 
 async function getApp() {
     inputValidation.init('test/pet-store-swagger.yaml', { 
@@ -215,7 +229,7 @@ async function getApp() {
 
 ### multiple-instances
 ```js
-const inputValidation = require('../../src/middleware');
+const inputValidation = require('openapi-validator-middleware');
 const validatorA = inputValidation.getNewMiddleware('test/pet-store-swaggerA.yaml', {framework: 'express'});
 const validatorB = inputValidation.getNewMiddleware('test/pet-store-swaggerB.yaml', {framework: 'express'});
 
@@ -240,12 +254,12 @@ Multipart/form-data (files) support is based on [`express/multer`](https://githu
 
 ### Fastify support
 
-Fastify support requires `uri-js` dependency to be available.
-When using this package as middleware for fastify, the validations errors are being thrown.
+Fastify support requires `uri-js` dependency to be installed. Make sure to run `npm install uri-js`.
+When using this package as a middleware for fastify, the validations errors will be thrown.
 
 ### Koa support
 
-When using this package as middleware for koa, the validations errors are being thrown.
+When using this package as middleware for koa, the validations errors will be thrown.
 
 ### Koa packages
 
@@ -266,8 +280,6 @@ npm test
 
 [npm-image]: https://img.shields.io/npm/v/openapi-validator-middleware.svg?style=flat
 [npm-url]: https://npmjs.org/package/openapi-validator-middleware
-[circleci-image]: https://circleci.com/gh/PayU/openapi-validator-middleware.svg?style=svg
-[circleci-url]: https://circleci.com/gh/PayU/openapi-validator-middleware
 [coveralls-image]: https://coveralls.io/repos/github/PayU/openapi-validator-middleware/badge.svg?branch=master
 [coveralls-url]: https://coveralls.io/github/PayU/openapi-validator-middleware?branch=master
 [downloads-image]: http://img.shields.io/npm/dm/openapi-validator-middleware.svg?style=flat
