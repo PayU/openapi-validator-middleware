@@ -149,11 +149,12 @@ const Koa = require('koa');
 const Router = require('koa-router');
 const bodyParser = require('koa-bodyparser');
 const inputValidation = require('openapi-validator-middleware');
-let app = new Koa();
-let router = new Router();
+const app = new Koa();
+const router = new Router();
 app.use(bodyParser());
 app.use(router.routes());
-module.exports = inputValidation.init('test/pet-store-swagger.yaml', { framework: 'koa' });
+inputValidation.init('test/pet-store-swagger.yaml', { framework: 'koa' });
+
 router.get('/pets', inputValidation.validate, async (ctx, next) => {
     ctx.status = 200;
     ctx.body = { result: 'OK' };
@@ -171,7 +172,20 @@ router.put('/pets', inputValidation.validate, async (ctx, next) => {
     ctx.body = { result: 'OK' };
 });
 
-return app;
+app.use(async (ctx, next) => {
+    try {
+        return await next();
+    } catch (err) {
+        if (err instanceof inputValidation.InputValidationError) {
+            ctx.status = 400;
+            ctx.body = err.errors;
+        }
+        throw err;
+    }
+})
+app.listen(process.env.PORT || 8888, function () {
+    console.log('listening on', this.address());
+});
 ```
 
 ### Fastify
