@@ -34,7 +34,7 @@ declare function validate(options: FastifyPluginOptions): any; // fastify
 export class InputValidationError extends Error {
     errors: Array<ErrorDetails | string>;
 
-    constructor(errors: Array<ErrorDetails>, options?: inputValidationOptions)
+    constructor(errors: Array<ErrorDetails | string>, options?: inputValidationOptions)
 }
 
 export interface ErrorDetails {
