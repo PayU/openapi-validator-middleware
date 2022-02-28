@@ -345,6 +345,22 @@ describe('input-validation middleware tests - Express', function () {
                     done();
                 });
         });
+        it('bad path param - wrong format empty string', function (done) {
+            request(app)
+                .get('/pets/')
+                .set('request-id', '1234')
+                .set('api-version', '1.0')
+                .query({ limit: '50', page: 0 })
+                .expect(400, function (err, res) {
+                    if (err) {
+                        throw err;
+                    }
+                    const moreInfoAsJson = JSON.parse(res.body.more_info);
+                    expect(moreInfoAsJson).to.be.instanceof(Array);
+                    expect(res.body.more_info).to.includes('petId');
+                    done();
+                });
+        });
         it('bad body - wrong format nested attribute (not parameters)', function (done) {
             request(app)
                 .put('/pets')
