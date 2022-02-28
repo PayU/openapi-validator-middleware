@@ -226,6 +226,68 @@ paths:
           description: unexpected error
           schema:
             $ref: '#/definitions/Error'
+  /pets/{petId}/medicalHistory:
+    get:
+      summary: Medical history for a specific pet
+      operationId: medicalHistoryByPetId
+      tags:
+        - pets
+      parameters:
+        - $ref: '#/parameters/ApiVersion'
+        - $ref: '#/parameters/ApiRequestId'
+        - name: petId
+          in: path
+          required: true
+          description: The id of the pet to retrieve
+          type: string
+          minLength: 3
+          maxLength: 10
+      responses:
+        "200":
+          description: Expected response to a valid request
+          schema:
+            $ref: '#/definitions/Pets'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      summary: Medical history for a specific pet
+      operationId: medicalHistoryByPetId
+      tags:
+        - pets
+      consumes:
+        - application/json
+      parameters:
+        - $ref: '#/parameters/ApiVersion'
+        - $ref: '#/parameters/ApiRequestId'
+        - name: petId
+          in: path
+          required: true
+          description: The id of the pet to retrieve
+          type: string
+          minLength: 3
+          maxLength: 10
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              age:
+                type: integer
+              tag:
+                type: string
+      responses:
+        "200":
+          description: Expected response to a valid request
+          schema:
+            $ref: '#/definitions/Pets'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
   /pets/search:
     get:
       summary: Search for a pet
