@@ -30,6 +30,10 @@ describe('fastify plugin', () => {
             reply.status(204).send();
         });
 
+        app.get('/pets/:petId/medicalHistory', (req, reply) => {
+            reply.status(204).send();
+        });
+
         app.post('/pets', (req, reply) => {
             reply.status(201).send();
         });
@@ -105,5 +109,23 @@ describe('fastify plugin', () => {
                 test: 'field1'
             }).post('/pets');
         expect(response.statusCode).to.equal(400);
+    });
+    it('Invalid path parameter - too short', async () => {
+        const response = await app.inject()
+            .headers({
+                'api-version': '1.0'
+            })
+            .get('/pets/11/medicalHistory');
+        expect(response.statusCode).to.equal(400);
+        console.log(response);
+    });
+    it('Invalid path parameter - empty', async () => {
+        const response = await app.inject()
+            .headers({
+                'api-version': '1.0'
+            })
+            .get('/pets//medicalHistory');
+        expect(response.statusCode).to.equal(400);
+        console.log(response);
     });
 });
