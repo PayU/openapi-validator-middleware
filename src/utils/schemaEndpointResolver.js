@@ -31,7 +31,7 @@ function _pathMatcherInternal(routes, path, exactMatch) {
 
                 if (!exactMatch) {
                     // if current path segment is param
-                    if (seg.startsWith(':') && pathArr[idx]) return true;
+                    if (seg.startsWith(':') && (idx in pathArr)) return true;
                 }
 
                 return false;
