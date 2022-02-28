@@ -29,7 +29,7 @@ describe('fastify plugin', () => {
         app.get('/pets', (req, reply) => {
             reply.status(204).send();
         });
-        
+
         app.get('/pets/:petId/medicalHistory', (req, reply) => {
             reply.status(204).send();
         });
