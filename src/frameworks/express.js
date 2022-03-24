@@ -10,6 +10,11 @@ function getValidator(validateRequest) {
 
 function _getParameters(req) {
     const requestOptions = {};
+    if (!req.route || !req.route.path) {
+        req.route = {
+            path: req.path
+        };
+    }
     const path = req.baseUrl.concat(req.route.path);
     requestOptions.path = path.endsWith('/') ? path.substring(0, path.length - 1) : path;
     requestOptions.headers = req.headers;
